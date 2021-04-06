@@ -1,0 +1,22 @@
+{
+    "common": {
+        "strategy": "Strategy",
+        "timezone": "Europe/Dublin"
+    },
+    "logging": {
+        "enabled": false
+    },
+    "feeds": {
+        "primary": ["Minutes", 5, "resample", {}]
+    },
+    "datas": {
+        "csv": {}
+    },
+    "plot": {
+        "plot_volume": true,
+        "bar_dist": 0.0003,
+        "style": "candle"
+    },
+    "TestStrategy": {
+    }
+}

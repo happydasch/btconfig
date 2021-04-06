@@ -1,0 +1,8 @@
+__pycache__
+venv
+config/*.json
+logs
+backtest
+strategies
+*.csv
+.vscode
