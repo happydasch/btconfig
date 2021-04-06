@@ -1,0 +1,10 @@
+iso8601>=0.1.13
+python-dateutil>=2.8.1
+tabulate>=0.8.7
+bokeh>=2.2.3
+PyYAML
+v20
+backtrader @ git+https://github.com/backtrader2/backtrader
+btoandav20 @ git+https://github.com/happydasch/btoandav20
+btplotting @ git+https://github.com/happydasch/btplotting
+IbPy2 @ git+https://github.com/blampe/IbPy.git

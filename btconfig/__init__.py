@@ -234,9 +234,10 @@ PATH_STRATEGY = ['strategies']
 
 # misc vars
 logger = logging.getLogger('btconfig')
-filename = None   # filename of config
-config = None     # complete configuration
-result = None     # store execution result
+filename = None         # filename of config
+config = None           # complete configuration
+result = None           # store execution result
+initialized = False     # is btconfig initialized
 
 # global vars
 cerebro = None     # cerebro instance
@@ -244,6 +245,43 @@ cmode = None       # current mode
 cconfig = None     # current configuration
 cstores = {}       # current stores available
 cdatas = {}        # current data sources
+
+
+def initialize(mode: int, configfile: str = None) -> None:
+    '''
+    Initialization of btconfig using a config file
+
+    Args:
+    -----
+    - mode (int): the mode to execute
+    - configfile (str): Optional, configfile to use
+
+    Returns:
+    --------
+    None
+    '''
+    global filename, initialized, config, result, cconfig, cmode, cstores, cdatas
+
+    # reset result
+    result = None
+    # load config from filename
+    if configfile:
+        filename = configfile
+    if filename is None:
+        raise Exception('No config file defined')
+    with open(filename, 'r') as file:
+        config = json.load(file)
+    merge_dicts(config, CONFIG_DEFAULT)
+    # store time when btconfig was initialized
+    config['common']['time'] = datetime.now()
+    # create config for mode
+    cmode = mode
+    cconfig = _get_config(mode)
+    # set empty dicts
+    cstores = {}
+    cdatas = {}
+    # mark as initialized
+    initialized = True
 
 
 def execute(mode: int, configfile: str = None) -> None:
@@ -262,10 +300,8 @@ def execute(mode: int, configfile: str = None) -> None:
     --------
     None
     '''
-    global filename, cconfig
-    if configfile:
-        filename = configfile
-    _initialize(mode)
+    if not initialized:
+        initialize(mode, configfile)
     _setup()
     _finish()
 
@@ -335,38 +371,6 @@ def log(txt: str, level: int = logging.INFO) -> None:
         logger.log(level, txt)
     else:
         print(txt)
-
-
-def _initialize(mode: int) -> None:
-    '''
-    Initialization of btconfig using a config file
-
-    Args:
-    -----
-    - mode (int): the mode to execute
-
-    Returns:
-    --------
-    None
-    '''
-    global filename, config, result, cconfig, cmode, cstores, cdatas
-
-    # reset result
-    result = None
-    # load config from filename
-    if filename is None:
-        raise Exception('No config file defined')
-    with open(filename, 'r') as file:
-        config = json.load(file)
-    merge_dicts(config, CONFIG_DEFAULT)
-    # store time when btconfig was initialized
-    config['common']['time'] = datetime.now()
-    # create config for mode
-    cmode = mode
-    cconfig = _get_config(mode)
-    # set empty dicts
-    cstores = {}
-    cdatas = {}
 
 
 def _setup() -> None:
