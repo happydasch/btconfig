@@ -247,13 +247,13 @@ cstores = {}       # current stores available
 cdatas = {}        # current data sources
 
 
-def initialize(mode: int, configfile: str = None) -> None:
+def initialize(mode: int = None, configfile: str = None) -> None:
     '''
     Initialization of btconfig using a config file
 
     Args:
     -----
-    - mode (int): the mode to execute
+    - mode (int): Optional, the mode to execute
     - configfile (str): Optional, configfile to use
 
     Returns:
@@ -265,7 +265,7 @@ def initialize(mode: int, configfile: str = None) -> None:
     # reset result
     result = None
     # load config from filename
-    if configfile:
+    if configfile is not None:
         filename = configfile
     if filename is None:
         raise Exception('No config file defined')
@@ -275,7 +275,10 @@ def initialize(mode: int, configfile: str = None) -> None:
     # store time when btconfig was initialized
     config['common']['time'] = datetime.now()
     # create config for mode
-    cmode = mode
+    if mode is not None:
+        cmode = mode
+    if cmode is None:
+        raise Exception('No run mode defined')
     cconfig = _get_config(mode)
     # set empty dicts
     cstores = {}
@@ -284,7 +287,7 @@ def initialize(mode: int, configfile: str = None) -> None:
     initialized = True
 
 
-def execute(mode: int, configfile: str = None) -> None:
+def execute(mode: int = None, configfile: str = None) -> None:
     '''
     Executes the strategy
 
@@ -293,8 +296,8 @@ def execute(mode: int, configfile: str = None) -> None:
 
     Args:
     -----
-    - mode (int): Run mode to execute
-    - configfile (str): The configfile to execute [Optional]
+    - mode (int): Optional, the mode to execute
+    - configfile (str): Optional, configfile to use
 
     Returns:
     --------

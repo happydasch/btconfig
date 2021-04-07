@@ -34,9 +34,8 @@ def setup_strategy():
         args.update(create_opt_params(cconfig.get('optimize', {})))
         btconfig.cerebro.optstrategy(strat, **args)
     runtype = 'strategy' if cmode != MODE_OPTIMIZE else 'optstrategy'
-    txt = 'Creating {}: {}\n{}'.format(
-            runtype,
-            stratname,
-            tabulate(args.items(), tablefmt='plain'))
+    params = '' if not len(args) else '\n{}'.format(
+        tabulate(args.items(), tablefmt='plain'))
+    txt = 'Creating {}: {}{}'.format(runtype, stratname, params)
     log(txt, logging.DEBUG)
     log('Strategy created\n', logging.INFO)

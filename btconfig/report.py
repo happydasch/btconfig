@@ -11,14 +11,41 @@ def create_report(result, startcash) -> str:
     '''
     trade_list = result.analyzers.TradeList.get_analysis()
     annual_return = result.analyzers.AnnualReturn.get_analysis()
-    time_return = result.analyzers.TimeReturn.get_analysis()
     trade_analysis = result.analyzers.TradeAnalyzer.get_analysis()
     drawdown = result.analyzers.DrawDown.get_analysis()
-    sharpe = result.analyzers.Sharpe.get_analysis()['sharperatio']
     sqn = result.analyzers.SQN.get_analysis()['sqn']
+    # load the following analyzer only if available
+    time_return = None
+    if 'TimeReturn' in result.analyzers._names:
+        time_return = result.analyzers.TimeReturn.get_analysis()
+    sharpe = None
+    if 'Sharpe' in result.analyzers._names:
+        sharpe = result.analyzers.Sharpe.get_analysis()['sharperatio']
 
     if 'pnl' not in trade_analysis:
         return 'No PnL, empty report\n'
+
+    txt = []
+
+    txt.append('')
+    txt.append('Trade List')
+    txt.append(tabulate(trade_list, headers='keys', tablefmt='simple'))
+    txt.append('')
+
+    if time_return:
+        txt.append('Time Return')
+        txt.append(tabulate(
+            time_return.items(),
+            headers=['time', 'return'],
+            tablefmt='fancy_grid'))
+        txt.append('')
+
+    txt.append('Annual Return')
+    txt.append(tabulate(
+        annual_return.items(),
+        headers=['time', 'return'],
+        tablefmt='fancy_grid'))
+    txt.append('')
 
     rpl = trade_analysis.pnl.net.total
     total_return = rpl / startcash
@@ -40,6 +67,9 @@ def create_report(result, startcash) -> str:
         ['max_money_drawdown', drawdown.max.moneydown],
         ['max_pct_drawdown (DD)', drawdown.max.drawdown]
     ]
+    txt.append('PnL')
+    txt.append(tabulate(kpi_pnl, tablefmt='fancy_grid'))
+    txt.append('')
 
     kpi_trades = [
         ['total_number_trades', total_number_trades],
@@ -55,36 +85,16 @@ def create_report(result, startcash) -> str:
         ['longest_win_streak', trade_analysis.streak.won.longest],
         ['longest_lose_streak', trade_analysis.streak.lost.longest]
     ]
-
-    kpi_perf = [
-        ['sharpe_ratio (SR)', sharpe],
-        ['sqn_score', sqn],
-        ['sqn_human', sqn2rating(sqn)]
-    ]
-
-    txt = []
-    txt.append('')
-    txt.append('Trade List')
-    txt.append(tabulate(trade_list, headers='keys', tablefmt='simple'))
-    txt.append('')
-    txt.append('Time Return')
-    txt.append(tabulate(
-        time_return.items(),
-        headers=['time', 'return'],
-        tablefmt='fancy_grid'))
-    txt.append('')
-    txt.append('Annual Return')
-    txt.append(tabulate(
-        annual_return.items(),
-        headers=['time', 'return'],
-        tablefmt='fancy_grid'))
-    txt.append('')
-    txt.append('PnL')
-    txt.append(tabulate(kpi_pnl, tablefmt='fancy_grid'))
-    txt.append('')
     txt.append('Trades')
     txt.append(tabulate(kpi_trades, tablefmt='fancy_grid'))
     txt.append('')
+
+    kpi_perf = [
+        ['sqn_score', sqn],
+        ['sqn_human', sqn2rating(sqn)]
+    ]
+    if sharpe:
+        kpi_perf.append(['sharpe_ratio (SR)', sharpe])
     txt.append('Performance')
     txt.append(tabulate(kpi_perf, tablefmt='fancy_grid'))
     txt = '\n'.join(txt)
