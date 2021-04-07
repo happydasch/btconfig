@@ -5,12 +5,11 @@ import pytz
 
 import backtrader as bt
 
+import btconfig
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)
 from ib.ext.ContractDetails import ContractDetails
-
-logger = logging.getLogger('btconfig.strategies')
 
 
 class ProtoStrategy(bt.Strategy):
@@ -42,13 +41,11 @@ class ProtoStrategy(bt.Strategy):
         ''' Logging function for strategy '''
         if len(self.data):
             dt = dt or self.data.datetime.datetime(0)
-            log = f'{dt.isoformat()}: {txt}'
-        else:
-            log = f'{txt}'
+            txt = f'{dt.isoformat()}: {txt}'
         if self.p.use_logging:
-            logger.log(level, log)
+            btconfig.log(txt, level)
         else:
-            print(log)
+            print(txt)
 
     def notify_store(self, msg, *args, **kwargs):
         ''' Store notification '''

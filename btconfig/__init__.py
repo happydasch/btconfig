@@ -8,10 +8,10 @@ The possible configuration options are described below.
 Intention
 ---------
 
-The intention of btconfig is to provide a basic framework for automatic strategy
-setup using a config file. This allows to collect different strategies,
-indicators, etc. and to setup and execute a strategy in different execution
-modes:
+The intention of btconfig is to provide a basic framework for automatic
+strategy setup using a config file. This allows to collect different
+strategies, indicators, etc. and to setup and execute a strategy in different
+execution modes:
 live, backtest, optimization.
 
 Every execution mode can set different settings for data sources, parts to
@@ -144,7 +144,8 @@ Configuration for analyzer
     * time_return (list): ["Minutes", 240]
     * sharpe_ratio (list): ["Days", 1, 365, true]
       Timeframe, Compression, Factor, Annualize
-      Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
+      Config based on:
+      https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
 
 See btconfig.parts.backtrader for more details
 
@@ -260,7 +261,8 @@ def initialize(mode: int = None, configfile: str = None) -> None:
     --------
     None
     '''
-    global filename, initialized, config, result, cconfig, cmode, cstores, cdatas
+    global filename, initialized, config, result
+    global cconfig, cmode, cstores, cdatas
 
     # reset result
     result = None

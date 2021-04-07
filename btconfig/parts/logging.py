@@ -58,7 +58,6 @@ def setup_logging() -> None:
         file.setLevel(level)
         logging.getLogger().addHandler(file)
     # enable logging in strategy
-    # TODO needs to be checked if still working
     cconfig['ProtoStrategy']['use_logging'] = True
     # initialize btplotting logger
     init_log_tab(['strategy'])
