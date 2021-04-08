@@ -13,8 +13,9 @@ def setup_sizer():
     '''
     Set ups the sizer to use
     '''
+    commoncfg = cconfig.get('common', {})
     sizercfg = cconfig.get('sizer', {})
-    if cmode != MODE_LIVE:
+    if cmode != MODE_LIVE or commoncfg.get('broker') != 'oandav20':
         btconfig.cerebro.addsizer(
             OandaV20BacktestRiskPercentSizer,
             percents=sizercfg.get('risk', 2),

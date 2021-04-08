@@ -228,7 +228,7 @@ class ForexProtoStrategy(ProtoStrategy):
             dcd = self.datas[0].contractdetails
         if isinstance(dcd, dict):
             # merge dict into contractdetails dict
-            cd = cd.update(dcd)
+            cd.update(dcd)
         elif isinstance(dcd, ContractDetails):
             # no updates from ib contractdetails
             pass
