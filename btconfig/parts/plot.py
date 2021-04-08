@@ -88,13 +88,12 @@ def _create_backtest_plotting():
         kwargs['use_default_tabs'] = False
         kwargs['tabs'] = [AnalyzerTab, MetadataTab, LogTab]
         kwargs['scheme'] = _get_btplotting_scheme(plotscheme)
-        if plotcfg.get('path', None) is not None:
-            output_file = plotcfg.get('path', './backtest')
-            output_file = os.path.abspath(output_file)
-            output_file = os.path.join(output_file, 'bt_{}_{}.html'.format(
-                commoncfg.get('strategy'),
-                commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
-            kwargs['filename'] = output_file
+        output_file = plotcfg.get('path', './backtest')
+        output_file = os.path.abspath(output_file)
+        output_file = os.path.join(output_file, 'bt_{}_{}.html'.format(
+            commoncfg.get('strategy'),
+            commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
+        kwargs['filename'] = output_file
         btconfig.cerebro.plot(BacktraderPlotting(**kwargs))
 
 
