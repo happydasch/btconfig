@@ -44,14 +44,13 @@ def setup_stores() -> None:
     if broker is not None:
         store = cstores[broker].getbroker()
         btconfig.cerebro.setbroker(store.getbroker())
+        log('Broker was set: %s' % broker, logging.DEBUG)
     # set starting cash
     if commoncfg.get('cash', None) is not None:
-        btconfig.cerebro.setcash(commoncfg.get('cash'))
+        cash = commoncfg.get('cash')
+        btconfig.cerebro.broker.setcash(cash)
+        log('Starting cash was set: %s' % cash, logging.DEBUG)
     # log execution
-    if broker is not None:
-        log('Broker %s was set' % broker, logging.DEBUG)
-    else:
-        log('Broker was not set', logging.DEBUG)
     log('Stores created\n', logging.INFO)
 
 
