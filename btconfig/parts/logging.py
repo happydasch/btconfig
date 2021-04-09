@@ -60,6 +60,6 @@ def setup_logging() -> None:
     # enable logging in strategy
     cconfig['ProtoStrategy']['use_logging'] = True
     # initialize btplotting logger
-    init_log_tab(['strategy'])
+    init_log_tab(['btconfig'])
     # log execution
     log('Logging started\n', logging.INFO)
