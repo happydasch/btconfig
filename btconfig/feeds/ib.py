@@ -50,6 +50,7 @@ def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
         dataname=cfg['name'],
         timeframe=timeframe,
         compression=compression,
+        qcheck=0.25,
         tz=tz,
         sessionstart=time(
             cfg['sessionstart'][0],
@@ -90,7 +91,6 @@ def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
     datakwargs['what'] = cfg['options'].get('what', 'MIDPOINT')
     datakwargs['useRTH'] = cfg['options'].get('useRTH', False)
     datakwargs['reconnect'] = cfg['options'].get('reconnect', -1)
-
     log('Loading Interactive Brokers data {} - {} {}\n{}'.format(
             cfg['name'],
             compression,

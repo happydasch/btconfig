@@ -71,13 +71,13 @@ class ProtoStrategy(bt.Strategy):
         frompre = kwargs.get('frompre', False)
         if not len(data):
             return
-        diff = 0
-        if data.close[offset] > data.open[offset]:
-            diff = data.close[offset] - data.close[offset - 1]
-        elif data.close[offset] < data.open[offset]:
-            diff = -(data.close[offset - 1] - data.close[offset])
-        elif data.close[offset] == data.open[offset]:
-            diff = 0.0
+        diff = 0.0
+        if len(data) > abs(offset):
+            if data.close[offset] > data.open[offset]:
+                diff = data.close[offset] - data.close[offset - 1]
+            elif data.close[offset] < data.open[offset]:
+                diff = -(data.close[offset - 1] - data.close[offset])
+
         prepend = '+' if diff > 0 else ''
         offset_str = f'{offset}' if offset < 0 else ''
 
