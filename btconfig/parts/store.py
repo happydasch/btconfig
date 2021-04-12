@@ -6,7 +6,7 @@ import backtrader as bt
 
 import btconfig
 from btconfig import log, cconfig, cstores
-from btconfig.stores import create_oandav20, create_ib
+from btconfig.stores import create_oandav20, create_ib, create_ccxt
 
 
 def setup_stores() -> None:
@@ -42,14 +42,15 @@ def setup_stores() -> None:
     # set broker
     broker = commoncfg.get('broker', None)
     if broker is not None:
-        store = cstores[broker].getbroker()
+        store = cstores[broker]
         btconfig.cerebro.setbroker(store.getbroker())
         log('Broker was set: %s' % broker, logging.DEBUG)
     # set starting cash
     if commoncfg.get('cash', None) is not None:
-        cash = commoncfg.get('cash')
-        btconfig.cerebro.broker.setcash(cash)
-        log('Starting cash was set: %s' % cash, logging.DEBUG)
+        if hasattr(btconfig.cerebro.broker, 'setcash'):
+            cash = commoncfg.get('cash')
+            btconfig.cerebro.broker.setcash(cash)
+            log('Starting cash was set: %s' % cash, logging.DEBUG)
     # log execution
     log('Stores created\n', logging.INFO)
 
@@ -71,6 +72,8 @@ def _create_store(store: str, cfg: dict) -> bt.Store:
         s = create_oandav20(cfg)
     elif store == 'ib':
         s = create_ib(cfg)
+    elif store == 'ccxt':
+        s = create_ccxt(cfg)
     else:
         raise Exception('Unknown store: %s\n' % store)
     log('Store created: %s\n' % store, logging.DEBUG)

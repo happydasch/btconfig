@@ -92,11 +92,11 @@ def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
     datakwargs['useRTH'] = cfg['options'].get('useRTH', False)
     datakwargs['reconnect'] = cfg['options'].get('reconnect', -1)
     log('Loading Interactive Brokers data {} - {} {}\n{}'.format(
-            cfg['name'],
-            compression,
-            bt.TimeFrame.TName(timeframe),
-            tabulate(datakwargs.items(), tablefmt='plain')
-        ), logging.DEBUG)
+        cfg['name'],
+        compression,
+        bt.TimeFrame.TName(timeframe),
+        tabulate(datakwargs.items(), tablefmt='plain')
+    ), logging.DEBUG)
     data = cstores['ib'].getdata(**datakwargs)
     return data
 

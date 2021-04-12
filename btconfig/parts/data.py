@@ -8,7 +8,8 @@ import btconfig
 from btconfig import log, cconfig, cdatas
 from btconfig.feeds import (
     create_ib, create_ib_downloader, create_oandav20,
-    create_oandav20_downloader, create_csv)
+    create_oandav20_downloader, create_csv,
+    create_ccxt)
 
 
 def setup_datas() -> None:
@@ -118,6 +119,8 @@ def _create_data(cfg: dict, tz: str) -> bt.AbstractDataBase:
         d = create_oandav20(cfg, tz)
     elif cfg['type'] == 'oandav20_downloader':
         d = create_oandav20_downloader(cfg, tz)
+    elif cfg['type'] == 'ccxt':
+        d = create_ccxt(cfg, tz)
     elif cfg['type'] == 'csv':
         d = create_csv(cfg, tz)
     else:
