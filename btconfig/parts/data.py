@@ -86,7 +86,14 @@ def setup_datas() -> None:
                     # if a feed is added, ensure, source data is added, too
                     # this is needed since the source data is providing the
                     # clock
-                    btconfig.cerebro.adddata(d)
+                    if d.islive():
+                        gran = datascfg[c]['granularity']
+                        btconfig.cerebro.replaydata(
+                            d,
+                            timeframe=bt.TimeFrame.TFrame(gran[0]),
+                            compression=gran[1])
+                    else:
+                        btconfig.cerebro.adddata(d)
                     added = True
                 cdatas[f] = _create_feed(d, f, feedcfg[f])
                 # remove created feed so already created feeds don't

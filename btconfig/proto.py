@@ -229,11 +229,23 @@ class ForexProtoStrategy(ProtoStrategy):
         if isinstance(dcd, dict):
             # merge dict into contractdetails dict
             cd.update(dcd)
+            for d in self.datas:
+                if d._name != self.datas[0]._name:
+                    d.contractdetails = cd
         elif isinstance(dcd, ContractDetails):
             # ib contract details
             self.contract = self.datas[0].contract
             self.tradecontract = self.datas[0].tradecontract
             self.tradecontractdetails = self.datas[0].tradecontractdetails
+            for d in self.datas:
+                if d._name != self.datas[0]._name:
+                    d.contract = self.datas[0].contract
+                    d.contractdetails = self.datas[0].contractdetails
+                    d.tradecontract = self.datas[0].tradecontract
+                    d.tradecontractdetails = self.datas[0].tradecontractdetails
+        else:
+            for d in self.datas:
+                d.contractdetails = cd
         self.contractdetails = cd
 
         super(ForexProtoStrategy, self).__init__()
