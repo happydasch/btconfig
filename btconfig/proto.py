@@ -238,33 +238,39 @@ class ForexProtoStrategy(ProtoStrategy):
 
         super(ForexProtoStrategy, self).__init__()
 
-    def pips_from_value(self, value, pip_precision=0):
+    def pips_from_value(self, value, pip_precision=0, pip_location=None):
         ''' Returns pips from a value '''
-        pip_location = self.contractdetails.get(
-            'pipLocation', 1)
+        if pip_location is None:
+            pip_location = self.contractdetails.get(
+                'pipLocation', 1)
         return get_pips_from_value(value, pip_location, pip_precision)
 
-    def value_from_pips(self, pips):
+    def value_from_pips(self, pips, pip_location=None, precision=None):
         ''' Returns price diff from pips '''
-        pip_location = self.contractdetails.get(
-            'pipLocation', 1)
-        precision = self.contractdetails.get(
-            'displayPrecision', 1)
+        if pip_location is None:
+            pip_location = self.contractdetails.get(
+                'pipLocation', 1)
+        if precision is None:
+            precision = self.contractdetails.get(
+                'displayPrecision', 1)
         return get_value_from_pips(pips, pip_location, precision)
 
-    def price_value(self, price):
+    def price_value(self, price, precision=None):
         ''' Returns a rounded price value '''
-        precision = self.contractdetails.get(
-            'displayPrecision', 1)
+        if precision is None:
+            precision = self.contractdetails.get(
+                'displayPrecision', 1)
         return get_price_value(price, precision)
 
     def round_to_pip(self, value, round_up=True, round_to_pip=0.5,
-                     ensure_dist=False):
+                     ensure_dist=False, pip_location=None, precision=None):
         ''' Rounding to pip '''
-        pip_location = self.contractdetails.get(
-            'pipLocation', 1)
-        precision = self.contractdetails.get(
-            'displayPrecision', 1)
+        if pip_location is None:
+            pip_location = self.contractdetails.get(
+                'pipLocation', 1)
+        if precision is None:
+            precision = self.contractdetails.get(
+                'displayPrecision', 1)
         return get_round_to_pip(value, pip_location, precision,
                                 round_up=round_up, round_to_pip=round_to_pip,
                                 ensure_dist=ensure_dist)
