@@ -230,8 +230,10 @@ class ForexProtoStrategy(ProtoStrategy):
             # merge dict into contractdetails dict
             cd.update(dcd)
         elif isinstance(dcd, ContractDetails):
-            # no updates from ib contractdetails
-            pass
+            # ib contract details
+            self.contract = self.datas[0].contract
+            self.tradecontract = self.datas[0].tradecontract
+            self.tradecontractdetails = self.datas[0].tradecontractdetails
         self.contractdetails = cd
 
         super(ForexProtoStrategy, self).__init__()
