@@ -64,4 +64,7 @@ def setup_logging() -> None:
     # initialize btplotting logger
     init_log_tab(['btconfig'])
     # log execution
+    log('Backtrader btconfig execution {}\n\n'.format(
+        commoncfg['time'].strftime('%Y-%m-%d %H:%M:%S')
+    ))
     log('Logging started\n', logging.INFO)
