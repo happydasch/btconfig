@@ -35,13 +35,13 @@ def finish_backtrader(result):
             if isinstance(r, list):
                 r = r.pop()
             params = r.p._getkwargs()
-            report = create_report(
-                r, r.cerebro.broker.startingcash)
+            report = create_report(r, r.cerebro.broker.startingcash)
             if cmode == MODE_OPTIMIZE:
                 log('Optimize Instance Args:\n{}'.format(tabulate(
                     params.items(), tablefmt='plain')),
                     logging.DEBUG)
-            log(report, logging.INFO)
+            if report:
+                log(report, logging.INFO)
 
 
 def _add_observer():
