@@ -19,6 +19,7 @@ def setup_strategy():
     all_classes = get_classes(PATH_STRATEGY)
     if stratname not in all_classes:
         raise Exception(f'Strategy {stratname} not found')
+
     strat = all_classes[stratname]
     args = {}
     if issubclass(strat, ProtoStrategy):
@@ -26,11 +27,13 @@ def setup_strategy():
     if issubclass(strat, ForexProtoStrategy):
         args.update(cconfig.get(ForexProtoStrategy.__name__, {}))
     args.update(cconfig.get(strat.__name__, {}))
+
     runtype = 'strategy' if cmode != MODE_OPTIMIZE else 'optstrategy'
     params = '' if not len(args) else '\n{}'.format(
         tabulate(args.items(), tablefmt='plain'))
     txt = 'Creating {}: {}{}'.format(runtype, stratname, params)
     log(txt, logging.DEBUG)
+
     if cmode != MODE_OPTIMIZE:
         btconfig.cerebro.addstrategy(strat, **args)
     else:

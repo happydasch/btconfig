@@ -33,12 +33,13 @@ def setup_comminfo():
     params = comminfocfg.get('params', {})
     if not classname:
         return
+
     all_classes = get_classes(PATH_COMMINFO)
     if classname not in all_classes:
         raise Exception(f'CommInfo: {classname} not found')
-    log('Creating Comminfo: {} with Params: \n{}'.format(
-            classname,
-            tabulate(params.items(), tablefmt='plain')),
+
+    log('Creating Comminfo: {}\n{}'.format(
+            classname, tabulate(params.items(), tablefmt='plain')),
         logging.DEBUG)
     comminfo = all_classes[classname](**params)
     btconfig.cerebro.broker.addcommissioninfo(comminfo)

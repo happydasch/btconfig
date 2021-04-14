@@ -38,7 +38,7 @@ def finish_backtrader(result):
             report = create_report(
                 r, r.cerebro.broker.startingcash)
             if cmode == MODE_OPTIMIZE:
-                log('Optimize Instance Args: \n{}'.format(tabulate(
+                log('Optimize Instance Args:\n{}'.format(tabulate(
                     params.items(), tablefmt='plain')),
                     logging.DEBUG)
             log(report, logging.INFO)

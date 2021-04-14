@@ -39,6 +39,7 @@ def setup_logging() -> None:
     # check if logging is enabled
     if not enabled:
         return
+
     # set default log level
     logger.setLevel(level)
     # add console handler

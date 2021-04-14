@@ -30,9 +30,11 @@ def setup_sizer():
     params = sizercfg.get('params', {})
     if not classname:
         return
+
     all_classes = get_classes(PATH_SIZER)
     if classname not in all_classes:
         raise Exception(f'Sizer: {classname} not found')
+
     log('Creating Sizer: {} with Params: \n{}'.format(
         classname,
         tabulate(params.items(), tablefmt='plain')),

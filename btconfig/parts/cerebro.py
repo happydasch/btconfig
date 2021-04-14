@@ -23,7 +23,7 @@ def setup_cerebro() -> None:
     "_live": {
         "cerebro": {}
     },
-    "_backtest": {: {
+    "_backtest": {
         "cerebro": {
             "preload": true,
             "runonce": true
@@ -40,7 +40,7 @@ def setup_cerebro() -> None:
     # collect all args for cerebro
     args = cconfig.get('cerebro', {})
     args['tz'] = commoncfg.get('timezone')
-    log('Creating Cerebro with Args: \n{}'.format(tabulate(
+    log('Creating Cerebro\n{}'.format(tabulate(
             args.items(), tablefmt='plain')),
         logging.DEBUG)
     # create and assign cerebro instance to module

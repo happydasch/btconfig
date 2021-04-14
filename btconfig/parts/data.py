@@ -132,6 +132,7 @@ def _create_data(cfg: dict, tz: str) -> bt.AbstractDataBase:
         d = create_csv(cfg, tz)
     else:
         raise Exception('Unknown data type: %s' % cfg['type'])
+
     return d
 
 
@@ -168,4 +169,5 @@ def _create_feed(
         d = btconfig.cerebro.adddata(data, name=name)
     else:
         raise Exception(f'Unsupported mode: {mode}')
+
     return d
