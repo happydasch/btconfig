@@ -115,7 +115,7 @@ class ProtoStrategy(bt.Strategy):
         if not self.p.log_orders:
             return
         txt = []
-        if isinstance(order, [bt.Order, IBOrder]):
+        if isinstance(order, (bt.Order, IBOrder)):
             txt.append(f'Ref {order.ref}')
             txt.append(f'Type {order.ordtypename()}')
             txt.append(f'Status {order.getstatusname()}')
@@ -126,7 +126,7 @@ class ProtoStrategy(bt.Strategy):
             txt.append(f'Position {self.position.size}')
         else:
             txt.append(str(order))
-        info = ' / '.join(str(txt))
+        info = ' / '.join(txt)
         self.log(f'[ORDER] {info}')
 
     def log_trade(self, trade, level=logging.INFO):
