@@ -22,7 +22,7 @@ def setup_backtrader():
             or commoncfg.get('create_report', False)):
         _add_observer()
         _add_analyzer()
-    log('Backtrader created\n', logging.INFO)
+    log('Backtrader configured\n', logging.INFO)
 
 
 def finish_backtrader(result):

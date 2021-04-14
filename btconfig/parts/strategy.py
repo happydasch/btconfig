@@ -26,6 +26,11 @@ def setup_strategy():
     if issubclass(strat, ForexProtoStrategy):
         args.update(cconfig.get(ForexProtoStrategy.__name__, {}))
     args.update(cconfig.get(strat.__name__, {}))
+    runtype = 'strategy' if cmode != MODE_OPTIMIZE else 'optstrategy'
+    params = '' if not len(args) else '\n{}'.format(
+        tabulate(args.items(), tablefmt='plain'))
+    txt = 'Creating {}: {}{}'.format(runtype, stratname, params)
+    log(txt, logging.DEBUG)
     if cmode != MODE_OPTIMIZE:
         btconfig.cerebro.addstrategy(strat, **args)
     else:
@@ -33,9 +38,4 @@ def setup_strategy():
             args[x] = (args[x],)
         args.update(create_opt_params(cconfig.get('optimize', {})))
         btconfig.cerebro.optstrategy(strat, **args)
-    runtype = 'strategy' if cmode != MODE_OPTIMIZE else 'optstrategy'
-    params = '' if not len(args) else '\n{}'.format(
-        tabulate(args.items(), tablefmt='plain'))
-    txt = 'Creating {}: {}{}'.format(runtype, stratname, params)
-    log(txt, logging.DEBUG)
     log('Strategy created\n', logging.INFO)

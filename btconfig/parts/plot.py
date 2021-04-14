@@ -31,7 +31,7 @@ def setup_plot():
 
     if cmode == MODE_LIVE:
         _create_live_plotting()
-    log('Plotting created\n', logging.INFO)
+    log('Plotting configured\n', logging.INFO)
 
 
 def finish_plot(result):
