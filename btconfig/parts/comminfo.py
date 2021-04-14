@@ -1,31 +1,45 @@
 from __future__ import division, absolute_import, print_function
 
+from tabulate import tabulate
+
 import logging
 
 import btconfig
-from btconfig import log, cconfig, cmode, MODE_LIVE
-
-from btoandav20.commissions import OandaV20BacktestCommInfo
+from btconfig import log, cconfig, PATH_COMMINFO
+from btconfig.helper import get_classes
 
 
 def setup_comminfo():
     '''
-    Set ups the comminfo to use
+    Sets up the comminfo to use
+
+    Config Example:
+    ---------------
+    To set up oanda comminfo:
+
+    "comminfo": {
+        "classname": "OandaV20BacktestCommInfo",
+        "params": {
+            "acc_counter_currency": true,
+            "spread": 0.7,
+            "leverage": 20.0,
+            "margin": 0.5,
+            "pip_location": -4
+        }
+    }
     '''
-    if cmode != MODE_LIVE:
-        comminfocfg = cconfig.get('comminfo', {})
-        stratcfg = cconfig.get('ForexProtoStrategy', {})
-        leverage = comminfocfg.get('leverage', 1)
-        margin = comminfocfg.get('margin', 0.5)
-        spread = comminfocfg.get('spread', 1.0)
-        counter_curr = comminfocfg.get('acc_counter_currency', True)
-        pip_location = stratcfg.get('pip_location', 1)
-        comminfo = OandaV20BacktestCommInfo(
-            data=btconfig.cerebro.datas[0],
-            acc_counter_currency=counter_curr,
-            pip_location=pip_location,
-            spread=spread,
-            margin=margin,
-            leverage=leverage)
-        btconfig.cerebro.broker.addcommissioninfo(comminfo)
+    comminfocfg = cconfig.get('comminfo', {})
+    classname = comminfocfg.get('classname')
+    params = comminfocfg.get('params', {})
+    if not classname:
+        return
+    all_classes = get_classes(PATH_COMMINFO)
+    if classname not in all_classes:
+        raise Exception(f'CommInfo: {classname} not found')
+    log('Creating Comminfo: {} with Params: \n{}'.format(
+            classname,
+            tabulate(params.items(), tablefmt='plain')),
+        logging.DEBUG)
+    comminfo = all_classes[classname](**params)
+    btconfig.cerebro.broker.addcommissioninfo(comminfo)
     log('Comminfo created\n', logging.INFO)

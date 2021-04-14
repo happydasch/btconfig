@@ -1,28 +1,41 @@
 from __future__ import division, absolute_import, print_function
 
+from tabulate import tabulate
+
 import logging
 
 import btconfig
-from btconfig import log, cconfig, cmode, MODE_LIVE
-
-from btoandav20.sizers import (
-    OandaV20RiskPercentSizer, OandaV20BacktestRiskPercentSizer)
+from btconfig import log, cconfig, PATH_SIZER
+from btconfig.helper import get_classes
 
 
 def setup_sizer():
     '''
-    Set ups the sizer to use
+    Sets up the sizer to use
+
+    Config Example:
+    ---------------
+    To set up oanda sizer:
+
+    "sizer": {
+        "classname": "OandaV20RiskPercentSizer",
+        "params": {
+            "percents": 2,
+            "avail_reduce_perc": 0.1
+        }
+    }
     '''
-    commoncfg = cconfig.get('common', {})
     sizercfg = cconfig.get('sizer', {})
-    if cmode != MODE_LIVE or commoncfg.get('broker') != 'oandav20':
-        btconfig.cerebro.addsizer(
-            OandaV20BacktestRiskPercentSizer,
-            percents=sizercfg.get('risk', 2),
-            avail_reduce_perc=0.1)
-    else:
-        btconfig.cerebro.addsizer(
-            OandaV20RiskPercentSizer,
-            percents=sizercfg.get('risk', 2),
-            avail_reduce_perc=0.1)
+    classname = sizercfg.get('classname')
+    params = sizercfg.get('params', {})
+    if not classname:
+        return
+    all_classes = get_classes(PATH_SIZER)
+    if classname not in all_classes:
+        raise Exception(f'Sizer: {classname} not found')
+    log('Creating Sizer: {} with Params: \n{}'.format(
+        classname,
+        tabulate(params.items(), tablefmt='plain')),
+        logging.DEBUG)
+    btconfig.cerebro.addsizer(all_classes[classname], **params)
     log('Sizer created\n', logging.INFO)
