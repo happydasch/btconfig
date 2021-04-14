@@ -66,7 +66,7 @@ See btconfig.parts.logging for more details
 Configuration for cerebro
 
 Supports all backtrader params. Based on the mode different
-defaults will be preset.
+defaults will be preset. name/value pairs.
 
 See btconfig.parts.cerebro for more details
 
@@ -108,17 +108,16 @@ See btconfig.parts.data for more details
 #### [sizer]
 Configuration for sizer
 
-    * risk (float)
+    * classname (str): Classname to use
+    * params (dict): name/value pairs for class params
 
 See btconfig.parts.sizer for more details
 
 #### [comminfo]
 Configuration for comminfo
 
-    * acc_counter_currency (bool): Default=true
-    * spread (float): Default=1.0
-    * leverage (int): Default=1
-    * margin (float): Default=0.5
+    * classname (str): Classname to use
+    * params (dict): name/value pairs for class params
 
 See btconfig.parts.comminfo for more details
 
@@ -137,8 +136,8 @@ Configuration for plotting
 
 See btconfig.parts.plot for more details
 
-#### [analyzer]
-Configuration for analyzer
+#### [analyzers]
+Configuration for analyzers
 **Only temporary**
 
     * time_return (list): ["Minutes", 240]
@@ -148,6 +147,22 @@ Configuration for analyzer
       https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
 
 See btconfig.parts.backtrader for more details
+
+#### [strategy]
+Configuration for strategy
+Contains dict with config for different classes
+
+    ProtoStrategy:
+    Configuration for prototype strategy
+        * valuename (string/number): Set common strategy param to given value
+
+    ForexProtoStrategy:
+    Configuration for forex prototype strategy
+        * valuename (string/number): Set common strategy param to given value
+
+    StrategyName:
+    Configuration for strategy with given name
+        * valuename (string/number): Set strategy param to given value
 
 #### [_live]
 Configuration when using live trading
@@ -171,21 +186,6 @@ with additional possibilities to set custom config values.
           List of values to use: list with values
         * valuename: ["range", 8, 10, 1]:
           Range of numerical values to use: start, end, step
-
-#### [ProtoStrategy]
-Configuration for prototype strategy
-
-    * valuename (string/number): Set common strategy param to given value
-
-#### [ForexProtoStrategy]
-Configuration for forex prototype strategy
-
-    * valuename (string/number): Set common strategy param to given value
-
-#### [StrategyName]
-Configuration for strategy with given name
-
-    * valuename (string/number): Set strategy param to given value
 
 """
 from __future__ import division, absolute_import, print_function
@@ -212,9 +212,8 @@ MODES = ['LIVE', 'BACKTEST', 'OPTIMIZE']
 CONFIG_DEFAULT = {
     'common': {}, 'cerebro': {}, 'stores': {}, 'broker': {},
     'datas': {}, 'feeds': {}, 'sizer': {}, 'comminfo': {},
-    'plot': {}, 'logging': {}, 'analyzers': {},
-    '_live': {}, '_backtest': {}, '_optimize': {},
-    'ProtoStrategy': {}, 'ForexProtoStrategy': {}}
+    'plot': {}, 'logging': {}, 'analyzers': {}, 'strategy': {},
+    '_live': {}, '_backtest': {}, '_optimize': {}}
 CONFIG_LIVE = {**CONFIG_DEFAULT, **{
     'cerebro': {'stdstats': False, 'live': True}}}
 CONFIG_BACKTEST = {**CONFIG_DEFAULT, **{
