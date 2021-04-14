@@ -4,12 +4,13 @@ import logging
 import pytz
 
 import backtrader as bt
+from backtrader.brokers.ibbroker import IBOrder
+from ib.ext.ContractDetails import ContractDetails
 
 import btconfig
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)
-from ib.ext.ContractDetails import ContractDetails
 
 
 class ProtoStrategy(bt.Strategy):
@@ -114,7 +115,7 @@ class ProtoStrategy(bt.Strategy):
         if not self.p.log_orders:
             return
         txt = []
-        if isinstance(order, bt.Order):
+        if isinstance(order, [bt.Order, IBOrder]):
             txt.append(f'Ref {order.ref}')
             txt.append(f'Type {order.ordtypename()}')
             txt.append(f'Status {order.getstatusname()}')
@@ -124,8 +125,8 @@ class ProtoStrategy(bt.Strategy):
             txt.append(f'Price {order.executed.price}')
             txt.append(f'Position {self.position.size}')
         else:
-            txt.append(order)
-        info = ' / '.join(txt)
+            txt.append(str(order))
+        info = ' / '.join(str(txt))
         self.log(f'[ORDER] {info}')
 
     def log_trade(self, trade, level=logging.INFO):
@@ -151,7 +152,7 @@ class ProtoStrategy(bt.Strategy):
                 txt.append('Comm {:.2f}'.format(comm))
                 txt.append(f'Length bars {trade.barlen}')
         else:
-            txt.append(trade)
+            txt.append(str(trade))
         info = ' / '.join(txt)
         self.log(f'[TRADE] {info}')
 
