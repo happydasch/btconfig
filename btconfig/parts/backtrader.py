@@ -1,91 +1,78 @@
 from __future__ import division, absolute_import, print_function
-from btconfig.helper import sqn2rating
-
-import logging
-
-from tabulate import tabulate
 
 import backtrader as bt
+from tabulate import tabulate
 
+import logging
 import btconfig
-from btconfig import log, cconfig, cmode, MODE_OPTIMIZE
+
+from btconfig.helper import sqn2rating
 from btconfig.observers import BuySell
 from btconfig.analyzers import TradeList
 
 
-def setup_backtrader():
-    '''
-    Sets up backtrader functionality
-    '''
-    commoncfg = cconfig.get('common', {})
-    if (commoncfg.get('create_plot', False)
-            or commoncfg.get('create_report', False)):
-        _add_observer()
-        _add_analyzer()
-    log('Backtrader configured\n', logging.INFO)
+class PartBacktrader(btconfig.BTConfigPart):
 
+    PRIORITY = 30
 
-def finish_backtrader(result):
-    '''
-    Finishes backtrader functionality with result
-    '''
-    commoncfg = cconfig.get('common', {})
-    if commoncfg.get('create_report', False):
-        for r in result:
-            if isinstance(r, list):
-                r = r.pop()
-            params = r.p._getkwargs()
-            report = create_report(r, r.cerebro.broker.startingcash)
-            if cmode == MODE_OPTIMIZE:
-                log('Optimize Instance Args:\n{}'.format(tabulate(
-                    params.items(), tablefmt='plain')),
-                    logging.DEBUG)
-            if report:
-                log(report, logging.INFO)
+    def setup(self) -> None:
+        commoncfg = self._instance.config.get('common', {})
+        if (commoncfg.get('create_plot', False)
+                or commoncfg.get('create_report', False)):
+            self._addObserver()
+            self._addAnalyzer()
+        self.log('Backtrader configured\n', logging.INFO)
 
+    def finish(self, result) -> None:
+        commoncfg = self._instance.config.get('common', {})
+        if commoncfg.get('create_report', False):
+            for r in result:
+                if isinstance(r, list):
+                    r = r.pop()
+                params = r.p._getkwargs()
+                report = create_report(r, r.cerebro.broker.startingcash)
+                if self._instance.mode == btconfig.MODE_OPTIMIZE:
+                    self.log('Optimize Instance Args:\n{}'.format(tabulate(
+                        params.items(), tablefmt='plain')),
+                        logging.DEBUG)
+                if report:
+                    self.log(report, logging.INFO)
 
-def _add_observer():
-    '''
-    Adds observer to cerebro
-    '''
-    plotcfg = cconfig.get('plot', {})
-    ccerebro = btconfig.cerebro
-    ccerebro.addobserver(bt.observers.Broker)
-    ccerebro.addobserver(bt.observers.Trades)
-    ccerebro.addobserver(bt.observers.DrawDown)
-    ccerebro.addobservermulti(
-        BuySell,  # buy / sell arrows
-        barplot=True,
-        bardist=plotcfg.get('bar_dist', 0.001))
+    def _addObserver(self) -> None:
+        plotcfg = self._instance.config.get('plot', {})
+        ccerebro = self._instance.cerebro
+        ccerebro.addobserver(bt.observers.Broker)
+        ccerebro.addobserver(bt.observers.Trades)
+        ccerebro.addobserver(bt.observers.DrawDown)
+        ccerebro.addobservermulti(
+            BuySell,  # buy / sell arrows
+            barplot=True,
+            bardist=plotcfg.get('bar_dist', 0.001))
 
-
-def _add_analyzer():
-    '''
-    Adds analyzer to cerebro
-    '''
-    analyzercfg = cconfig.get('analyzers', {})
-    ccerebro = btconfig.cerebro
-    cfg = analyzercfg.get('time_return')
-    if cfg:
-        ccerebro.addanalyzer(
-            bt.analyzers.TimeReturn,
-            timeframe=bt.TimeFrame.TFrame(cfg[0]),
-            compression=cfg[1],
-            _name='TimeReturn')
-    cfg = analyzercfg.get('sharpe_ratio')
-    if cfg:
-        ccerebro.addanalyzer(
-            bt.analyzers.SharpeRatio,
-            riskfreerate=0,
-            timeframe=bt.TimeFrame.TFrame(cfg[0]),
-            compression=cfg[1],
-            factor=cfg[2],
-            annualize=cfg[3],
-            _name='Sharpe')
-    ccerebro.addanalyzer(bt.analyzers.DrawDown, _name='DrawDown')
-    ccerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer')
-    ccerebro.addanalyzer(bt.analyzers.SQN, _name='SQN')
-    ccerebro.addanalyzer(TradeList, _name='TradeList')
+    def _addAnalyzer(self) -> None:
+        analyzercfg = self._instance.config.get('analyzers', {})
+        ccerebro = self._instance.cerebro
+        cfg = analyzercfg.get('time_return')
+        if cfg:
+            ccerebro.addanalyzer(
+                bt.analyzers.TimeReturn,
+                timeframe=bt.TimeFrame.TFrame(cfg[0]),
+                compression=cfg[1],
+                _name='TimeReturn')
+        cfg = analyzercfg.get('sharpe_ratio')
+        if cfg:
+            ccerebro.addanalyzer(
+                bt.analyzers.SharpeRatio,
+                riskfreerate=0,
+                timeframe=bt.TimeFrame.TFrame(cfg[0]),
+                compression=cfg[1],
+                factor=cfg[2],
+                annualize=cfg[3],
+                _name='Sharpe')
+        ccerebro.addanalyzer(bt.analyzers.DrawDown, _name='DrawDown')
+        ccerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer')
+        ccerebro.addanalyzer(bt.analyzers.SQN, _name='SQN')
+        ccerebro.addanalyzer(TradeList, _name='TradeList')
 
 
 def create_report(result, startcash) -> str:

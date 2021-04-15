@@ -1,43 +1,46 @@
 from __future__ import division, absolute_import, print_function
 
-import logging
-
 from tabulate import tabulate
 
+import logging
 import btconfig
-from btconfig import log, cconfig, cmode, MODE_OPTIMIZE, PATH_STRATEGY
+
 from btconfig.proto import ProtoStrategy, ForexProtoStrategy
 from btconfig.helper import get_classes, create_opt_params
 
 
-def setup_strategy():
-    '''
-    Creates strategy from config
-    '''
-    commoncfg = cconfig.get('common', {})
-    stratname = commoncfg.get('strategy', None)
-    stratcfg = cconfig.get('strategy', {})
-    all_classes = get_classes(PATH_STRATEGY)
-    if stratname not in all_classes:
-        raise Exception(f'Strategy {stratname} not found')
+class PartStrategy(btconfig.BTConfigPart):
 
-    strat = all_classes[stratname]
-    args = {}
-    for x in [ProtoStrategy, ForexProtoStrategy, strat]:
-        if issubclass(strat, x):
-            args.update(stratcfg.get(x.__name__, {}))
+    PRIORITY = 80
 
-    runtype = 'strategy' if cmode != MODE_OPTIMIZE else 'optstrategy'
-    params = '' if not len(args) else '\n{}'.format(
-        tabulate(args.items(), tablefmt='plain'))
-    txt = 'Creating {}: {}{}'.format(runtype, stratname, params)
-    log(txt, logging.DEBUG)
+    def setup(self):
+        commoncfg = self._instance.config.get('common', {})
+        stratname = commoncfg.get('strategy', None)
+        stratcfg = self._instance.config.get('strategy', {})
+        all_classes = get_classes(self.PATH_STRATEGY)
+        if stratname not in all_classes:
+            raise Exception(f'Strategy {stratname} not found')
 
-    if cmode != MODE_OPTIMIZE:
-        btconfig.cerebro.addstrategy(strat, **args)
-    else:
-        for x in args:
-            args[x] = (args[x],)
-        args.update(create_opt_params(cconfig.get('optimize', {})))
-        btconfig.cerebro.optstrategy(strat, **args)
-    log('Strategy created\n', logging.INFO)
+        strat = all_classes[stratname]
+        args = {}
+        for x in [ProtoStrategy, ForexProtoStrategy, strat]:
+            if issubclass(strat, x):
+                args.update(stratcfg.get(x.__name__, {}))
+
+        runtype = ('strategy'
+                   if self._instance.mode != btconfig.MODE_OPTIMIZE
+                   else 'optstrategy')
+        params = '' if not len(args) else '\n{}'.format(
+            tabulate(args.items(), tablefmt='plain'))
+        txt = f'Creating {runtype}: {stratname}{params}'
+        self.log(txt, logging.DEBUG)
+
+        if self._instance.mode != btconfig.MODE_OPTIMIZE:
+            self._instance.cerebro.addstrategy(strat, **args)
+        else:
+            for x in args:
+                args[x] = (args[x],)
+            args.update(create_opt_params(
+                self._instance.config.get('optimize', {})))
+            self._instance.cerebro.optstrategy(strat, **args)
+        self.log('Strategy created\n', logging.INFO)
