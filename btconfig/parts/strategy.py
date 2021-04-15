@@ -17,7 +17,7 @@ class PartStrategy(btconfig.BTConfigPart):
         commoncfg = self._instance.config.get('common', {})
         stratname = commoncfg.get('strategy', None)
         stratcfg = self._instance.config.get('strategy', {})
-        all_classes = get_classes(self.PATH_STRATEGY)
+        all_classes = get_classes(self._instance.PATH_STRATEGY)
         if stratname not in all_classes:
             raise Exception(f'Strategy {stratname} not found')
 
@@ -32,7 +32,7 @@ class PartStrategy(btconfig.BTConfigPart):
                    else 'optstrategy')
         params = '' if not len(args) else '\n{}'.format(
             tabulate(args.items(), tablefmt='plain'))
-        txt = f'Creating {runtype}: {stratname}{params}'
+        txt = f'Creating {runtype} {stratname}{params}'
         self.log(txt, logging.DEBUG)
 
         if self._instance.mode != btconfig.MODE_OPTIMIZE:

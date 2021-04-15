@@ -1,33 +1,35 @@
 from __future__ import division, absolute_import, print_function
 
-import logging
-
-from tabulate import tabulate
-
-from ccxtbt.ccxtstore import CCXTStore
-from btconfig import log
+import btconfig
 
 
-def create_ccxt(cfg: dict) -> CCXTStore:
+class StoreCCXT(btconfig.BTConfigStore):
     '''
     Creates an CCXT store
 
-    Args:
-    -----
-    - cfg (dict)
+        Args:
+        -----
+        - cfg (dict)
 
-    Params:
-    -------
-    - exchange='bitmex'
-    - currency=currency
-    - config = {'urls': {'api': 'https://testnet.bitmex.com'},
-                   'apiKey': apikey,
-                   'secret': secret,
-                   'enableRateLimit': enableRateLimit,
-                }
-    - retries=5
-    - debug=False
+        Params:
+        -------
+        - exchange='bitmex'
+        - currency=currency
+        - config = {'urls': {'api': 'https://testnet.bitmex.com'},
+                    'apiKey': apikey,
+                    'secret': secret,
+                    'enableRateLimit': enableRateLimit,
+                    }
+        - retries=5
+        - debug=False
     '''
+
+    def create(self, cfg: dict):
+        pass
+
+"""
+def create_ccxt(cfg: dict) -> CCXTStore:
+    
     storekwargs = dict(
         exchange=cfg.get('exchange', ''),
         currency=cfg.get('currency', ''),
@@ -42,3 +44,4 @@ def create_ccxt(cfg: dict) -> CCXTStore:
     store = CCXTStore(**storekwargs)
     # return store
     return store
+"""

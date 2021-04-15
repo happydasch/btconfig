@@ -1,6 +1,16 @@
 
 from __future__ import division, absolute_import, print_function
 
+
+import btconfig
+
+
+class StoreOandaV20(btconfig.BTConfigStore):
+
+    def create(self, cfg: dict):
+        pass
+
+"""
 import logging
 from tabulate import tabulate
 
@@ -13,17 +23,17 @@ def create_oandav20(cfg: dict) -> OandaV20Store:
     '''
     Creates an Oanda V20 store
 
-    Args:
-    -----
-    - cfg (dict)
+        Args:
+        -----
+        - cfg (dict)
 
-    Params:
-    -------
-    - token
-    - account
-    - practice
-    - stream_timeout
-    - notif_transactions
+        Params:
+        -------
+        - token
+        - account
+        - practice
+        - stream_timeout
+        - notif_transactions
     '''
 
     storekwargs = dict(
@@ -45,3 +55,4 @@ def create_oandav20(cfg: dict) -> OandaV20Store:
     store = OandaV20Store(**storekwargs)
     # return store
     return store
+"""

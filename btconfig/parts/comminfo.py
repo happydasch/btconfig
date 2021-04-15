@@ -37,11 +37,11 @@ class PartCommInfo(btconfig.BTConfigPart):
         if not classname:
             return
 
-        all_classes = get_classes(self.PATH_COMMINFO)
+        all_classes = get_classes(self._instance.PATH_COMMINFO)
         if classname not in all_classes:
             raise Exception(f'CommInfo: {classname} not found')
 
-        self.log('Creating Comminfo: {}\n{}'.format(
+        self.log('Creating Comminfo {}\n{}'.format(
                 classname, tabulate(params.items(), tablefmt='plain')),
             logging.DEBUG)
         comminfo = all_classes[classname](**params)

@@ -129,7 +129,7 @@ class PartPlot(btconfig.BTConfigPart):
             scheme.volume = False
         return scheme
 
-    def _getBTPlottingScheme(plotscheme):
+    def _getBTPlottingScheme(self, plotscheme):
         '''
         Returns a scheme for btplotting
         '''

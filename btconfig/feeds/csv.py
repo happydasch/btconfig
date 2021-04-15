@@ -1,48 +1,45 @@
 from __future__ import division, absolute_import, print_function
 
-import iso8601      # for date string -> date object
-import logging
-
-from datetime import time
-
-import backtrader as bt
-
-from btconfig import log
-from btconfig.helper import parse_time
-from btconfig.utils.csv import CSVAdjustTime, CSVBidAskAdjustTime
+import btconfig
 
 
-def create_csv(cfg: dict, tz: str) -> bt.AbstractDataBase:
+class FeedCSV(btconfig.BTConfigFeed):
     '''
     Creates a data source from csv
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - fromdate (str): null
-    - todate (str): null
-    - datetime (int): CSV Column datetime, Default=0
-    - time (int): CSV Column time, Default=-1
-    - open (int): CSV Column open, Default=1
-    - high (int): CSV Column high, Default=2
-    - low (int): CSV Column low, Default=3
-    - close (int): CSV Column close, Default=4
-    - volume (int): CSV Column volume, Default=5
-    - openinterest (int): : CSV Column openinterest, Default=-1
+        Custom Options:
+        ---------------
+        - fromdate (str): null
+        - todate (str): null
+        - datetime (int): CSV Column datetime, Default=0
+        - time (int): CSV Column time, Default=-1
+        - open (int): CSV Column open, Default=1
+        - high (int): CSV Column high, Default=2
+        - low (int): CSV Column low, Default=3
+        - close (int): CSV Column close, Default=4
+        - volume (int): CSV Column volume, Default=5
+        - openinterest (int): : CSV Column openinterest, Default=-1
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+"""
+def create_csv(cfg: dict, tz: str) -> bt.AbstractDataBase:
     if cfg['granularity'][0] != 'Ticks':
         log('Loading CSV file {} - {} {}'.format(
             cfg['name'],
@@ -126,3 +123,4 @@ def create_csv(cfg: dict, tz: str) -> bt.AbstractDataBase:
             datakwargs['todate'] = todate
         data = CSVBidAskAdjustTime(**datakwargs)
     return data
+"""

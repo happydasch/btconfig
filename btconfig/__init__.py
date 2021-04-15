@@ -257,6 +257,12 @@ class BTConfig:
     PATH_ANALYZER = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
     PATH_OBSERVER = ['observers', 'backtrader.observers', 'btconfig.observers']
     PATH_STRATEGY = ['strategies']
+    # default different parts to load
+    LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
+                        'PartLogging', 'PartPlot', 'PartSizer',
+                        'PartStrategy']
+    LOAD_BTCONF_STORE = []
+    LOAD_BTCONF_FEED = []
 
     def __init__(self, mode: int = None, configfile: str = None) -> None:
         '''
@@ -285,24 +291,31 @@ class BTConfig:
         '''
         Loads all available parts
         '''
-        for classname, classobj in get_classes(self.PATH_BTCONF_PART).items():
-            self._parts[classname] = classobj(self)
+        all_classes = get_classes(self.PATH_BTCONF_PART)
+        for classname in self.LOAD_BTCONF_PART:
+            if classname not in all_classes:
+                raise Exception(f'Part {classname} not found')
+            self._parts[classname] = all_classes[classname](self)
 
     def _getParts(self) -> list:
         '''
         Returns a sorted list of all available parts
         '''
-        return sorted(
+        keys = sorted(
             self._parts,
             key=lambda x: self._parts[x].PRIORITY,
-            reverse=True)
+            reverse=False)
+        return [self._parts[x] for x in keys]
 
     def _loadStores(self) -> None:
         '''
         Loads all available stores
         '''
-        for classname, classobj in get_classes(self.PATH_BTCONF_STORE).items():
-            self._stores[classname] = classobj(self)
+        all_classes = get_classes(self.PATH_BTCONF_STORE)
+        for classname in self.LOAD_BTCONF_STORE:
+            if classname not in all_classes:
+                raise Exception(f'Store {classname} not found')
+            self._stores[classname] = all_classes[classname](self)
 
     def _getStores(self) -> list:
         '''
@@ -314,8 +327,11 @@ class BTConfig:
         '''
         Loads all available feeds
         '''
-        for classname, classobj in get_classes(self.PATH_BTCONF_FEED).items():
-            self._feeds[classname] = classobj(self)
+        all_classes = get_classes(self.PATH_BTCONF_FEED)
+        for classname in self.LOAD_BTCONF_FEED:
+            if classname not in all_classes:
+                raise Exception(f'Feed {classname} not found')
+            self._feeds[classname] = all_classes[classname](self)
 
     def _getFeeds(self) -> list:
         '''
@@ -374,7 +390,7 @@ class BTConfig:
             self._filename = configfile
         if self._filename is None:
             raise Exception('No config file defined')
-        with open(self.filename, 'r') as file:
+        with open(self._filename, 'r') as file:
             self._config = json.load(file)
         merge_dicts(self._config, CONFIG_DEFAULT)
         # store time at which btconfig was initialized
@@ -386,7 +402,7 @@ class BTConfig:
         if self.mode is None:
             raise Exception('No run mode defined')
         # set config for mode
-        self.config = self._getConfigForMode(mode)
+        self.config = self._getConfigForMode(self.mode)
 
         # set empty dicts
         self.stores = {}
@@ -403,7 +419,7 @@ class BTConfig:
             --------
             None
         '''
-        for p in self._parts:
+        for p in self._getParts():
             p.setup()
 
     def _finish(self) -> None:
@@ -415,14 +431,15 @@ class BTConfig:
             None
         '''
         self.result = self.cerebro.run()
-        for p in self._parts:
+        if not len(self.result):
+            return
+        for p in self._getParts():
             p.finish(self.result)
 
-    def run(self, mode: int = None, configfile: str = None) -> list:
+    def run(self, mode: int = None, configfile: str = None) -> None:
         self._prepare(mode, configfile)
         self._setup()
         self._finish()
-        return self._result
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
         '''
@@ -461,7 +478,7 @@ class BTConfigPart(BTConfigItem):
     def setup(self) -> None:
         pass
 
-    def finish(self) -> None:
+    def finish(self, result) -> None:
         pass
 
 

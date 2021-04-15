@@ -1,49 +1,76 @@
 from __future__ import division, absolute_import, print_function
 
-import os
-import iso8601      # for date string -> date object
-import logging
-
-from tabulate import tabulate
-from datetime import datetime, time, timedelta
-
-import backtrader as bt
-
-from btconfig import cstores, cconfig, log, TIMEFORMAT
-from btconfig.helper import parse_time
-from btconfig.utils.ib import IBDownloadApp
-from btconfig.utils.csv import CSVAdjustTime
+import btconfig
 
 
-def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
+class FeedIB(btconfig.BTConfigPart):
     '''
     Creates a data source from Interactive Brokers
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - backfill_days (int): Default=0
-    - fromdate (str): Default=null
-    - todate (str): Default=null
-    - historical (bool): Default=false
-    - rtbar (bool): Default=false
-    - what (str): Default=MIDPOINT
-    - useRTH (bool): Default=false
-    - reconnect (int): Default=-1
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - historical (bool): Default=false
+        - rtbar (bool): Default=false
+        - what (str): Default=MIDPOINT
+        - useRTH (bool): Default=false
+        - reconnect (int): Default=-1
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+
+class FeedIBDownloader(btconfig.BTConfigPart):
+    '''
+    Creates a data source from Interactive Brokers to csv
+
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
+
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
+
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - what (str): Default=MIDPOINT
+        - useRTH (bool): Default=false
+        - adjstarttime (bool): Default=false
+
+        Returns:
+        --------
+        bt.AbstractDataBase
+    '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+
+"""
+def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
     timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
     compression = cfg['granularity'][1]
     datakwargs = dict(
@@ -105,28 +132,28 @@ def create_ib_downloader(cfg: dict, tz: str) -> bt.AbstractDataBase:
     '''
     Creates a data source from Interactive Brokers to csv
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - backfill_days (int): Default=0
-    - fromdate (str): Default=null
-    - todate (str): Default=null
-    - what (str): Default=MIDPOINT
-    - useRTH (bool): Default=false
-    - adjstarttime (bool): Default=false
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - what (str): Default=MIDPOINT
+        - useRTH (bool): Default=false
+        - adjstarttime (bool): Default=false
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
     what = cfg['options'].get('what', 'MIDPOINT')
     fromdate = cfg['options'].get('fromdate', None)
@@ -195,3 +222,4 @@ def create_ib_downloader(cfg: dict, tz: str) -> bt.AbstractDataBase:
         dtformat=parse_time)
     # return data
     return data
+"""

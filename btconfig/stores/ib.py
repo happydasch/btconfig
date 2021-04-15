@@ -1,34 +1,34 @@
 from __future__ import division, absolute_import, print_function
 
-import logging
+import btconfig
 
-from tabulate import tabulate
-
-from backtrader.stores import IBStore
-from btconfig import log
-
-
-def create_ib(cfg: dict) -> IBStore:
+class StoreIB(btconfig.BTConfigStore):
     '''
     Creates an Interactive Brokers store
 
-    Args:
-    -----
-    - cfg (dict)
+        Args:
+        -----
+        - cfg (dict)
 
-    Params:
-    -------
-    - host
-    - port
-    - clientId
-    - reconnect
-    - timeout
-    - timeoffset
-    - timerefresh
-    - notifyall
-    - indcash
-    - _debug
+        Params:
+        -------
+        - host
+        - port
+        - clientId
+        - reconnect
+        - timeout
+        - timeoffset
+        - timerefresh
+        - notifyall
+        - indcash
+        - _debug
     '''
+
+    def create(self, cfg: dict):
+        pass
+
+"""
+def create_ib(cfg: dict) -> IBStore:
     storekwargs = dict(
         host=cfg.get('host', ''),
         port=cfg.get('port', ''),
@@ -49,3 +49,4 @@ def create_ib(cfg: dict) -> IBStore:
     store = IBStore(**storekwargs)
     # return store
     return store
+"""

@@ -1,50 +1,48 @@
 from __future__ import division, absolute_import, print_function
 
-import iso8601      # for date string -> date object
-import logging
+import btconfig
 
-from tabulate import tabulate
-from datetime import datetime, time, timedelta
-
-import backtrader as bt
-
-from ccxtbt.ccxtfeed import CCXTFeed
-
-from btconfig import cstores, log
+#from ccxtbt.ccxtfeed import CCXTFeed
 
 
-def create_ccxt(cfg: dict, tz: str) -> CCXTFeed:
+class FeedCCXT(btconfig.BTConfigFeed):
     '''
     Creates a data source from ccxt
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - backfill_days (int): Default=0
-    - fromdate (str): Default=null
-    - todate (str): Default=null
-    - historical (bool): Default=false
-    - config = {'urls': {'api': 'https://testnet.bitmex.com'},
-                   'apiKey': apikey,
-                   'secret': secret,
-                   'enableRateLimit': enableRateLimit,
-                }
-    - ohlcv_limit
-    - fetch_ohlcv_params {}
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - historical (bool): Default=false
+        - config = {'urls': {'api': 'https://testnet.bitmex.com'},
+                    'apiKey': apikey,
+                    'secret': secret,
+                    'enableRateLimit': enableRateLimit,
+                    }
+        - ohlcv_limit
+        - fetch_ohlcv_params {}
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+"""
+def create_ccxt(cfg: dict, tz: str) -> CCXTFeed:
     pass
     timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
     compression = cfg['granularity'][1]
@@ -91,11 +89,12 @@ def create_ccxt(cfg: dict, tz: str) -> CCXTFeed:
     datakwargs['config'] = cfg['options'].get('config', {})
     datakwargs['ohlcv_limit'] = cfg['options'].get('ohlcv_limit')
     datakwargs['fetch_ohlcv_params'] = cfg['options'].get('fetch_ohlcv_params', {})
-    log('Loading CCXT data {} - {} {}\n{}'.format(
+    '''log('Loading CCXT data {} - {} {}\n{}'.format(
         cfg['name'],
         compression,
         bt.TimeFrame.TName(timeframe),
         tabulate(datakwargs.items(), tablefmt='plain')
-    ), logging.DEBUG)
+    ), logging.DEBUG)'''
     data = cstores['ccxt'].getdata(**datakwargs)
     return data
+"""

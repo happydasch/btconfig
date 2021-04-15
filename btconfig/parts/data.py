@@ -5,10 +5,10 @@ import backtrader as bt
 import logging
 import btconfig
 
-from btconfig.feeds import (
+'''from btconfig.feeds import (
     create_ib, create_ib_downloader, create_oandav20,
     create_oandav20_downloader, create_csv,
-    create_ccxt)
+    create_ccxt)'''
 
 
 class PartDatas(btconfig.BTConfigPart):

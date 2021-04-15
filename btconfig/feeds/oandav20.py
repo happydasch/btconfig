@@ -1,47 +1,100 @@
 from __future__ import division, absolute_import, print_function
 
-import os
-import iso8601      # for date string -> date object
-import logging
-
-from tabulate import tabulate
-from datetime import datetime, time, timedelta
-
-import backtrader as bt
-
-from btconfig import cstores, cconfig, log, TIMEFORMAT
-from btconfig.helper import parse_time
-from btconfig.utils.oandav20 import OandaV20DownloadApp
-from btconfig.utils.csv import CSVBidAskAdjustTime
+import btconfig
 
 
+class FeedOandaV20(btconfig.BTConfigFeed):
+    '''
+    Creates a data source from Oanda V20
+
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
+
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
+
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - bidask (bool): Default=true
+        - useask (bool): Default=false
+        - historical (bool): Default=false
+        - adjstarttime (bool): Default=false
+
+        Returns:
+        --------
+        bt.AbstractDataBase
+    '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+
+class FeedOandaV20Downloader(btconfig.BTConfigFeed):
+    '''
+    Creates a data source from Oanda V20 to csv
+
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
+
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
+
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - bidask (bool): Default=true
+        - useask (bool): Default=false
+        - adjstarttime (bool): Default=false
+
+        Returns:
+        --------
+        bt.AbstractDataBase
+    '''
+
+    def create(self, cfg: dict, tz: str):
+        pass
+
+"""
 def create_oandav20(cfg: dict, tz: str) -> bt.AbstractDataBase:
     '''
     Creates a data source from Oanda V20
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - backfill_days (int): Default=0
-    - fromdate (str): Default=null
-    - todate (str): Default=null
-    - bidask (bool): Default=true
-    - useask (bool): Default=false
-    - historical (bool): Default=false
-    - adjstarttime (bool): Default=false
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - bidask (bool): Default=true
+        - useask (bool): Default=false
+        - historical (bool): Default=false
+        - adjstarttime (bool): Default=false
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
     timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
     compression = cfg['granularity'][1]
@@ -103,28 +156,28 @@ def create_oandav20_downloader(cfg: dict, tz: str) -> bt.AbstractDataBase:
     '''
     Creates a data source from Oanda V20 to csv
 
-    Args:
-    -----
-    - cfg (dict)
-    - tz (str)
+        Args:
+        -----
+        - cfg (dict)
+        - tz (str)
 
-    Params:
-    -------
-    All default params are supported. Additionally custom
-    options are available.
+        Params:
+        -------
+        All default params are supported. Additionally custom
+        options are available.
 
-    Custom Options:
-    ---------------
-    - backfill_days (int): Default=0
-    - fromdate (str): Default=null
-    - todate (str): Default=null
-    - bidask (bool): Default=true
-    - useask (bool): Default=false
-    - adjstarttime (bool): Default=false
+        Custom Options:
+        ---------------
+        - backfill_days (int): Default=0
+        - fromdate (str): Default=null
+        - todate (str): Default=null
+        - bidask (bool): Default=true
+        - useask (bool): Default=false
+        - adjstarttime (bool): Default=false
 
-    Returns:
-    --------
-    bt.AbstractDataBase
+        Returns:
+        --------
+        bt.AbstractDataBase
     '''
     bidask = cfg['options'].get('bidask', True)
     useask = cfg['options'].get('useask', False)
@@ -196,3 +249,4 @@ def create_oandav20_downloader(cfg: dict, tz: str) -> bt.AbstractDataBase:
         sessionend=sessionend,
         dtformat=parse_time)
     return data
+"""

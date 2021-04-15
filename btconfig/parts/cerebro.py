@@ -37,14 +37,14 @@ class PartCerebro(btconfig.BTConfigPart):
     PRIORITY = 20
 
     def setup(self) -> None:
-        commoncfg = self.config.get('common', {})
+        commoncfg = self._instance.config.get('common', {})
         # collect all args for cerebro
-        args = self.config.get('cerebro', {})
+        args = self._instance.config.get('cerebro', {})
         args['tz'] = commoncfg.get('timezone')
         self.log('Creating Cerebro\n{}'.format(tabulate(
                 args.items(), tablefmt='plain')),
             logging.DEBUG)
-        # create and assign cerebro instance to module
-        self.cerebro = bt.Cerebro(**args)
+        # create and assign cerebro instance
+        self._instance.cerebro = bt.Cerebro(**args)
         # log execution
         self.log('Cerebro created\n', logging.INFO)

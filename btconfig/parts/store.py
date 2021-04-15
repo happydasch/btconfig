@@ -5,7 +5,7 @@ import backtrader as bt
 import logging
 import btconfig
 
-from btconfig.stores import create_oandav20, create_ib, create_ccxt
+#from btconfig.stores import create_oandav20, create_ib, create_ccxt
 
 
 class PartStores(btconfig.BTConfigPart):
@@ -54,7 +54,7 @@ class PartStores(btconfig.BTConfigPart):
             if hasattr(self._instance.cerebro.broker, 'setcash'):
                 cash = commoncfg.get('cash')
                 self._instance.cerebro.broker.setcash(cash)
-                self.log(f'Starting cash was set: {cash}', logging.DEBUG)
+                self.log(f'Starting cash was set to {cash}', logging.DEBUG)
         # log execution
         self.log('Stores created\n', logging.INFO)
 
