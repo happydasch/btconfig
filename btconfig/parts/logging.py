@@ -17,16 +17,17 @@ class PartLogging(btconfig.BTConfigPart):
         - console: Should log entries be logged to console
         - file: Should log entries be logged to file
         - level: Log level to use
-        - file_path: Path for file logs
 
         Config Example:
         ---------------
+        "common": {
+            "log_path": "./logs"
+        },
         "logging": {
             "enabled": true,
             "log_to_console": true,
             "log_to_file": true,
             "level": "INFO",
-            "path": "./logs"
         }
     '''
 
@@ -35,11 +36,11 @@ class PartLogging(btconfig.BTConfigPart):
     def setup(self) -> None:
         logcfg = self._instance.config.get('logging', {})
         commoncfg = self._instance.config.get('common', {})
+        path = commoncfg.get('log_path', './logs')
         enabled = logcfg.get('enabled', True)
         level = logcfg.get('level', 'INFO')
         logconsole = logcfg.get('log_to_console', True)
         logfile = logcfg.get('log_to_file', True)
-        path = logcfg.get('path', './logs')
         # check if logging is enabled
         if not enabled:
             return

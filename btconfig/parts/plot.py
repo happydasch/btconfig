@@ -62,6 +62,7 @@ class PartPlot(btconfig.BTConfigPart):
         Backtest plotting configuration
         '''
         commoncfg = self._instance.config.get('common', {})
+        path = commoncfg.get('report_path', './backtest')
         plotcfg = self._instance.config.get('plot', {})
         # if plots should be combined, set up datafeeds
         if plotcfg.get('combine', False):
@@ -82,8 +83,7 @@ class PartPlot(btconfig.BTConfigPart):
             kwargs['use_default_tabs'] = False
             kwargs['tabs'] = [AnalyzerTab, MetadataTab, LogTab]
             kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)
-            output_file = plotcfg.get('path', './backtest')
-            output_file = os.path.abspath(output_file)
+            output_file = os.path.abspath(path)
             output_file = os.path.join(output_file, 'bt_{}_{}.html'.format(
                 commoncfg.get('strategy'),
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))

@@ -66,6 +66,9 @@ Config file
         * create_report (bool): Should a report be created
         * broker (string): The broker to use
         * cash (float): The start amount of cash
+        * log_path (str): Path for log files
+        * report_path (str): Path for backtest files
+        * data_path (str): Path for data files
 
     #### [logging]
     Configuration for logging
@@ -108,23 +111,16 @@ Config file
 
     See btconfig.parts.store for more details
 
-    #### [feeds]
-    Configuration for data feeds of strategy
-
-        * feed_name (string: list): Configuration for a single feed
-        Where list expects the values:
-        [Timeframe, Compression, Method, Options]
-
-    See btconfig.parts.data for more details
-
     #### [datas]
     Configuration for data sources
 
-        * identifier (string: dict)
-        Where dict contains data config values
+        Allows to setup different data sources which
+        are differentiated by the data_id.
+
+        * data_id (string: dict): Configuration for a data source
 
         "datas": {
-            "ident_oanda": {
+            "data_id": {
                 "classname": "ClassName",
                 "store": "store_id",
                 "name": "EUR_USD",
@@ -140,6 +136,15 @@ Config file
                 }
             }
         }
+
+    See btconfig.parts.data for more details
+
+    #### [feeds]
+    Configuration for data feeds of strategy
+
+        * feed_name (string: list): Configuration for a single feed
+        Where list expects the values:
+        [Timeframe, Compression, Method, Options]
 
     See btconfig.parts.data for more details
 
@@ -163,7 +168,6 @@ Config file
     Configuration for plotting
 
         * use (string): use=web for web interface, TKAgg etc.
-        * path (string): Path for backtest output
         * plot_volume (bool): Should volume be added to plotting (true/false)
         * bar_dist (float): Distance of markers to bars (ex. 0.0003)
         * style (string): Plot style for bars (ex. "candle")
@@ -437,11 +441,15 @@ class BTConfig:
             p.finish(self.result)
 
     def run(self, mode: int = None, configfile: str = None) -> None:
+        '''
+        Runs backtrader
+        '''
         # load different parts of btconfig
         self._loadParts()
         # prepare and setup everything also run strategy
         self._prepare(mode, configfile)
         self._setup()
+        self.log('All parts set up and configured, running backtrader\n')
         self._finish()
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
@@ -470,28 +478,55 @@ class BTConfigPart:
     PRIORITY = 0
 
     def __init__(self, instance: BTConfig) -> None:
+        '''
+        Initialization
+        '''
         self._instance = instance
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
+        '''
+        Logs messages
+        '''
         self._instance.log(txt, level)
 
     def setup(self) -> None:
+        '''
+        Sets up part
+        '''
         pass
 
     def finish(self, result) -> None:
+        '''
+        Finishes part execution
+        '''
         pass
 
 
 class BTConfigDataloader:
 
-    def __init__(self, instance: BTConfig, store) -> None:
+    def __init__(self,
+                 instance: BTConfig,
+                 data_id: str,
+                 cfg: dict,
+                 tz: str) -> None:
+        '''
+        Initialization
+        '''
         self._instance = instance
-        self._store = store
+        self._data_id = data_id
+        self._cfg = cfg
+        self._tz = tz
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
+        '''
+        Logs messages
+        '''
         self._instance.log(txt, level)
 
     def load(self):
+        '''
+        Loads a custom data source
+        '''
         raise Exception('Method load needs to be overwritten')
 
 

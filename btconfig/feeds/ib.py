@@ -6,7 +6,9 @@ from backtrader.feeds import IBData
 
 
 class IBDownload(btconfig.BTConfigDataloader):
-    pass
+
+    def load(self):
+        pass
 
 """
 

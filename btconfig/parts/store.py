@@ -1,6 +1,5 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
 from tabulate import tabulate
 
 import logging
