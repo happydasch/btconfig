@@ -21,16 +21,16 @@ class PartDatas(btconfig.BTConfigPart):
         Params:
         -------
         For datas:
-            - type (str): Name of data source type
+            - classname (str): Classname of data source
             - name (str): Name of data source
             - sessionstart: [hour, minute, second, microsecond]
             - sessionend: [hour, minute, second, microsecond]
             - granularity: [timeframe, compression]
             - for (list): List of feed names this data source is used with
-            - options (dict): Custom data source params
+            - params (dict): Custom data source params
 
         All data sources support some common backtrader options.
-        Custom data source configuration is being done using options.
+        Custom data source configuration is being done using params.
 
         For feeds:
             - timeframe (str): Timeframe as string
@@ -44,20 +44,24 @@ class PartDatas(btconfig.BTConfigPart):
         ---------------
         The following examples creates a data source type data
         and sets the primary data feed from created data source:
+
         "datas": {
-            "ident": {
-                "type": "data",
+            "feed_id": {
+                "classname": "ClassName",
                 "name": "name",
                 "sessionstart": [22, 0, 0, 0],
                 "sessionend": [21, 59, 59, 999999],
                 "granularity": ["Minutes", 5],
-                "options": {},
+                "params": {
+                    # additional params for feed
+                },
                 "for": ["primary"]
             },
         },
         "feeds": {
             "primary": {"Minutes", 1, "resample", {}}
         }
+
         The feed named primary will be available in the strategy as datas0
     '''
 

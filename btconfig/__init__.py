@@ -220,13 +220,13 @@ from .helper import get_classes, merge_dicts
 
 
 # dev info
-__author__          = "Daniel Schindler <daniel@vcard24.de>"
-__status__          = "development"
+__author__ = "Daniel Schindler <daniel@vcard24.de>"
+__status__ = "development"
 
 # constants
-TIMEFORMAT          = '%Y-%m-%dT%H:%M:%S'
-NUMBERFORMAT        = '0,0.000[000]'
-MODES               = ['LIVE', 'BACKTEST', 'OPTIMIZE']
+TIMEFORMAT = '%Y-%m-%dT%H:%M:%S'
+NUMBERFORMAT = '0,0.000[000]'
+MODES = ['LIVE', 'BACKTEST', 'OPTIMIZE']
 MODE_LIVE, MODE_BACKTEST, MODE_OPTIMIZE = range(3)
 
 # default config dicts
@@ -250,41 +250,41 @@ CONFIG_OPTIMIZE = {**CONFIG_DEFAULT, **CONFIG_BACKTEST}
 class BTConfig:
 
     # default search paths for classes
-    PATH_BTCONF_PART    = ['btconfig.parts']
-    PATH_BTCONF_FEED    = ['btconfig.feeds']
+    PATH_BTCONF_PART = ['btconfig.parts']
+    PATH_BTCONF_FEED = ['btconfig.feeds']
 
-    PATH_COMMINFO       = ['commissions',
-                          'backtrader.commissions',
-                          'btoandav20.commissions']
-    PATH_SIZER          = ['sizers', 'backtrader.sizers', 'btoandav20.sizers']
-    PATH_ANALYZER       = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
-    PATH_OBSERVER       = ['observers', 'backtrader.observers', 'btconfig.observers']
-    PATH_STORE          = ['backtrader.stores', 'btoandav20.stores', 'ccxtbt.ccxtstore']
-    PATH_STRATEGY       = ['strategies']
+    PATH_COMMINFO = ['commissions',
+                     'backtrader.commissions',
+                     'btoandav20.commissions']
+    PATH_SIZER = ['sizers', 'backtrader.sizers', 'btoandav20.sizers']
+    PATH_ANALYZER = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
+    PATH_OBSERVER = ['observers', 'backtrader.observers', 'btconfig.observers']
+    PATH_STORE = ['backtrader.stores', 'btoandav20.stores', 'ccxtbt.ccxtstore']
+    PATH_STRATEGY = ['strategies']
     # default different parts to load
-    LOAD_BTCONF_PART    = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
-                           'PartLogging', 'PartPlot', 'PartSizer',
-                           'PartStores', 'PartStrategy']
-    LOAD_BTCONF_FEED    = ['FeedCCXT', 'FeedCSV', 'FeedIB', 'FeedIBDownloader',
-                           'FeedOandaV20', 'FeedOandaV20Downloader']
+    LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
+                        'PartLogging', 'PartPlot', 'PartSizer',
+                        'PartStores', 'PartStrategy']
+    LOAD_BTCONF_FEED = ['FeedCCXT', 'FeedCSV', 'FeedIB', 'FeedIBDownloader',
+                        'FeedOandaV20', 'FeedOandaV20Downloader']
 
     def __init__(self, mode: int = None, configfile: str = None) -> None:
         '''
         Initialization
         '''
         # misc vars
-        self._filename  = configfile    # filename of config
-        self._config    = None          # complete configuration
-        self._parts     = {}            # all loaded parts
-        self._feeds     = {}            # all loaded feeds
+        self._filename = configfile  # filename of config
+        self._config = None          # complete configuration
+        self._parts = {}             # all loaded parts
+        self._feeds = {}             # all loaded feeds
         # global vars
-        self.logger     = logging.getLogger('btconfig')
-        self.cerebro    = None          # cerebro instance
-        self.mode       = mode          # current mode
-        self.config     = None          # current configuration
-        self.stores     = {}            # current stores available
-        self.datas      = {}            # current data sources
-        self.result     = []            # store execution result
+        self.logger = logging.getLogger('btconfig')
+        self.cerebro = None          # cerebro instance
+        self.mode = mode             # current mode
+        self.config = None           # current configuration
+        self.stores = {}             # current stores available
+        self.datas = {}              # current data sources
+        self.result = []             # store execution result
 
     def _loadParts(self) -> None:
         '''
@@ -359,14 +359,14 @@ class BTConfig:
         '''
         Initialization of btconfig using a config file
 
-        Args:
-        -----
-        - mode (int): Optional, the mode to execute
-        - configfile (str): Optional, configfile to use
+            Args:
+            -----
+            - mode (int): Optional, the mode to execute
+            - configfile (str): Optional, configfile to use
 
-        Returns:
-        --------
-        None
+            Returns:
+            --------
+            None
         '''
         # load config from filename
         if configfile is not None:
@@ -467,12 +467,6 @@ class BTConfigPart(BTConfigItem):
 
     def finish(self, result) -> None:
         pass
-
-
-class BTConfigStore(BTConfigItem):
-
-    def create(self, cfg: dict) -> bt.Store:
-        raise Exception('Method create needs to be overwritten')
 
 
 class BTConfigFeed(BTConfigItem):
