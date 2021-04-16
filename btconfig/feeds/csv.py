@@ -41,9 +41,7 @@ class CSVBidAskAdjustTime(CSVAdjustTime):
         volume=8
     )
 
-
-
-'''
+"""
 class FeedCSV(btconfig.BTConfigFeed):
     '''
     Creates a data source from csv
@@ -79,7 +77,7 @@ class FeedCSV(btconfig.BTConfigFeed):
     def create(self, cfg: dict, tz: str):
         pass
 
-"""
+
 def create_csv(cfg: dict, tz: str) -> bt.AbstractDataBase:
     if cfg['granularity'][0] != 'Ticks':
         log('Loading CSV file {} - {} {}'.format(

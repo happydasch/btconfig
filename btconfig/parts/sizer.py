@@ -39,8 +39,8 @@ class PartSizer(btconfig.BTConfigPart):
             raise Exception(f'Sizer {classname} not found')
 
         self.log('Creating Sizer {}\n{}'.format(
-            classname,
-            tabulate(params.items(), tablefmt='plain')),
+                classname,
+                tabulate(params.items(), tablefmt='plain')),
             logging.DEBUG)
         self._instance.cerebro.addsizer(all_classes[classname], **params)
         self.log('Sizer created\n', logging.INFO)

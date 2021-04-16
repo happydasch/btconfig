@@ -33,7 +33,7 @@ class PartBacktrader(btconfig.BTConfigPart):
                 report = create_report(r, r.cerebro.broker.startingcash)
                 if self._instance.mode == btconfig.MODE_OPTIMIZE:
                     self.log('Optimize Instance Args:\n{}'.format(tabulate(
-                        params.items(), tablefmt='plain')),
+                            params.items(), tablefmt='plain')),
                         logging.DEBUG)
                 if report:
                     self.log(report, logging.INFO)

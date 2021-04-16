@@ -7,7 +7,6 @@ import backtrader as bt
 from backtrader.brokers.ibbroker import IBOrder
 from ib.ext.ContractDetails import ContractDetails
 
-import btconfig
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)
@@ -44,7 +43,7 @@ class ProtoStrategy(bt.Strategy):
             dt = dt or self.data.datetime.datetime(0)
             txt = f'{dt.isoformat()}: {txt}'
         if self.p.use_logging:
-            btconfig.log(txt, level)
+            self.cerebro.btconfig.log(txt, level)
         else:
             print(txt)
 

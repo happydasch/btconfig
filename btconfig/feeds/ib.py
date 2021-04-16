@@ -5,7 +5,7 @@ import btconfig
 from backtrader.feeds import IBData
 
 
-class IBDataDownload(IBData):
+class IBDownload(btconfig.BTConfigDataloader):
     pass
 
 """
@@ -25,10 +25,6 @@ class IBDataDownload(IBData):
 
         Custom Options:
         ---------------
-        - backfill_days (int): Default=0
-        - fromdate (str): Default=null
-        - todate (str): Default=null
-        - historical (bool): Default=false
         - rtbar (bool): Default=false
         - what (str): Default=MIDPOINT
         - useRTH (bool): Default=false
@@ -59,9 +55,6 @@ class FeedIBDownloader(btconfig.BTConfigPart):
 
         Custom Options:
         ---------------
-        - backfill_days (int): Default=0
-        - fromdate (str): Default=null
-        - todate (str): Default=null
         - what (str): Default=MIDPOINT
         - useRTH (bool): Default=false
         - adjstarttime (bool): Default=false

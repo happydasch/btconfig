@@ -46,5 +46,6 @@ class PartCerebro(btconfig.BTConfigPart):
             logging.DEBUG)
         # create and assign cerebro instance
         self._instance.cerebro = bt.Cerebro(**args)
+        self._instance.cerebro.btconfig = self._instance
         # log execution
         self.log('Cerebro created\n', logging.INFO)

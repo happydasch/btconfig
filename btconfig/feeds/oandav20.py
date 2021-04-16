@@ -7,7 +7,7 @@ from .csv import CSVAdjustTime, CSVBidAskAdjustTime
 from btoandav20.feeds import OandaV20Data
 
 
-class OandaV20DataDownload(OandaV20Data):
+class OandaV20Download(btconfig.BTConfigDataloader):
     pass
 
 """

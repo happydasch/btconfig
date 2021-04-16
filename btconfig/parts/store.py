@@ -52,8 +52,8 @@ class PartStores(btconfig.BTConfigPart):
             if classname not in all_classes:
                 raise Exception(f'Store {classname} not found')
             self.log('Creating Store {} ({})\n{}'.format(
-                classname, i,
-                tabulate(params.items(), tablefmt='plain')),
+                    classname, i,
+                    tabulate(params.items(), tablefmt='plain')),
                 logging.DEBUG)
             store = all_classes[classname](**params)
             self._instance.stores[i] = store
@@ -63,7 +63,7 @@ class PartStores(btconfig.BTConfigPart):
         if broker is not None:
             store = self._instance.stores[broker]
             self._instance.cerebro.setbroker(store.getbroker())
-            self.log(f'Broker from store {broker} was set', logging.INFO)
+            self.log(f'Broker from store {broker} set', logging.INFO)
         # set starting cash
         if commoncfg.get('cash', None) is not None:
             if hasattr(self._instance.cerebro.broker, 'setcash'):

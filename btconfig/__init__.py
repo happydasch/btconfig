@@ -482,6 +482,19 @@ class BTConfigPart:
         pass
 
 
+class BTConfigDataloader:
+
+    def __init__(self, instance: BTConfig, store) -> None:
+        self._instance = instance
+        self._store = store
+
+    def log(self, txt: str, level: int = logging.INFO) -> None:
+        self._instance.log(txt, level)
+
+    def load(self):
+        raise Exception('Method load needs to be overwritten')
+
+
 def run(mode: int = None, configfile: str = None) -> BTConfig:
     '''
     Runs the strategy
