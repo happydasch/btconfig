@@ -45,7 +45,7 @@ class PartLogging(btconfig.BTConfigPart):
             return
 
         # set default log level
-        self._instance._logger.setLevel(level)
+        self._instance.logger.setLevel(level)
         # add console handler
         if logconsole:
             console = logging.StreamHandler()

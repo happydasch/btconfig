@@ -1,11 +1,12 @@
 from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
+from tabulate import tabulate
 
 import logging
 import btconfig
 
-#from btconfig.stores import create_oandav20, create_ib, create_ccxt
+from btconfig.helper import get_classes
 
 
 class PartStores(btconfig.BTConfigPart):
@@ -15,22 +16,25 @@ class PartStores(btconfig.BTConfigPart):
     This creates all stores and sets a broker
     from store if this is configured.
 
-        Available Stores:
-        -----------------
-        - oandav20
-        - ib
+    Multiple stores can be configured
 
         Config Example:
         ---------------
         The following example would create a store
-        named store and set the broker from the given
-        store:
+        named store and set the broker and cash from
+        the given store:
 
         "common": {
-            "broker": "store"
+            "broker": "store_id",
+            "cash": 10000
         }
         "stores": {
-            "store": {}
+            "store_id": {
+                "classname": "StoreClass",
+                "params": {
+                    # store params as key/value pairs
+                }
+            }
         }
     '''
 
@@ -39,45 +43,32 @@ class PartStores(btconfig.BTConfigPart):
     def setup(self) -> None:
         commoncfg = self._instance.config.get('common', {})
         storescfg = self._instance.config.get('stores', {})
-        # create all configured stores
-        for s in storescfg:
-            self._instance.stores[s] = self._createStore(
-                s, storescfg.get(s, {}))
+        all_classes = get_classes(self._instance.PATH_STORE)
+        for i, v in storescfg.items():
+            classname = v.get('classname')
+            params = v.get('params', {})
+            if not classname:
+                return
+            if classname not in all_classes:
+                raise Exception(f'Store {classname} not found')
+            self.log('Creating Store {} ({})\n{}'.format(
+                classname, i,
+                tabulate(params.items(), tablefmt='plain')),
+                logging.DEBUG)
+            store = all_classes[classname](**params)
+            self._instance.stores[i] = store
+            self.log(f'Store {i} created', logging.INFO)
         # set broker
         broker = commoncfg.get('broker', None)
         if broker is not None:
             store = self._instance.stores[broker]
             self._instance.cerebro.setbroker(store.getbroker())
-            self.log(f'Broker was set: {broker}', logging.DEBUG)
+            self.log(f'Broker from store {broker} was set', logging.INFO)
         # set starting cash
         if commoncfg.get('cash', None) is not None:
             if hasattr(self._instance.cerebro.broker, 'setcash'):
                 cash = commoncfg.get('cash')
                 self._instance.cerebro.broker.setcash(cash)
-                self.log(f'Starting cash was set to {cash}', logging.DEBUG)
-        # log execution
+                self.log(f'Starting cash was set to {cash}', logging.INFO)
+
         self.log('Stores created\n', logging.INFO)
-
-    def _createStore(self,  store: str, cfg: dict) -> bt.Store:
-        '''
-        Creates and configures the store
-
-        Args:
-        -----
-        store (str)
-        cfg (dict)
-
-        Returns:
-        --------
-        bt.Store instance
-        '''
-        if store == 'oandav20':
-            s = create_oandav20(cfg)
-        elif store == 'ib':
-            s = create_ib(cfg)
-        elif store == 'ccxt':
-            s = create_ccxt(cfg)
-        else:
-            raise Exception('Unknown store: %s\n' % store)
-        self.log('Store created: %s\n' % store, logging.DEBUG)
-        return s

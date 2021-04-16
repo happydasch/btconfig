@@ -90,14 +90,15 @@ Config file
     Configuration for stores
 
         Allows to setup different stores which
-        are differentiated by the store_name.
+        are differentiated by the store_id.
 
-        * store_name (string: dict): Configuration for a single store
-
-        The following stores are supported:
-
-        * oandav20: Oanda V20
-        * ib: Interactive Brokers
+        * store_id (string: dict): Configuration for a single store
+          {
+                "classname": "ClassName",
+                "params": {
+                    # params for store
+                }
+          }
 
         Every store can individually be configured by providing
         different params in the dict.
@@ -210,23 +211,23 @@ from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
 
+from datetime import datetime
+
 import json
 import logging
-
-from datetime import datetime
 
 from .helper import get_classes, merge_dicts
 
 
 # dev info
-__author__ = "Daniel Schindler <daniel@vcard24.de>"
-__status__ = "development"
+__author__          = "Daniel Schindler <daniel@vcard24.de>"
+__status__          = "development"
 
 # constants
-TIMEFORMAT = '%Y-%m-%dT%H:%M:%S'
-NUMBERFORMAT = '0,0.000[000]'
+TIMEFORMAT          = '%Y-%m-%dT%H:%M:%S'
+NUMBERFORMAT        = '0,0.000[000]'
+MODES               = ['LIVE', 'BACKTEST', 'OPTIMIZE']
 MODE_LIVE, MODE_BACKTEST, MODE_OPTIMIZE = range(3)
-MODES = ['LIVE', 'BACKTEST', 'OPTIMIZE']
 
 # default config dicts
 CONFIG_DEFAULT = {
@@ -234,58 +235,56 @@ CONFIG_DEFAULT = {
     'datas': {}, 'feeds': {}, 'sizer': {}, 'comminfo': {},
     'plot': {}, 'logging': {}, 'analyzers': {}, 'strategy': {},
     '_live': {}, '_backtest': {}, '_optimize': {}}
-CONFIG_LIVE = {**CONFIG_DEFAULT, **{
-    'cerebro': {'stdstats': False, 'live': True}}}
-CONFIG_BACKTEST = {**CONFIG_DEFAULT, **{
-    'cerebro': {'stdstats': False,
-                'live': False,
-                'optreturn': False,
-                'tradehistory': True}}}
+CONFIG_LIVE = {
+    **CONFIG_DEFAULT, **{'cerebro': {
+        'stdstats': False, 'live': True}}}
+CONFIG_BACKTEST = {
+    **CONFIG_DEFAULT, **{'cerebro': {
+        'stdstats': False,
+        'live': False,
+        'optreturn': False,
+        'tradehistory': True}}}
 CONFIG_OPTIMIZE = {**CONFIG_DEFAULT, **CONFIG_BACKTEST}
 
 
 class BTConfig:
 
     # default search paths for classes
-    PATH_BTCONF_PART = ['btconfig.parts']
-    PATH_BTCONF_STORE = ['btconfig.stores']
-    PATH_BTCONF_FEED = ['btconfig.feeds']
-    PATH_COMMINFO = ['commissions',
-                     'backtrader.commissions',
-                     'btoandav20.commissions']
-    PATH_SIZER = ['sizers', 'backtrader.sizers', 'btoandav20.sizers']
-    PATH_ANALYZER = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
-    PATH_OBSERVER = ['observers', 'backtrader.observers', 'btconfig.observers']
-    PATH_STRATEGY = ['strategies']
+    PATH_BTCONF_PART    = ['btconfig.parts']
+    PATH_BTCONF_FEED    = ['btconfig.feeds']
+
+    PATH_COMMINFO       = ['commissions',
+                          'backtrader.commissions',
+                          'btoandav20.commissions']
+    PATH_SIZER          = ['sizers', 'backtrader.sizers', 'btoandav20.sizers']
+    PATH_ANALYZER       = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
+    PATH_OBSERVER       = ['observers', 'backtrader.observers', 'btconfig.observers']
+    PATH_STORE          = ['backtrader.stores', 'btoandav20.stores', 'ccxtbt.ccxtstore']
+    PATH_STRATEGY       = ['strategies']
     # default different parts to load
-    LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
-                        'PartLogging', 'PartPlot', 'PartSizer',
-                        'PartStrategy']
-    LOAD_BTCONF_STORE = []
-    LOAD_BTCONF_FEED = []
+    LOAD_BTCONF_PART    = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
+                           'PartLogging', 'PartPlot', 'PartSizer',
+                           'PartStores', 'PartStrategy']
+    LOAD_BTCONF_FEED    = ['FeedCCXT', 'FeedCSV', 'FeedIB', 'FeedIBDownloader',
+                           'FeedOandaV20', 'FeedOandaV20Downloader']
 
     def __init__(self, mode: int = None, configfile: str = None) -> None:
         '''
         Initialization
         '''
         # misc vars
-        self._logger = logging.getLogger('btconfig')
-        self._filename = configfile   # filename of config
-        self._config = None           # complete configuration
-        self._parts = {}              # all loaded parts
-        self._stores = {}             # all loaded stores
-        self._feeds = {}              # all loaded feeds
+        self._filename  = configfile    # filename of config
+        self._config    = None          # complete configuration
+        self._parts     = {}            # all loaded parts
+        self._feeds     = {}            # all loaded feeds
         # global vars
-        self.cerebro = None    # cerebro instance
-        self.mode = mode       # current mode
-        self.config = None     # current configuration
-        self.stores = {}       # current stores available
-        self.datas = {}        # current data sources
-        self.result = []       # store execution result
-        # load different parts of btconfig
-        self._loadParts()
-        self._loadStores()
-        self._loadFeeds()
+        self.logger     = logging.getLogger('btconfig')
+        self.cerebro    = None          # cerebro instance
+        self.mode       = mode          # current mode
+        self.config     = None          # current configuration
+        self.stores     = {}            # current stores available
+        self.datas      = {}            # current data sources
+        self.result     = []            # store execution result
 
     def _loadParts(self) -> None:
         '''
@@ -306,22 +305,6 @@ class BTConfig:
             key=lambda x: self._parts[x].PRIORITY,
             reverse=False)
         return [self._parts[x] for x in keys]
-
-    def _loadStores(self) -> None:
-        '''
-        Loads all available stores
-        '''
-        all_classes = get_classes(self.PATH_BTCONF_STORE)
-        for classname in self.LOAD_BTCONF_STORE:
-            if classname not in all_classes:
-                raise Exception(f'Store {classname} not found')
-            self._stores[classname] = all_classes[classname](self)
-
-    def _getStores(self) -> list:
-        '''
-        Returns a sorted list of all available stores
-        '''
-        return [self._stores[x] for x in self._stores]
 
     def _loadFeeds(self) -> None:
         '''
@@ -437,6 +420,10 @@ class BTConfig:
             p.finish(self.result)
 
     def run(self, mode: int = None, configfile: str = None) -> None:
+        # load different parts of btconfig
+        self._loadParts()
+        self._loadFeeds()
+        # prepare and setup everything also run strategy
         self._prepare(mode, configfile)
         self._setup()
         self._finish()
@@ -457,7 +444,7 @@ class BTConfig:
         if self.config is None:
             raise Exception('No config loaded')
         if self.config['logging'].get('enabled', True):
-            self._logger.log(level, txt)
+            self.logger.log(level, txt)
         else:
             print(txt)
 

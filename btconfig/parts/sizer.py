@@ -36,7 +36,7 @@ class PartSizer(btconfig.BTConfigPart):
 
         all_classes = get_classes(self._instance.PATH_SIZER)
         if classname not in all_classes:
-            raise Exception(f'Sizer: {classname} not found')
+            raise Exception(f'Sizer {classname} not found')
 
         self.log('Creating Sizer {}\n{}'.format(
             classname,
