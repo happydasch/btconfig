@@ -93,12 +93,15 @@ Config file
         are differentiated by the store_id.
 
         * store_id (string: dict): Configuration for a single store
-          {
+
+        "stores":
+            "store_id": {
                 "classname": "ClassName",
                 "params": {
                     # params for store
                 }
-          }
+            }
+        }
 
         Every store can individually be configured by providing
         different params in the dict.
@@ -119,6 +122,24 @@ Config file
 
         * identifier (string: dict)
         Where dict contains data config values
+
+        "datas": {
+            "ident_oanda": {
+                "classname": "ClassName",
+                "store": "store_id",
+                "name": "EUR_USD",
+                "sessionstart": [22, 0, 0, 0],
+                "sessionend": [21, 59, 59, 999999],
+                "granularity": ["Minutes", 5],
+                "backfill_days": null,
+                "fromdate": null,
+                "todate": null,
+                "for": [],
+                "params": {
+                    # additional data params
+                }
+            }
+        }
 
     See btconfig.parts.data for more details
 
@@ -209,8 +230,6 @@ Config file
 
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-
 from datetime import datetime
 
 import json
@@ -249,24 +268,39 @@ CONFIG_OPTIMIZE = {**CONFIG_DEFAULT, **CONFIG_BACKTEST}
 
 class BTConfig:
 
+    # default module paths
+    PATH_COMMINFO = [
+        'commissions',
+        'backtrader.commissions',
+        'btoandav20.commissions']
+    PATH_SIZER = [
+        'sizers',
+        'backtrader.sizers',
+        'btoandav20.sizers']
+    PATH_ANALYZER = [
+        'analyzers',
+        'backtrader.analyzers',
+        'btconfig.analyzers']
+    PATH_OBSERVER = [
+        'observers',
+        'backtrader.observers',
+        'btconfig.observers']
+    PATH_STORE = [
+        'backtrader.stores',
+        'btoandav20.stores',
+        'ccxtbt.ccxtstore']
+    PATH_DATA = [
+        'backtrader.feeds',
+        'btoandav20.feeds',
+        'ccxtbt.ccxtfeed',
+        'btconfig.feeds']
+    PATH_STRATEGY = ['strategies']
     # default search paths for classes
     PATH_BTCONF_PART = ['btconfig.parts']
-    PATH_BTCONF_FEED = ['btconfig.feeds']
-
-    PATH_COMMINFO = ['commissions',
-                     'backtrader.commissions',
-                     'btoandav20.commissions']
-    PATH_SIZER = ['sizers', 'backtrader.sizers', 'btoandav20.sizers']
-    PATH_ANALYZER = ['analyzers', 'backtrader.analyzers', 'btconfig.analyzers']
-    PATH_OBSERVER = ['observers', 'backtrader.observers', 'btconfig.observers']
-    PATH_STORE = ['backtrader.stores', 'btoandav20.stores', 'ccxtbt.ccxtstore']
-    PATH_STRATEGY = ['strategies']
     # default different parts to load
     LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
-                        'PartLogging', 'PartPlot', 'PartSizer',
+                        'PartDatas', 'PartLogging', 'PartPlot', 'PartSizer',
                         'PartStores', 'PartStrategy']
-    LOAD_BTCONF_FEED = ['FeedCCXT', 'FeedCSV', 'FeedIB', 'FeedIBDownloader',
-                        'FeedOandaV20', 'FeedOandaV20Downloader']
 
     def __init__(self, mode: int = None, configfile: str = None) -> None:
         '''
@@ -276,7 +310,6 @@ class BTConfig:
         self._filename = configfile  # filename of config
         self._config = None          # complete configuration
         self._parts = {}             # all loaded parts
-        self._feeds = {}             # all loaded feeds
         # global vars
         self.logger = logging.getLogger('btconfig')
         self.cerebro = None          # cerebro instance
@@ -305,22 +338,6 @@ class BTConfig:
             key=lambda x: self._parts[x].PRIORITY,
             reverse=False)
         return [self._parts[x] for x in keys]
-
-    def _loadFeeds(self) -> None:
-        '''
-        Loads all available feeds
-        '''
-        all_classes = get_classes(self.PATH_BTCONF_FEED)
-        for classname in self.LOAD_BTCONF_FEED:
-            if classname not in all_classes:
-                raise Exception(f'Feed {classname} not found')
-            self._feeds[classname] = all_classes[classname](self)
-
-    def _getFeeds(self) -> list:
-        '''
-        Returns a sorted list of all available feeds
-        '''
-        return [self._feeds[x] for x in self._feeds]
 
     def _getConfigForMode(self, mode: int) -> dict:
         '''
@@ -422,7 +439,6 @@ class BTConfig:
     def run(self, mode: int = None, configfile: str = None) -> None:
         # load different parts of btconfig
         self._loadParts()
-        self._loadFeeds()
         # prepare and setup everything also run strategy
         self._prepare(mode, configfile)
         self._setup()
@@ -449,7 +465,9 @@ class BTConfig:
             print(txt)
 
 
-class BTConfigItem:
+class BTConfigPart:
+
+    PRIORITY = 0
 
     def __init__(self, instance: BTConfig) -> None:
         self._instance = instance
@@ -457,22 +475,11 @@ class BTConfigItem:
     def log(self, txt: str, level: int = logging.INFO) -> None:
         self._instance.log(txt, level)
 
-
-class BTConfigPart(BTConfigItem):
-
-    PRIORITY = 0
-
     def setup(self) -> None:
         pass
 
     def finish(self, result) -> None:
         pass
-
-
-class BTConfigFeed(BTConfigItem):
-
-    def create(self, cfg, tz) -> bt.AbstractDataBase:
-        raise Exception('Method create needs to be overwritten')
 
 
 def run(mode: int = None, configfile: str = None) -> BTConfig:

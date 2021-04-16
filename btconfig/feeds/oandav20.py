@@ -2,6 +2,15 @@ from __future__ import division, absolute_import, print_function
 
 import btconfig
 
+from .csv import CSVAdjustTime, CSVBidAskAdjustTime
+
+from btoandav20.feeds import OandaV20Data
+
+
+class OandaV20DataDownload(OandaV20Data):
+    pass
+
+"""
 
 class FeedOandaV20(btconfig.BTConfigFeed):
     '''
@@ -67,7 +76,7 @@ class FeedOandaV20Downloader(btconfig.BTConfigFeed):
     def create(self, cfg: dict, tz: str):
         pass
 
-"""
+
 def create_oandav20(cfg: dict, tz: str) -> bt.AbstractDataBase:
     '''
     Creates a data source from Oanda V20

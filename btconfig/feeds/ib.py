@@ -2,8 +2,14 @@ from __future__ import division, absolute_import, print_function
 
 import btconfig
 
+from backtrader.feeds import IBData
 
-class FeedIB(btconfig.BTConfigPart):
+
+class IBDataDownload(IBData):
+    pass
+
+"""
+
     '''
     Creates a data source from Interactive Brokers
 
@@ -69,7 +75,6 @@ class FeedIBDownloader(btconfig.BTConfigPart):
         pass
 
 
-"""
 def create_ib(cfg: dict, tz: str) -> bt.AbstractDataBase:
     timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
     compression = cfg['granularity'][1]

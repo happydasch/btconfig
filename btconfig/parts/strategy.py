@@ -26,7 +26,6 @@ class PartStrategy(btconfig.BTConfigPart):
         for x in [ProtoStrategy, ForexProtoStrategy, strat]:
             if issubclass(strat, x):
                 args.update(stratcfg.get(x.__name__, {}))
-
         runtype = ('strategy'
                    if self._instance.mode != btconfig.MODE_OPTIMIZE
                    else 'optstrategy')
@@ -34,7 +33,6 @@ class PartStrategy(btconfig.BTConfigPart):
             tabulate(args.items(), tablefmt='plain'))
         txt = f'Creating {runtype} {stratname}{params}'
         self.log(txt, logging.DEBUG)
-
         if self._instance.mode != btconfig.MODE_OPTIMIZE:
             self._instance.cerebro.addstrategy(strat, **args)
         else:

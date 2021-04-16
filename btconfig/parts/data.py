@@ -22,6 +22,7 @@ class PartDatas(btconfig.BTConfigPart):
         -------
         For datas:
             - classname (str): Classname of data source
+            - store (str): store id to use (only if classname is not set)
             - name (str): Name of data source
             - sessionstart: [hour, minute, second, microsecond]
             - sessionend: [hour, minute, second, microsecond]
@@ -72,7 +73,7 @@ class PartDatas(btconfig.BTConfigPart):
         datascfg = self._instance.config.get('datas', {})
         commoncfg = self._instance.config.get('common', {})
         tz = commoncfg.get('timezone', None)
-
+"""
         for c in datascfg:
             added = False
             d = self._createData(datascfg[c], tz)
@@ -178,3 +179,4 @@ class PartDatas(btconfig.BTConfigPart):
                 raise Exception(f'Unsupported mode: {mode}')
 
             return d
+"""

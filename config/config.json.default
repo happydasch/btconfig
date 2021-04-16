@@ -43,28 +43,34 @@
         ' Configuration for oanda
         '
         "oanda": {
-            "token": "",
-            "account": "",
-            "practice": true,
-            "stream_timeout": 5,
-            "poll_timeout": 5,
-            "notif_transactions": false
+            "classname": "OandaV20Store",
+            "params": {
+                "token": "",
+                "account": "",
+                "practice": true,
+                "stream_timeout": 5,
+                "poll_timeout": 5,
+                "notif_transactions": false
+            }
         },
 
         '
         ' Configuration for IB
         '
         "ib": {
-            "host": "localhost",
-            "port": 7496,
-            "clientId": 1,
-            "reconnect": 3,
-            "timeout": 3.0,
-            "timerefresh": 60,
-            "timeoffset": true,
-            "notifyall": false,
-            "indcash": true,
-            "_debug": false
+            "classname": "IBStore",
+            "params": {
+                "host": "localhost",
+                "port": 7496,
+                "clientId": 1,
+                "reconnect": 3,
+                "timeout": 3.0,
+                "timerefresh": 60,
+                "timeoffset": true,
+                "notifyall": false,
+                "indcash": true,
+                "_debug": false
+            }
         }
     }
 
@@ -74,32 +80,28 @@
 
     "datas": {
         "ident_oanda": {
-            "type": "oanda",
+            "store": "oanda",
             "name": "EUR_USD",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
             "granularity": ["Minutes", 5],
-            "options": {
-                "backfill_days": null,
+            "backfill_days": null,
+            "params": {
                 "historical": true
             },
             "for": ["primary", "secondary"]
         },
+
         "ident_ib": {
-            "type": "ib",
+            "store": "ib",
             "name": "EUR.USD-CASH-IDEALPRO",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
             "granularity": ["Minutes", 5],
-            "options": {
-                '
-                ' if backfill_days is set, this will be the startdate
-                ' else fromdate will be used as startdate
-                ' if todate is set, this will be used, else now
-                '
-                "backfill_days": null,
-                "fromdate": "2020-01-01 00:00:00",
-                "todate": null,
+            "backfill_days": null,
+            "fromdate": "2020-01-01 00:00:00",
+            "todate": null,
+            "params": {
                 "historical": true,
                 "rtbar": false,
                 "historical": false,
@@ -108,38 +110,33 @@
             },
             "for": ["primary", "secondary"]
         },
+
         "ident_oanda_downloader": {
-            "type": "oanda_downloader",
+            "classname": "OandaV20DataDownload",
+            "store": "oanda",
             "name": "EUR_USD",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
             "granularity": ["Minutes", 5],
-            "options": {
-                '
-                ' if backfill_days is set, this will be the startdate
-                ' else fromdate will be used as startdate
-                ' if todate is set, this will be used, else now
-                '
-                "backfill_days": null,
-                "fromdate": "2020-01-01 00:00:00",
-                "todate": null,
-                '
-                ' set to true, to adjust starttime of a candle to the end of the candle
-                '
+            "backfill_days": null,
+            "fromdate": "2020-01-01 00:00:00",
+            "todate": null,
+            "params": {
                 "adjstarttime": true,
                 "useRTH": false
             },
             "for": []
         },
+
         "ident_csv": {
-            "type": "csv",
+            "classname": "CSVAdjustTime",
             "name": "OANDA_EUR_USD_M5_MID_30DAYS.csv",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
             "granularity": ["Minutes", 5],
-            "options": {
-                "fromdate": "2020-01-01 00:00:00",
-                "todate": null,
+            "fromdate": "2020-01-01 00:00:00",
+            "todate": null,
+            "params": {
                 "datetime": 0,
                 "time": -1,
                 "open": 1,
@@ -151,13 +148,14 @@
             },
             "for": ["primary", "secondary"]
         },
+
         "ident_csv_ticks": {
-            "type": "csv",
+            "classname": "CSVBidAskAdjustTime",
             "name": "OANDA_EUR_USD_TICKS.csv",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
             "granularity": null,
-            "options": {
+            "params": {
             },
             "for": ["primary", "secondary"]
         }
@@ -182,18 +180,26 @@
     '
 
     "sizer": {
-        "risk": 2
-    },
+        "classname": "OandaV20BacktestRiskPercentSizer",
+        "params": {
+            "percents": 2,
+            "avail_reduce_perc": 0.1
+        }
+    }
 
     '
     ' Comminfo configuration
     '
 
     "comminfo": {
-        "acc_counter_currency": true,
-        "spread": 1.0,
-        "leverage": 1,
-        "margin": 0.5
+        "classname": "OandaV20BacktestCommInfo",
+        "params": {
+            "acc_counter_currency": true,
+            "spread": 0.7,
+            "leverage": 20.0,
+            "margin": 0.5,
+            "pip_location": -4
+        }
     },
 
     '
@@ -227,13 +233,43 @@
     },
 
     '
+    ' Configuration for strategy
+    '
+
+    "strategy": {
+        '
+        ' Default proto strategy values
+        '
+        "ProtoStrategy": {
+            "log_candles": true,
+            "log_signals": true,
+            "log_orders": true,
+            "log_trades": true
+        },
+        '
+        ' Default forex strategy values
+        '
+        "ForexProtoStrategy": {
+            "pip_location": -4,
+            "display_precision": 5,
+            "min_trail_stop_dist": 0.0005,
+            "markets": [],
+            "custom_market_hours": []
+        },
+        '
+        ' Configuration for other strategies can be added
+        '
+        "StrategyName": {}
+    },
+
+    '
     ' Configuration for live trading
     '
 
     "_live": {
         "common": {
             "create_plot": false,
-            "broker": "oandav20"
+            "broker": "oanda"
         }
         "cerebro": {
             "quicknotify": true
@@ -263,44 +299,7 @@
             ' Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
             '
             "sharpe_ratio": ["Days", 1, 365, true]
-        },
-        "datas": {
-            "ident_oanda": {
-                "type": "oanda",
-                "name": "EUR_USD",
-                "sessionstart": [22, 0, 0, 0],
-                "sessionend": [21, 59, 59, 999999],
-                "granularity": ["Minutes", 5],
-                "options": {
-                    "backfill_days": null,
-                    "historical": true
-                },
-                "for": ["primary", "secondary"]
-            },
-            "ident_ib": {
-                "type": "ib",
-                "name": "EUR.USD-CASH-IDEALPRO",
-                "sessionstart": [22, 0, 0, 0],
-                "sessionend": [21, 59, 59, 999999],
-                "granularity": ["Minutes", 5],
-                "options": {
-                    '
-                    ' if backfill_days is set, this will be the startdate
-                    ' else fromdate will be used as startdate
-                    ' if todate is set, this will be used, else now
-                    '
-                    "backfill_days": null,
-                    "fromdate": "2020-01-01 00:00:00",
-                    "todate": null,
-                    "historical": true,
-                    "rtbar": false,
-                    "historical": false,
-                    "what": null,
-                    "useRTH": false
-                },
-                "for": ["primary", "secondary"]
-            }
-        ]
+        }
     },
 
     '
@@ -332,34 +331,5 @@
             '
             "sharpe_ratio": ["Days", 1, 365, true]
         }
-    },
-
-    '
-    ' Default proto strategy values
-    '
-
-    "ProtoStrategy": {
-        "log_candles": true,
-        "log_signals": true,
-        "log_orders": true,
-        "log_trades": true
-    },
-
-    '
-    ' Default forex strategy values
-    '
-
-    "ForexProtoStrategy": {
-        "pip_location": -4,
-        "display_precision": 5,
-        "min_trail_stop_dist": 0.0005,
-        "markets": [],
-        "custom_market_hours": []
-    },
-
-    '
-    ' Configuration for other strategies can be added
-    '
-
-    "StrategyName": {}
+    }
 }
