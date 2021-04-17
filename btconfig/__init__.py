@@ -243,8 +243,9 @@ from .helper import get_classes, merge_dicts
 
 
 # dev info
-__author__ = "Daniel Schindler <daniel@vcard24.de>"
-__status__ = "development"
+__author__ = 'Daniel Schindler <daniel@vcard24.de>'
+__status__ = 'development'
+__version__ = '0.1.0'
 
 # constants
 TIMEFORMAT = '%Y-%m-%dT%H:%M:%S'
