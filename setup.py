@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 main_ns = {}
-ver_path = convert_path('btconfig/__init__.py')
+ver_path = convert_path('btconfig/version.py')
 with open(ver_path) as ver_file:
     exec(ver_file.read(), main_ns)
 
