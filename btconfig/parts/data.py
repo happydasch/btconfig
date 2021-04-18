@@ -243,7 +243,7 @@ def get_data_params(cfg: dict, tz: str) -> dict:
     backfill_days = cfg.get('backfill_days', 0)
     fromdate = cfg.get('fromdate')
     todate = cfg.get('todate')
-    if backfill_days > 0:
+    if backfill_days and backfill_days > 0:
         # date for backfill start
         dt = datetime.now() - timedelta(days=backfill_days)
         dargs['fromdate'] = dt
