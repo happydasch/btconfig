@@ -3,10 +3,10 @@ from __future__ import division, absolute_import, print_function
 from btconfig.helper import get_classes
 
 import backtrader as bt
+from dateutil import parser
 from datetime import datetime, timedelta, time
 from tabulate import tabulate
 
-import iso8601
 import logging
 import btconfig
 
@@ -94,10 +94,11 @@ class PartDatas(btconfig.BTConfigPart):
                 continue
             # create all feeds
             for fid in dcfg['for']:
-                fcfg = feedscfg[fid]
                 if fid not in feedscfg:
                     txt = f'Feed {fid} is already set or does not exist'
                     self.log(txt, logging.DEBUG)
+                    continue
+                fcfg = feedscfg[fid]
                 if fcfg[2] == 'add':
                     added = True
                 elif not added:
@@ -249,11 +250,9 @@ def get_data_params(cfg: dict, tz: str) -> dict:
         dargs['fromdate'] = dt
         dargs['backfill_start'] = True
     elif fromdate:
-        dargs['fromdate'] = iso8601.parse_date(
-            fromdate, default_timezone=None)
+        dargs['fromdate'] = parser.parse(fromdate, igoretz=True)
         if todate:
-            dargs['todate'] = iso8601.parse_date(
-                todate, default_timezone=None)
+            dargs['todate'] = parser.parse(todate, igoretz=True)
             # with a todate, this is always historical
             dargs['historical'] = True
         dargs['backfill_start'] = True

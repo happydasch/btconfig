@@ -1,7 +1,7 @@
 from __future__ import division, absolute_import, print_function
 
-import iso8601
 import pandas as pd
+from dateutil import parser
 
 import v20
 
@@ -30,13 +30,14 @@ class OandaV20DownloadApp:
         try:
             data = pd.read_csv(filename)
             data_len = len(data)
-            start = iso8601.parse_date(data.iloc[-1].time)
+            start = data.iloc[-1].time
+            start = parser.parse(start)
         except IOError:
             data_len = 0
-            start = iso8601.parse_date(fromdate)
+            start = fromdate
         end = None
         if todate:
-            end = iso8601.parse_date(todate)
+            end = todate
 
         while True:
             # set new start time
@@ -101,7 +102,7 @@ class OandaV20DownloadApp:
                                        index=False, mode='a')
 
             # set new start time and update number of downloaded rows
-            start = iso8601.parse_date(ratesFromServer.iloc[-1].time)
+            start = parser.parse(ratesFromServer.iloc[-1].time)
             data_len += len(ratesFromServer)
 
             # stop if start time is higher than end date if defined

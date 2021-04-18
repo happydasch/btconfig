@@ -42,6 +42,12 @@ class OandaV20Download(btconfig.BTConfigDataloader):
             fromdate, todate, backfill_days
         )
         filename = os.path.join(path, filename)
+        # get params for data
+        params = get_data_params(self._cfg, self._tz)
+        fromdate = params.get('fromdate')
+        todate = params.get('todate')
+        if fromdate is None and todate is None:
+            raise Exception('fromdate and todate is not set')
         # download data into csv file
         if not fromdate or not todate or not os.path.isfile(filename):
             timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
@@ -53,7 +59,6 @@ class OandaV20Download(btconfig.BTConfigDataloader):
                 filename, dataname, timeframe, compression,
                 fromdate, todate, bidask, useask)
         # set csv file from download
-        params = get_data_params(self._cfg, self._tz)
         for i in ['fromdate', 'todate']:
             if i in params:
                 del params[i]

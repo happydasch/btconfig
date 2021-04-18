@@ -1,12 +1,11 @@
 from __future__ import division, absolute_import, print_function
 
 from abc import abstractmethod
-from datetime import datetime, timezone
-import itertools
-import iso8601
-
-from time import sleep
 from collections import defaultdict
+from datetime import datetime, timezone
+from time import sleep
+import itertools
+
 
 import pandas as pd
 
@@ -239,7 +238,7 @@ class IBDownloadApp:
         if todate is None:
             end = datetime.now(tz=timezone.utc)
         else:
-            end = iso8601.parse_date(todate)
+            end = todate
 
         if fromdate is None:
             # no start date so request maximum amount of data in a
@@ -248,7 +247,7 @@ class IBDownloadApp:
             self._appendRequest(contract, end, duration, barsize,
                                 what, useRTH)
         else:
-            start = iso8601.parse_date(fromdate)
+            start = fromdate
             starttemp = start
             # collect all required requests
             while True:
@@ -310,9 +309,9 @@ class IBDownloadApp:
             start = None  # start of df slice (datetime)
             end = None  # end of df slice (datetime)
             if fromdate is not None:
-                start = iso8601.parse_date(fromdate)
+                start = fromdate
             if todate is not None:
-                end = iso8601.parse_date(todate)
+                end = todate
             # only append if there is any new data
             df_new = df[start:end].iloc[1:]
             if len(df_new) > 0:
