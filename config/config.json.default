@@ -10,7 +10,10 @@
         "create_plot": false,
         "create_report": false,
         "broker": null,
-        "cash": null
+        "cash": null,
+        "log_path": "./logs",
+        "report_path": "./backtest",
+        "data_path": "./data"
     },
 
     '
@@ -21,8 +24,7 @@
         "enabled": true,
         "console": true,
         "file": true,
-        "level": "INFO",
-        "file_path": "./logs"
+        "level": "INFO"
     },
 
     '
@@ -42,7 +44,7 @@
         '
         ' Configuration for oanda
         '
-        "oanda": {
+        "oandav20": {
             "classname": "OandaV20Store",
             "params": {
                 "token": "",
@@ -53,7 +55,6 @@
                 "notif_transactions": false
             }
         },
-
         '
         ' Configuration for IB
         '
@@ -203,8 +204,9 @@
     },
 
     '
+    ' Configuration for optimization process
     '
-    '
+
     "optimize": {
         '
         ' To provide a list of values
@@ -214,6 +216,21 @@
         ' To provide a range of values
         '
         "param2": ["range", 8, 10, 1]
+    }
+
+    '
+    ' Configuration for analyzers
+    '
+
+    "analyzers": {
+        "time_return": ["Minutes", 240],
+        '
+        ' Sharpe Ratio
+        '
+        ' Timeframe, Compression, Factor, Annualize
+        ' Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
+        '
+        "sharpe_ratio": ["Days", 1, 365, true]
     }
 
     '
@@ -289,16 +306,6 @@
         "cerebro": {
             "preload": true,
             "runonce": true
-        },
-        "analyzer": {
-            "time_return": ["Minutes", 240],
-            '
-            ' Sharpe Ratio
-            '
-            ' Timeframe, Compression, Factor, Annualize
-            ' Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
-            '
-            "sharpe_ratio": ["Days", 1, 365, true]
         }
     },
 
@@ -320,16 +327,6 @@
             ' To provide a range of values
             '
             "param2": ["range", 8, 10, 1]
-        },
-        "analyzer": {
-            "time_return": ["Minutes", 240],
-            '
-            ' Sharpe Ratio
-            '
-            ' Timeframe, Compression, Factor, Annualize
-            ' Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
-            '
-            "sharpe_ratio": ["Days", 1, 365, true]
         }
     }
 }
