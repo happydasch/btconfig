@@ -245,7 +245,7 @@
         "bar_dist": 0.0003,
         "style": "candle",
         "combine": true,
-        "web_port": 80,
+        "port": 80,
         "live_lookback": 50
     },
 

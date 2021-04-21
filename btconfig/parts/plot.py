@@ -52,7 +52,7 @@ class PartPlot(btconfig.BTConfigPart):
             BacktraderPlottingLive,
             lookback=cfg.get('live_lookback', 50),
             style=cfg.get('style', 'candle'),
-            http_port=cfg.get('web_port',  80),
+            port=cfg.get('port',  80),
             use_default_tabs=False,
             tabs=[AnalyzerTab, MetadataTab, ConfigTab, LogTab],
             scheme=self._getBTPlottingScheme(self._getPlotscheme()))
@@ -79,7 +79,7 @@ class PartPlot(btconfig.BTConfigPart):
         else:
             kwargs = {}
             kwargs['style'] = plotcfg.get('style')
-            kwargs['http_port'] = plotcfg.get('web_port')
+            kwargs['port'] = plotcfg.get('port')
             kwargs['use_default_tabs'] = False
             kwargs['tabs'] = [AnalyzerTab, MetadataTab, LogTab]
             kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)
@@ -102,7 +102,7 @@ class PartPlot(btconfig.BTConfigPart):
         plotscheme = self._getPlotscheme()
         kwargs = {}
         kwargs['style'] = plotcfg.get('style')
-        kwargs['http_port'] = plotcfg.get('web_port')
+        kwargs['port'] = plotcfg.get('port')
         kwargs['use_default_tabs'] = False
         kwargs['tabs'] = [AnalyzerTab, MetadataTab]
         kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)

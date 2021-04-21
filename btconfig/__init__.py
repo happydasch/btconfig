@@ -173,7 +173,7 @@ Config file
         * style (string): Plot style for bars (ex. "candle")
         * combine (bool): Should different feeds be combined to a
         single plot (true/false)
-        * web_port (int): Web port for btplotting (ex. 80)
+        * port (int): Web port for btplotting (ex. 80)
         * live_lookback (int): Lockback of bars for live plotting (ex. 50)
 
     See btconfig.parts.plot for more details
@@ -263,7 +263,9 @@ CONFIG_LIVE = {
     **CONFIG_DEFAULT, **{'cerebro': {'live': True}}}
 CONFIG_BACKTEST = {
     **CONFIG_DEFAULT, **{'cerebro': {'live': False}}}
-CONFIG_OPTIMIZE = {**CONFIG_DEFAULT, **CONFIG_BACKTEST}
+CONFIG_OPTIMIZE = {
+    **CONFIG_DEFAULT, **CONFIG_BACKTEST,
+    **{'cerebro': {'optreturn': False}}}
 
 
 class BTConfig:
