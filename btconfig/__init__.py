@@ -253,19 +253,16 @@ MODE_LIVE, MODE_BACKTEST, MODE_OPTIMIZE = range(3)
 
 # default config dicts
 CONFIG_DEFAULT = {
-    'common': {}, 'cerebro': {}, 'stores': {}, 'broker': {},
+    'common': {}, 'cerebro': {
+        'stdstats': False, 'tradehistory': True
+    }, 'stores': {}, 'broker': {},
     'datas': {}, 'feeds': {}, 'sizer': {}, 'comminfo': {},
     'plot': {}, 'logging': {}, 'analyzers': {}, 'strategy': {},
     '_live': {}, '_backtest': {}, '_optimize': {}}
 CONFIG_LIVE = {
-    **CONFIG_DEFAULT, **{'cerebro': {
-        'stdstats': False, 'live': True}}}
+    **CONFIG_DEFAULT, **{'cerebro': {'live': True}}}
 CONFIG_BACKTEST = {
-    **CONFIG_DEFAULT, **{'cerebro': {
-        'stdstats': False,
-        'live': False,
-        'optreturn': False,
-        'tradehistory': True}}}
+    **CONFIG_DEFAULT, **{'cerebro': {'live': False}}}
 CONFIG_OPTIMIZE = {**CONFIG_DEFAULT, **CONFIG_BACKTEST}
 
 
