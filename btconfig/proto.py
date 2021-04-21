@@ -82,10 +82,7 @@ class ProtoStrategy(bt.Strategy):
         offset_str = f'{offset}' if offset < 0 else ''
 
         txt = []
-        txt.append('{} ({}{:5f})'.format(
-            prepend,
-            prepend,
-            diff))
+        txt.append('{}{:5f}'.format(prepend, diff))
         if frompre:
             txt.append('FILLING')
         else:
