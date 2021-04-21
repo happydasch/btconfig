@@ -3,9 +3,9 @@ from __future__ import division, absolute_import, print_function
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime, timezone
+from dateutil import parser
 from time import sleep
 import itertools
-
 
 import pandas as pd
 
@@ -236,7 +236,7 @@ class IBDownloadApp:
                             'request for timeframe/compresison')
 
         if todate is None:
-            end = datetime.now(tz=timezone.utc)
+            end = datetime.utcnow()
         else:
             end = todate
 
@@ -286,7 +286,7 @@ class IBDownloadApp:
             data_len = len(data)
             # ensure fromdate is set to the last row's time
             # which is needed for appending data
-            fromdate = data.iloc[-1].time
+            fromdate = parser.parse(data.iloc[-1].time, ignoretz=True)
         except IOError:
             data_len = 0
         # fetch data in DataFrame
