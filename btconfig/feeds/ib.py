@@ -50,9 +50,9 @@ class IBDownload(btconfig.BTConfigDataloader):
                 self._instance.config['stores'][store]['params']['host'],
                 self._instance.config['stores'][store]['params']['port'],
                 self._instance.config['stores'][store]['params']['clientId'])
-        app.download(
-            filename, dataname, timeframe, compression,
-            fromdate, todate, what, useRTH)
+            app.download(
+                filename, dataname, timeframe, compression,
+                fromdate, todate, what, useRTH)
         # set csv file from download
         for i in ['fromdate', 'todate']:
             if i in params:
