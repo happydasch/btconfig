@@ -99,23 +99,6 @@ class PartDatas(btconfig.BTConfigPart):
                     self.log(txt, logging.DEBUG)
                     continue
                 fcfg = feedscfg[fid]
-                if fcfg[2] == 'add':
-                    added = True
-                elif not added:
-                    # if a feed is added, ensure, source data is added, too
-                    # this is needed since the source data is providing the
-                    # clock
-                    if data.islive():
-                        gran = dcfg['granularity']
-                        timeframe = bt.TimeFrame.TFrame(gran[0])
-                        compression = gran[1]
-                        self._instance.cerebro.replaydata(
-                            data, timeframe=timeframe, compression=compression)
-                        self.log(f'Resampled {data._name} as base feed')
-                    else:
-                        self._instance.cerebro.adddata(data)
-                        self.log(f'Added {data._name} as base feed')
-                    added = True
                 self._instance.datas[fid] = self._createFeed(data, fid, fcfg)
                 # remove created feed so already created feeds don't
                 # get recreated by other data sources
@@ -229,7 +212,6 @@ def get_data_params(cfg: dict, tz: str) -> dict:
         dataname=cfg['dataname'],
         timeframe=timeframe,
         compression=compression,
-        tzinput=tz,
         tz=tz)
     # session start and end
     sessstart = cfg.get('sessionstart', [])
@@ -250,9 +232,9 @@ def get_data_params(cfg: dict, tz: str) -> dict:
         dargs['fromdate'] = dt
         dargs['backfill_start'] = True
     elif fromdate:
-        dargs['fromdate'] = parser.parse(fromdate, igoretz=True)
+        dargs['fromdate'] = parser.parse(fromdate)
         if todate:
-            dargs['todate'] = parser.parse(todate, igoretz=True)
+            dargs['todate'] = parser.parse(todate)
             # with a todate, this is always historical
             dargs['historical'] = True
         dargs['backfill_start'] = True
