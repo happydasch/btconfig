@@ -288,11 +288,10 @@ class BTConfig:
     PATH_STORE = [
         'backtrader.stores',
         'btoandav20.stores',
-        'ccxtbt.ccxtstore']
+        'btconfig.stores']
     PATH_DATA = [
         'backtrader.feeds',
         'btoandav20.feeds',
-        'ccxtbt.ccxtfeed',
         'btconfig.feeds']
     PATH_STRATEGY = ['strategies']
     # default search paths for classes

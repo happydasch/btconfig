@@ -84,7 +84,6 @@ class PartDatas(btconfig.BTConfigPart):
         commoncfg = self._instance.config.get('common', {})
         tz = commoncfg.get('timezone', None)
         for did in datascfg:
-            added = False
             dcfg = datascfg[did]
             # create and store data source
             data = self._createData(did, dcfg, tz)

@@ -31,7 +31,7 @@ class OandaV20DownloadApp:
             data = pd.read_csv(filename)
             data_len = len(data)
             start = data.iloc[-1].time
-            start = parser.parse(start)
+            start = parser.parse(start, ignoretz=True)
         except IOError:
             data_len = 0
             start = fromdate
@@ -43,8 +43,8 @@ class OandaV20DownloadApp:
             # set new start time
             params['fromTime'] = start.strftime(OandaV20Store._DATE_FORMAT)
 
-            # don't include first row if any row available, since start time is the
-            # date of last row already downloaded
+            # don't include first row if any row available, since start time
+            # is the date of last row already downloaded
             if data_len > 0:
                 params['includeFirst'] = False
 
@@ -102,7 +102,9 @@ class OandaV20DownloadApp:
                                        index=False, mode='a')
 
             # set new start time and update number of downloaded rows
-            start = parser.parse(ratesFromServer.iloc[-1].time)
+            start = parser.parse(
+                ratesFromServer.iloc[-1].time,
+                ignoretz=True)
             data_len += len(ratesFromServer)
 
             # stop if start time is higher than end date if defined
