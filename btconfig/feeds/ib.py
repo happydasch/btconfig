@@ -2,13 +2,31 @@ from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
 from dateutil import parser
+from datetime import timedelta
+from backtrader.utils import date2num
 
 import os
 import btconfig
 
+from btconfig.utils.date import getstarttime
 from btconfig.feeds.csv import CSVAdjustTime
 from btconfig.parts.data import get_data_params
 from btconfig.utils.ib import IBDownloadApp
+
+
+class IBDataAdjustTime(bt.feeds.IBData):
+
+    def _load_rtbar(self, rtbar, hist=False):
+        res = super(IBDataAdjustTime, self)._load_rtbar(rtbar, hist)
+        if res:
+            new_date = getstarttime(
+                self._timeframe,
+                self._compression,
+                self.datetime.datetime(0),
+                self.sessionstart,
+                -1) - timedelta(microseconds=100)
+            self.lines.datetime[0] = date2num(new_date)
+        return res
 
 
 class IBDownload(btconfig.BTConfigDataloader):
