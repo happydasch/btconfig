@@ -18,7 +18,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
 
     def _load_rtbar(self, rtbar, hist=False):
         res = super(IBDataAdjustTime, self)._load_rtbar(rtbar, hist)
-        if res:
+        if res and hist:
             new_date = getstarttime(
                 self._timeframe,
                 self._compression,
