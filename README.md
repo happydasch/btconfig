@@ -9,6 +9,16 @@ It supports different execution modes:
 * BACKTEST: Executes backtest mode
 * OPTIMIZE: Executes optimization mode
 
+## Features
+
+* Execution of strategies without code
+* Configuration of backtrader components using config files
+* Data Downloader for Oanda and Interactive Brokers included
+* Custom Feeds with time correction (useful for resample and replay)
+* Live Plotting, Optimiziation Browser, Backtest Results using btplotting
+* Prototype Strategies for Forex Trading with functionality to work with pips
+* Additional Analysers for Backtesting
+
 ## Contribute
 
 We are looking for contributors: if you are interested to join us please contact us.
