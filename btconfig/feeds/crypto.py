@@ -23,8 +23,8 @@ class BinanceDownload(btconfig.BTConfigDataloader):
     # https://github.com/pratikpv/cryptocurrency_data_downloader/blob/master/download_data_from_binance.py
 
     FMT = "%Y-%m-%d %H:%M:%S"  # e.g. 2019-11-16 23:16:15
-    ORG_COLS = ['open', 'high', 'low', 'close', 'volume', 'close_time', 'quote_av',
-                'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
+    ORG_COLS = ['open', 'high', 'low', 'close', 'volume', 'close_time', 
+                'quote_av', 'trades', 'tb_base_av', 'tb_quote_av', 'ignore']
     COLS = ['open', 'high', 'low', 'close', 'volume']
     INTERVALS = {
         (bt.TimeFrame.Minutes, 1): '1m',
@@ -179,5 +179,5 @@ class BinanceDownload(btconfig.BTConfigDataloader):
         past = datetime(1970, 1, 1, tzinfo=from_date.tzinfo)
         return int((from_date - past).total_seconds() * 1000.0)
 
-    def _toDatetime(ms):
+    def _toDatetime(self, ms):
         return datetime.fromtimestamp(int(float(ms) / 1000.0))
