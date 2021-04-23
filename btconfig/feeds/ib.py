@@ -1,14 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
-from dateutil import parser
 from datetime import timedelta
 from backtrader.utils import date2num
 
 import os
 import btconfig
 
-from btconfig.utils.date import getstarttime
+from btconfig.utils.date import getstarttime, parse_dt
 from btconfig.feeds.csv import CSVAdjustTime
 from btconfig.parts.data import get_data_params
 from btconfig.utils.ib import IBDownloadApp
@@ -46,7 +45,7 @@ class IBDownload(btconfig.BTConfigDataloader):
         if backfill_days:
             fromdate = None
             todate = None
-        filename = 'IB_CSV_DATA_{}_{}_{}_{}_{}_{}_{}.csv'.format(
+        filename = 'IB_{}_{}_{}_{}_{}_{}_{}.csv'.format(
             what, dataname,
             self._cfg['granularity'][0],
             self._cfg['granularity'][1],
@@ -80,7 +79,3 @@ class IBDownload(btconfig.BTConfigDataloader):
         params['dtformat'] = parse_dt
         data = CSVAdjustTime(**params)
         return data
-
-
-def parse_dt(dt):
-    return parser.parse(dt)

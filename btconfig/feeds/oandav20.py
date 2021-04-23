@@ -1,13 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
-from dateutil import parser
 
 import os
 import btconfig
 
 from btconfig.feeds.csv import CSVBidAskAdjustTime
 from btconfig.parts.data import get_data_params
+from btconfig.utils.date import parse_dt
 from btconfig.utils.oandav20 import OandaV20DownloadApp
 
 
@@ -35,7 +35,7 @@ class OandaV20Download(btconfig.BTConfigDataloader):
         if backfill_days:
             fromdate = None
             todate = None
-        filename = 'OANDA_CSV_DATA_{}_{}_{}_{}_{}_{}_{}.csv'.format(
+        filename = 'OANDA_{}_{}_{}_{}_{}_{}_{}.csv'.format(
             ctype, dataname,
             self._cfg['granularity'][0],
             self._cfg['granularity'][1],
@@ -67,7 +67,3 @@ class OandaV20Download(btconfig.BTConfigDataloader):
         params['dtformat'] = parse_dt
         data = CSVBidAskAdjustTime(**params)
         return data
-
-
-def parse_dt(dt):
-    return parser.parse(dt)

@@ -2,7 +2,7 @@ from __future__ import division, absolute_import, print_function
 
 from abc import abstractmethod
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 from dateutil import parser
 from time import sleep
 import itertools

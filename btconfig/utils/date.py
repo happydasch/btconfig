@@ -1,8 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
 from datetime import datetime, time, timedelta
+from dateutil import parser
 
 import backtrader as bt
+
+
+def parse_dt(dt):
+    return parser.parse(dt)
 
 
 def getstarttime(timeframe, compression, dt, sessionstart=None, offset=0):
