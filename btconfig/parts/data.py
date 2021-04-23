@@ -87,7 +87,7 @@ class PartDatas(btconfig.BTConfigPart):
             dcfg = datascfg[did]
             # create and store data source
             data = self._createData(did, dcfg, tz)
-            if not data:
+            if data is None:
                 raise Exception('Data was not created')
             self._instance.datas[did] = data
             # check for feeds
