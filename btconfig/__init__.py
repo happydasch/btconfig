@@ -479,6 +479,10 @@ class BTConfigPart:
         Initialization
         '''
         self._instance = instance
+        self.prepare()
+
+    def prepare(self):
+        pass
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
         '''
@@ -513,6 +517,10 @@ class BTConfigDataloader:
         self._data_id = data_id
         self._cfg = cfg
         self._tz = tz
+        self.prepare()
+
+    def prepare(self):
+        pass
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
         '''

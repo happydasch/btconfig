@@ -1,8 +1,11 @@
+matplotlib>=3.2.2
 python-dateutil>=2.8.1
 tabulate>=0.8.7
 bokeh>=2.2.3
+pytz>=2020.1
 PyYAML
 v20
+python-binance>=0.7.11
 backtrader @ git+https://github.com/backtrader2/backtrader
 btoandav20 @ git+https://github.com/happydasch/btoandav20
 btplotting @ git+https://github.com/happydasch/btplotting
