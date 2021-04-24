@@ -45,8 +45,8 @@ class BinanceDownload(btconfig.BTConfigDataloader):
     }
 
     def prepare(self):
-        self.api_key = self._cfg.get('binance_api_key', '')
-        self.api_secret = self._cfg.get('binance_api_secret', '')
+        self.api_key = self._cfg.get('api_key', '')
+        self.api_secret = self._cfg.get('api_secret', '')
         self.client = Client(
             api_key=self.api_key, api_secret=self.api_secret)
 
