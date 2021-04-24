@@ -1,12 +1,11 @@
 from __future__ import division, absolute_import, print_function
 
-from datetime import datetime
 from dateutil import parser
+from urllib.parse import urlencode
+
 from btconfig.parts.data import get_data_params
 from btconfig.feeds.csv import CSVAdjustTime
 from btconfig.utils.date import parse_dt
-
-from coinapi_rest_v1.restapi import CoinAPIv1
 
 import backtrader as bt
 import numpy as np
@@ -15,12 +14,13 @@ import pandas as pd
 import os
 import time
 import logging
+import requests
 import btconfig
 
 
 class CoinAPIDownload(btconfig.BTConfigDataloader):
 
-    FMT = "%Y-%m-%d %H:%M:%S"  # e.g. 2019-11-16 23:16:15
+    FMT = "%Y-%m-%dT%H:%M:%S"  # e.g. 2016-01-01T00:00:00
 
     '''
     https://docs.coinapi.io/#list-all-periods
@@ -64,7 +64,8 @@ class CoinAPIDownload(btconfig.BTConfigDataloader):
 
     def prepare(self):
         self.api_key = self._cfg.get('api_key', '')
-        self.api = CoinAPIv1(self.api_key)
+        self.headers = {'X-CoinAPI-Key': self.api_key}
+        self.url = 'https://rest.coinapi.io/v1/ohlcv/%s/history?'
 
     def load(self):
         commoncfg = self._instance.config.get('common', {})
@@ -111,11 +112,11 @@ class CoinAPIDownload(btconfig.BTConfigDataloader):
         data = CSVAdjustTime(**params)
         return data
 
-    def _download(self, filename, symbol, interval, from_date, to_date, pause=-1):
+    def _download(self, filename, symbol, period, from_date, to_date, pause=-1):
         """
         :param filename:
         :param symbol:
-        :param interval:
+        :param period:
         :param from_date:
         :param to_date:
         :param pause: pause seconds before downloading next batch.
@@ -133,20 +134,33 @@ class CoinAPIDownload(btconfig.BTConfigDataloader):
 
         count = 0
         while True:
+            params = {
+                'limit': 1000,
+                'period_id': period,
+                'time_start': from_date.strftime(self.FMT)
+            }
+            if to_date:
+                params['time_end'] = to_date.strftime(self.FMT)
             # download data
             self.log(f'Fetching coinAPI historical data for {symbol}'
                      + f' {from_date} ({count + 1})', logging.DEBUG)
-            data = self.api.ohlcv_historical_data(symbol, **kargs)
-            new_columns = self.ORG_COLS.copy()
-            new_columns.insert(0, 'time')
+            url = self.url % symbol + urlencode(params)
+
+            response = requests.get(url, headers=self.headers)
+            if response.status_code == 200:
+                data = response.json()
             if len(data) > 0:
-                data_df = pd.DataFrame(data, columns=new_columns)
+                data_df = pd.DataFrame(data)
             else:
                 break
-            for i in self.ORG_COLS:
-                if i not in self.COLS:
-                    del data_df[i]
-            data_df['time'] = pd.to_datetime(data_df['time'])
+            data_df['time_period_start'] = pd.to_datetime(data_df['time_period_start'])
+            for x in ['time_period_end', 'time_open', 'time_close', 'trades_count']:
+                del data_df[x]
+            data_df.rename(
+                columns={
+                    'time_period_start': 'time', 'price_open': 'open', 'price_high': 'high',
+                    'price_low': 'low', 'price_close': 'close', 'volume_traded': 'volume'}, 
+                inplace=True)
 
             # if first line then output also headers
             if data_len == 0:
