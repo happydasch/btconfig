@@ -1,4 +1,5 @@
-from .csv import *  # noqa: F401
-from .ib import *  # noqa: F401
-from .oandav20 import *  # noqa: F401
-from .binance import *  # noqa: F401
+from .csv import *  # noqa: *
+from .ib import *  # noqa: *
+from .oandav20 import *  # noqa: *
+from .binance import *  # noqa: *
+from .coinapi import *  # noqa: *

@@ -6,6 +6,7 @@ pytz>=2020.1
 PyYAML
 v20
 python-binance>=0.7.11
+coinapi.rest.v1>=1.3
 backtrader @ git+https://github.com/backtrader2/backtrader
 btoandav20 @ git+https://github.com/happydasch/btoandav20
 btplotting @ git+https://github.com/happydasch/btplotting
