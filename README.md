@@ -13,7 +13,7 @@ It supports different execution modes:
 
 * Execution of strategies without code
 * Configuration of backtrader components using config files
-* Data Downloader for Oanda and Interactive Brokers included
+* Data Downloader for Oanda, Interactive Brokers, Binance, CoinAPI included
 * Custom Feeds with time correction (useful for resample and replay)
 * Live Plotting, Optimiziation Browser, Backtest Results using btplotting
 * Prototype Strategies for Forex Trading with functionality to work with pips
