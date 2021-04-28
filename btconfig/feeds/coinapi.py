@@ -149,6 +149,9 @@ class CoinAPIDownload(btconfig.BTConfigDataloader):
             response = requests.get(url, headers=self.headers)
             if response.status_code == 200:
                 data = response.json()
+            else:
+                print(f'Invalid response code {response.status_code} recieved')
+                data = []
             if len(data) > 0:
                 data_df = pd.DataFrame(data)
             else:
