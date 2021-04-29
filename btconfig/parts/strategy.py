@@ -41,4 +41,4 @@ class PartStrategy(btconfig.BTConfigPart):
             args.update(create_opt_params(
                 self._instance.config.get('optimize', {})))
             self._instance.cerebro.optstrategy(strat, **args)
-        self.log('Strategy created\n', logging.INFO)
+        self.log(f'Strategy {stratname} created\n', logging.INFO)

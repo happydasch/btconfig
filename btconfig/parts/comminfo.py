@@ -46,4 +46,4 @@ class PartCommInfo(btconfig.BTConfigPart):
             logging.DEBUG)
         comminfo = all_classes[classname](**params)
         self._instance.cerebro.broker.addcommissioninfo(comminfo)
-        self.log('Comminfo created\n', logging.INFO)
+        self.log(f'Comminfo {classname} created\n', logging.INFO)

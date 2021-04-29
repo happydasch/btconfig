@@ -186,8 +186,8 @@ class PartDatas(btconfig.BTConfigPart):
         mode = cfg[2]
         if len(cfg) > 3:
             dargs = {**dargs, **cfg[3]}
-        self.log('Creating Feed {} using {}\n{}'.format(
-                name, mode,
+        self.log('Creating Feed {} {}: [{}, {}]\n{}'.format(
+                name, mode, cfg[0], cfg[1],
                 tabulate(dargs.items(), tablefmt='plain')),
             logging.DEBUG)
         if mode == 'replay':
@@ -198,7 +198,9 @@ class PartDatas(btconfig.BTConfigPart):
             d = self._instance.cerebro.adddata(data, name=name)
         else:
             raise Exception(f'Unsupported feed mode {mode}')
-        self.log(f'Feed {name} created', logging.INFO)
+        self.log(
+            f'Feed {name} {mode}: [{cfg[0]}, {cfg[1]}] created',
+            logging.INFO)
         return d
 
 

@@ -70,4 +70,7 @@ class PartStores(btconfig.BTConfigPart):
                 self._instance.cerebro.broker.setcash(cash)
                 self.log(f'Starting cash was set to {cash}', logging.INFO)
 
-        self.log('Stores created\n', logging.INFO)
+        if len(storescfg):
+            self.log('Stores created\n', logging.INFO)
+        else:
+            self.log('Broker configured\n', logging.INFO)

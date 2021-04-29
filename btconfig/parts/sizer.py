@@ -43,4 +43,4 @@ class PartSizer(btconfig.BTConfigPart):
                 tabulate(params.items(), tablefmt='plain')),
             logging.DEBUG)
         self._instance.cerebro.addsizer(all_classes[classname], **params)
-        self.log('Sizer created\n', logging.INFO)
+        self.log(f'Sizer {classname} created\n', logging.INFO)
