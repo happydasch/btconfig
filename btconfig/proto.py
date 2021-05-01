@@ -119,7 +119,7 @@ class ProtoStrategy(bt.Strategy):
             txt.append(f'Size {order.size}')
             txt.append(f'Alive {order.alive()}')
             txt.append(f'Price {order.executed.price}')
-            txt.append(f'Position {self.position.size}')
+            txt.append(f'Position {self.getposition(order.data).size}')
         else:
             txt.append(str(order))
         info = ' / '.join(txt)
