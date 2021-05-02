@@ -4,7 +4,9 @@ import os
 import logging
 import btconfig
 
-from telegram.ext import Updater
+from telethon import TelegramClient
+import telethon.sync
+
 from btplotting.tabs.log import init_log_tab
 
 
@@ -18,7 +20,8 @@ class PartLogging(btconfig.BTConfigPart):
         - log_to_console: Should log entries be logged to console
         - log_to_file: Should log entries be logged to file
         - log_to_telegram: Should log entries be logged to telegram
-        - telegram: dict with config (token, whitelist, blacklist)
+        - telegram: dict with config
+            chat_id, token, api_id, api_hash, whitelist, blacklist
         - level: Log level to use
 
         Config Example:
@@ -32,7 +35,10 @@ class PartLogging(btconfig.BTConfigPart):
             "log_to_file": true,
             "log_to_telegram": false,
             "telegram": {
+                "chat_id": [],
                 "token": "",
+                "api_id: "",
+                "api_hash": "",
                 "whitelist": [],
                 "blacklist": []
             },
@@ -74,13 +80,7 @@ class PartLogging(btconfig.BTConfigPart):
         # add telegram handler
         if logtelegram:
             telegramcfg = logcfg.get('telegram', {})
-            token = telegramcfg.get('token', '')
-            self.telegramupdater = Updater(
-                token, use_context=True)
-            self.telegramupdater.start_polling()
-            #self.telegramupdater.idle()
-
-            telegram = TelegramHandler(self.telegramupdater)
+            telegram = TelegramHandler(telegramcfg)
             logging.getLogger().addHandler(telegram)
         # enable logging in strategy
         if 'ProtoStrategy' in self._instance.config['strategy']:
@@ -97,10 +97,31 @@ class PartLogging(btconfig.BTConfigPart):
 
 class TelegramHandler(logging.Handler):
 
-    def __init__(self, updater, level=logging.NOTSET):
+    def __init__(self, cfg, level=logging.NOTSET):
         super(TelegramHandler, self).__init__(level=level)
-        self.updater = updater
+        self.cfg = cfg
+        self.token = self.cfg.get('token', '')
+        self.api_id = self.cfg.get('api_id', '')
+        self.api_hash = self.cfg.get('api_hash', '')
+        self.chat_id = self.cfg.get('chat_id', [])
+        self.whitelist = self.cfg.get('whitelist', [])
+        self.blacklist = self.cfg.get('blacklist', [])
+        self.client = None
+        self._createTelegram()
+
+    def _createTelegram(self):
+        self.client = TelegramClient('logger', self.api_id, self.api_hash)
+        self.client.start(bot_token=self.token)
 
     def emit(self, record):
-        message = record.msg
-        print("MESSAGE", message)
+        msg = record.msg
+        if len(self.whitelist):
+            for x in self.whitelist:
+                if x not in msg:
+                    return
+        if len(self.blacklist):
+            for x in self.blacklist:
+                if x in msg:
+                    return
+        for c in self.chat_id:
+            self.client.send_message(c, msg)

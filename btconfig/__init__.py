@@ -77,7 +77,7 @@ Config file
         * log_to_console (bool): Should log entries be logged to console (true/false)
         * log_to_file (bool): Should log entries be logged into files (true/false)
         * log_to_telegram (bool): Should log entries be logged to telegram (true/false)
-        * telegram (dict): "token" - Telegram token to use, "whitelist", "blacklist"
+        * telegram (dict): Config for telegram
         * level (string): Log level to log (ex. "INFO")
 
     See btconfig.parts.logging for more details
