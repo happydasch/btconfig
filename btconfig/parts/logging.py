@@ -5,7 +5,7 @@ import logging
 import btconfig
 
 from telethon import TelegramClient
-import telethon.sync
+import telethon.sync  # noqa: * keep for async->sync wrapper
 
 from btplotting.tabs.log import init_log_tab
 
