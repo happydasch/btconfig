@@ -74,10 +74,11 @@ Config file
     Configuration for logging
 
         * enabled (bool): Should logging be enabled (true/false)
-        * console (bool): Should log entries be logged to console (true/false)
-        * file (bool): Should log entries be logged into files (true/false)
+        * log_to_console (bool): Should log entries be logged to console (true/false)
+        * log_to_file (bool): Should log entries be logged into files (true/false)
+        * log_to_telegram (bool): Should log entries be logged to telegram (true/false)
+        * telegram (dict): "token" - Telegram token to use, "whitelist", "blacklist"
         * level (string): Log level to log (ex. "INFO")
-        * file_path (string): Path for file logs (ex. "./logs")
 
     See btconfig.parts.logging for more details
 
@@ -353,19 +354,19 @@ class BTConfig:
             dict
         '''
         # use default config based on mode and merge with config
+        res = self._config.copy()
         if mode == MODE_LIVE:
-            res = CONFIG_LIVE
+            merge_dicts(res, CONFIG_LIVE)
             merge_dicts(res, self._config.get('_live', {}))
         elif mode == MODE_BACKTEST:
-            res = CONFIG_BACKTEST
+            merge_dicts(res, CONFIG_BACKTEST)
             merge_dicts(res, self._config.get('_backtest', {}))
         elif mode == MODE_OPTIMIZE:
-            res = CONFIG_OPTIMIZE
+            merge_dicts(res, CONFIG_OPTIMIZE)
             merge_dicts(res, self._config.get('_backtest', {}))
             merge_dicts(res, self._config.get('_optimize', {}))
         else:
             raise Exception('Unknown mode provided')
-        merge_dicts(res, self._config)
         # remove override sections
         for v in ['_live', '_backtest', '_optimize']:
             if v in res:
