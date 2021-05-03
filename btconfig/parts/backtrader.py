@@ -7,7 +7,7 @@ import logging
 import btconfig
 
 from btconfig.helper import sqn2rating
-from btconfig.observers import BuySell
+from btconfig.observers import BuySellMarker
 from btconfig.analyzers import TradeList
 
 
@@ -45,7 +45,7 @@ class PartBacktrader(btconfig.BTConfigPart):
         ccerebro.addobserver(bt.observers.Trades)
         ccerebro.addobserver(bt.observers.DrawDown)
         ccerebro.addobservermulti(
-            BuySell,  # buy / sell arrows
+            BuySellMarker,  # buy / sell arrows
             barplot=True,
             bardist=plotcfg.get('bar_dist', 0.001))
 

@@ -433,8 +433,6 @@ class BTConfig:
             None
         '''
         self.result = self.cerebro.run()
-        if not len(self.result):
-            return
         for p in self._getParts():
             p.finish(self.result)
 
