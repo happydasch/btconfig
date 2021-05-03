@@ -70,20 +70,16 @@ class BinanceDownloadApp:
         except IOError:
             data_len = 0
         from_millis = self._toUnixMillis(from_date)
-        from_millis_str = str(from_millis)
         to_millis = None
-        to_millis_str = None
         if to_date:
             to_millis = self._toUnixMillis(to_date)
-            to_millis_str = str(from_millis)
-
         count = 0
         while True:
             # download data
             print(f'Fetching binance historical data for {symbol}'
                   + f' {from_date} ({count + 1})')
             klines = self.client.get_historical_klines(
-                symbol, interval, from_millis_str, to_millis_str)
+                symbol, interval, str(from_millis), str(to_millis))
             new_columns = self.ORG_COLS.copy()
             new_columns.insert(0, 'time')
             if len(klines) > 0:
