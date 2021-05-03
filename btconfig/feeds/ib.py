@@ -10,7 +10,7 @@ import btconfig
 from btconfig.utils.date import getstarttime, parse_dt
 from btconfig.feeds.csv import CSVAdjustTime
 from btconfig.parts.data import get_data_params
-from btconfig.utils.ib import IBDownloadApp
+from btconfig.utils.download import IBDownloadApp
 
 
 class IBDataAdjustTime(bt.feeds.IBData):
@@ -22,7 +22,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
                 self._timeframe,
                 self._compression,
                 self.datetime.datetime(0),
-                self.sessionstart,
+                self.p.sessionstart,
                 -1) - timedelta(microseconds=100)
             self.lines.datetime[0] = date2num(new_date)
         return res

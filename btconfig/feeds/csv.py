@@ -24,7 +24,7 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
                 self._timeframe,
                 self._compression,
                 self.datetime.datetime(0),
-                self.sessionstart,
+                self.p.sessionstart,
                 -1) - timedelta(microseconds=100)
             self.datetime[0] = date2num(new_date)
         else:

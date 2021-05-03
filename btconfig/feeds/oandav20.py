@@ -8,7 +8,7 @@ import btconfig
 from btconfig.feeds.csv import CSVBidAskAdjustTime
 from btconfig.parts.data import get_data_params
 from btconfig.utils.date import parse_dt
-from btconfig.utils.oandav20 import OandaV20DownloadApp
+from btconfig.utils.download import OandaV20DownloadApp
 
 
 class OandaV20Download(btconfig.BTConfigDataloader):
