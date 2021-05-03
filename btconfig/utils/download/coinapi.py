@@ -99,7 +99,7 @@ class CoinAPIDownloadApp:
             # download data
             print(f'Fetching coinAPI historical data for {symbol}'
                   + f' {from_date} ({count + 1})')
-            url = self.url % symbol + urlencode(params)
+            url = self.URL % symbol + urlencode(params)
 
             response = requests.get(url, headers=self.headers)
             if response.status_code == 200:
