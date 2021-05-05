@@ -292,6 +292,8 @@ class IBDownloadApp:
         # fetch data in DataFrame
         df = self.request(instrument, timeframe, compression,
                           fromdate, todate, what, useRTH)
+        if not df or not len(df):
+            return
         # ensure time contains datetime objects
         df.time = pd.to_datetime(
             df.time, format='%Y%m%d  %H:%M:%S', utc=True)
