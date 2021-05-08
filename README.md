@@ -14,6 +14,8 @@ It supports different execution modes:
 * Execution of strategies without code
 * Configuration of backtrader components using config files
 * Data Downloader for Oanda, Interactive Brokers, Binance included
+* Additional Dataloader: CoinMetrics, CoinAPI
+* API Clients for: CoinAPI, CoinMetrics, CoinGecko, CoinMarketCap
 * Custom Feeds with time correction (useful for resample and replay)
 * Live Plotting, Optimiziation Browser, Backtest Results using btplotting
 * Prototype Strategies for Forex Trading with functionality to work with pips
