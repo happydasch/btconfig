@@ -40,3 +40,14 @@ class CSVBidAskAdjustTime(CSVAdjustTime):
         mid_close=5, bid_close=6, ask_close=7,
         volume=8
     )
+
+
+class CSVMVRVData(CSVAdjustTime):
+
+    lines = ('mv', 'rv', 'mvrv')
+    params = dict(
+        dtformat='%Y-%m-%d %H:%M:%S%z',
+        datetime=0, time=-1, open=1, high=2, low=3,
+        close=4, volume=5, openinterest=-1,
+        mv=6, rv=7, mvrv=8
+    )

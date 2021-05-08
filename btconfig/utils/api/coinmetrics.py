@@ -12,7 +12,7 @@ class CoinMetricsClient(BTConfigApiClient):
     https://docs.coinmetrics.io/api
     '''
 
-    FMT = "%Y-%m-%d %H:%M:%S"  # e.g. 2016-01-01T00:00:00
+    FMT = "%Y-%m-%dT%H:%M:%S"  # e.g. 2016-01-01T00:00:00
     FREQUENCY = {
         (bt.TimeFrame.Days, 1): '1d'
     }
