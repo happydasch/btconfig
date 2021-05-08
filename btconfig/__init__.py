@@ -19,6 +19,11 @@ Intention
     Every execution mode can set different settings for data sources, parts to
     use and so on.
 
+    Additionally btconfig helps with data from different data sources, provides
+    generic api access to different data providers. It also provides basic crypto
+    support.
+
+
 How to run
 ----------
 
@@ -235,12 +240,13 @@ Config file
 
 from __future__ import division, absolute_import, print_function
 
-from datetime import datetime
+from datetime import datetime, time
 from urllib.parse import urlencode
 
 import json
 import logging
 import requests
+import random
 
 from .helper import get_classes, merge_dicts
 
@@ -540,10 +546,11 @@ class BTConfigDataloader:
 
 class BTConfigApiClient:
 
-    def __init__(self, base_url, headers={}, debug=False):
+    def __init__(self, base_url, headers={}, debug=False, pause=0):
         self.base_url = base_url
         self.headers = headers
         self.debug = debug
+        self.pause = pause
 
     def _getUrl(self, path, **kwargs):
         params = '?' + urlencode(kwargs) if len(kwargs) else ''
@@ -567,6 +574,11 @@ class BTConfigApiClient:
         if self.debug:
             print('Requesting', url)
         response = requests.get(url, headers=self.headers)
+        if self.pause != 0:
+            pause = self.pause
+            if pause == -1:
+                pause = random.randint(2, 5)
+            time.sleep(pause)
         return response
 
 
