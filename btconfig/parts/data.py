@@ -76,7 +76,7 @@ class PartDatas(btconfig.BTConfigPart):
         Initialization
         '''
         super(PartDatas, self).__init__(instance)
-        self.all_classes = get_classes(self._instance.PATH_DATA)
+        self.all_classes = get_classes(self._instance.PATH_FEED)
 
     def setup(self) -> None:
         feedscfg = self._instance.config.get('feeds', {})

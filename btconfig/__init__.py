@@ -287,7 +287,7 @@ class BTConfig:
     PATH_STORE = [
         'backtrader.stores',
         'btconfig.stores']
-    PATH_DATA = [
+    PATH_FEED = [
         'backtrader.feeds',
         'btconfig.feeds']
     PATH_STRATEGY = []
@@ -322,7 +322,7 @@ class BTConfig:
             self.PATH_ANALYZER.append('analyzers')
             self.PATH_OBSERVER.append('observers')
             self.PATH_STORE.append('stores')
-            self.PATH_DATA.append('feeds')
+            self.PATH_FEED.append('feeds')
             self.PATH_STRATEGY.append('strategies')
 
     def _loadParts(self) -> None:
