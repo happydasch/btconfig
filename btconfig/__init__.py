@@ -236,9 +236,11 @@ Config file
 from __future__ import division, absolute_import, print_function
 
 from datetime import datetime
+from urllib.parse import urlencode
 
 import json
 import logging
+import requests
 
 from .helper import get_classes, merge_dicts
 
@@ -273,30 +275,22 @@ class BTConfig:
 
     # default module paths
     PATH_COMMINFO = [
-        'commissions',
-        'backtrader.commissions',
-        'btoandav20.commissions']
+        'backtrader.commissions']
     PATH_SIZER = [
-        'sizers',
-        'backtrader.sizers',
-        'btoandav20.sizers']
+        'backtrader.sizers']
     PATH_ANALYZER = [
-        'analyzers',
         'backtrader.analyzers',
         'btconfig.analyzers']
     PATH_OBSERVER = [
-        'observers',
         'backtrader.observers',
         'btconfig.observers']
     PATH_STORE = [
         'backtrader.stores',
-        'btoandav20.stores',
         'btconfig.stores']
     PATH_DATA = [
         'backtrader.feeds',
-        'btoandav20.feeds',
         'btconfig.feeds']
-    PATH_STRATEGY = ['strategies']
+    PATH_STRATEGY = []
     # default search paths for classes
     PATH_BTCONF_PART = ['btconfig.parts']
     # default different parts to load
@@ -304,7 +298,8 @@ class BTConfig:
                         'PartDatas', 'PartLogging', 'PartPlot', 'PartSizer',
                         'PartStores', 'PartStrategy']
 
-    def __init__(self, mode: int = None, configfile: str = None) -> None:
+    def __init__(self, mode: int = None, configfile: str = None,
+                 add_local_paths: bool = True) -> None:
         '''
         Initialization
         '''
@@ -320,6 +315,15 @@ class BTConfig:
         self.stores = {}             # current stores available
         self.datas = {}              # current data sources
         self.result = []             # store execution result
+        # local paths
+        if add_local_paths:
+            self.PATH_COMMINFO.append('commissions')
+            self.PATH_SIZER.append('sizers')
+            self.PATH_ANALYZER.append('analyzers')
+            self.PATH_OBSERVER.append('observers')
+            self.PATH_STORE.append('stores')
+            self.PATH_DATA.append('feeds')
+            self.PATH_STRATEGY.append('strategies')
 
     def _loadParts(self) -> None:
         '''
@@ -532,6 +536,36 @@ class BTConfigDataloader:
         Loads a custom data source
         '''
         raise Exception('Method load needs to be overwritten')
+
+
+class BTConfigApiClient:
+
+    def __init__(self, base_url, headers={}, debug=False):
+        self.base_url = base_url
+        self.headers = headers
+        self.debug = debug
+
+    def _getUrl(self, path, **kwargs):
+        params = '?' + urlencode(kwargs) if len(kwargs) else ''
+        url = self.base_url + path + params
+        return url
+
+    def _request(self, path, exceptions=False, json=False, **kwargs):
+        url = self._getUrl(path, **kwargs)
+        response = self._requestUrl(url)
+        if response.status_code == 200:
+            if json:
+                return response.json()
+        else:
+            if exceptions:
+                raise Exception(f'{url}: {response.text}')
+            if json:
+                return []
+        return response
+
+    def _requestUrl(self, url):
+        response = requests.get(url, headers=self.headers)
+        return response
 
 
 def run(mode: int = None, configfile: str = None) -> BTConfig:
