@@ -564,6 +564,8 @@ class BTConfigApiClient:
         return response
 
     def _requestUrl(self, url):
+        if self.debug:
+            print('Requesting', url)
         response = requests.get(url, headers=self.headers)
         return response
 
