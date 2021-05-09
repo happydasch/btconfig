@@ -11,7 +11,7 @@ from btconfig.utils.dataloader import BinanceDataloaderApp
 
 class BinanceDataloader(btconfig.BTConfigDataloader):
 
-    PREFIX = 'IB'
+    PREFIX = 'BINANCE'
 
     def prepare(self):
         self._cls = CSVAdjustTime
