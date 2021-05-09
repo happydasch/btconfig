@@ -1,15 +1,14 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
+import time
+import pytz
 import numpy as np
 import pandas as pd
+import backtrader as bt
 
 from datetime import datetime
 from dateutil import parser
 from binance.client import Client
-
-import time
-import pytz
 
 
 class BinanceDownloadApp:

@@ -1,14 +1,23 @@
+from __future__ import division, absolute_import, print_function
+
 import numpy as np
 import pandas as pd
 import scipy as sp
 import scipy.signal
+
+
+def _ensure_list(data):
+    if type(data) is not list:
+        data = [data]
+    return data
+
 
 '''
 PEAKS
 '''
 
 
-def findPeaks(data, distance, inv=False):
+def find_peaks(data, distance, inv=False):
     if inv:
         peaks, _ = sp.signal.find_peaks(1./data, distance=distance)
     else:
@@ -16,7 +25,7 @@ def findPeaks(data, distance, inv=False):
     return peaks
 
 
-def findPeaksSavgol(data, distance, inv=False, polyorder=3):
+def find_peaks_savgol(data, distance, inv=False, polyorder=3):
     # distance needs to be an odd int
     if distance % 2 == 0:
         distance = distance + 1
@@ -35,14 +44,7 @@ SUPPORT RESISTANCE
 '''
 
 
-def _ensureList(l):
-    res = l
-    if type(res) is not list:
-        res = [l]
-    return res
-
-
-def supportResistance(ltp, n):
+def support_resistance(ltp, n):
     '''
     This function takes a numpy array of last traded price
     and returns a list of support and resistance levels
@@ -361,7 +363,7 @@ PIVOT POINTS
 '''
 
 
-def pivotPoints(highList, lowList, closeList):
+def pivot_points(highList, lowList, closeList):
     '''
     Returns the standard pivot points, three support levels (s1,s2 and s3)
     and three resistance levels (r1, r2 and r3) of the
@@ -388,9 +390,9 @@ def pivotPoints(highList, lowList, closeList):
             - r3: resistence third point
     '''
     # ensure np array is being used
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
-    closeList = np.array(_ensureList(closeList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
+    closeList = np.array(_ensure_list(closeList))
 
     # calculation
     p = (highList + lowList + closeList) / 3
@@ -405,7 +407,7 @@ def pivotPoints(highList, lowList, closeList):
     return p, s1, s2, s3, r1, r2, r3
 
 
-def tomDemarkPoints(openList, highList, lowList, closeList):
+def tom_demark_points(openList, highList, lowList, closeList):
     '''
     Returns the Tom Demark points, the predicted low and highs
     of the period.
@@ -435,10 +437,10 @@ def tomDemarkPoints(openList, highList, lowList, closeList):
             - s1: Support 1
     '''
     # ensure np array is being used
-    openList = np.array(_ensureList(openList))
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
-    closeList = np.array(_ensureList(closeList))
+    openList = np.array(_ensure_list(openList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
+    closeList = np.array(_ensure_list(closeList))
 
     # calculation
     p = []
@@ -459,7 +461,7 @@ def tomDemarkPoints(openList, highList, lowList, closeList):
     return p, s1, r1
 
 
-def woodiesPoints(highList, lowList, closeList):
+def woodies_points(highList, lowList, closeList):
     '''
     Returns the Woodies points: pivot, supports (s1 and s2) and
     resistance values (r1 and r2).
@@ -479,9 +481,9 @@ def woodiesPoints(highList, lowList, closeList):
             - r2: secondary resistance (r2)
     '''
     # ensure np array is being used
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
-    closeList = np.array(_ensureList(closeList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
+    closeList = np.array(_ensure_list(closeList))
 
     # calculation
     p = (highList + lowList + 2 * closeList) / 4
@@ -494,7 +496,7 @@ def woodiesPoints(highList, lowList, closeList):
     return p, s1, s2, r1, r2
 
 
-def camarillaPoints(highList, lowList, closeList):
+def camarilla_points(highList, lowList, closeList):
     '''
     Returns the Camarilla points: supports (s1,s2,3 and s4)) and
     resistance values (r1, r2, r3 and r4).
@@ -514,9 +516,9 @@ def camarillaPoints(highList, lowList, closeList):
             - r4: r4 resistance
     '''
     # ensure np array is being used
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
-    closeList = np.array(_ensureList(closeList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
+    closeList = np.array(_ensure_list(closeList))
 
     # calculation
     diff = highList - lowList
@@ -533,7 +535,7 @@ def camarillaPoints(highList, lowList, closeList):
     return s1, s2, s3, s4, r1, r2, r3, r4
 
 
-def fibanocciPoints(highList, lowList, closeList):
+def fibanocci_points(highList, lowList, closeList):
     '''
     Returns the fibanocci points: supports (s1,s2,3)) and
     resistance values (r1, r2, r3).
@@ -552,9 +554,9 @@ def fibanocciPoints(highList, lowList, closeList):
             - r3: r3 resistance
     '''
     # ensure np array is being used
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
-    closeList = np.array(_ensureList(closeList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
+    closeList = np.array(_ensure_list(closeList))
 
     # calculation
     p = (highList + lowList + closeList) / 3
@@ -569,7 +571,7 @@ def fibanocciPoints(highList, lowList, closeList):
     return p, s1, s2, s3, r1, r2, r3
 
 
-def fibonacciRetracements(highList, lowList):
+def fibonacci_retracements(highList, lowList):
     '''
     Returns the fibanocci retracements.
 
@@ -581,8 +583,8 @@ def fibonacciRetracements(highList, lowList):
             - downTrend
     '''
     # ensure np array is being used
-    highList = np.array(_ensureList(highList))
-    lowList = np.array(_ensureList(lowList))
+    highList = np.array(_ensure_list(highList))
+    lowList = np.array(_ensure_list(lowList))
 
     # calculation
     retracements = [1, 0.618, 0.5, 0.382, 0.236, 0]

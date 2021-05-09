@@ -1,9 +1,8 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-
 import os
 import btconfig
+import backtrader as bt
 
 from btconfig.helper import get_data_params
 from btconfig.feeds.csv import CSVBidAskAdjustTime

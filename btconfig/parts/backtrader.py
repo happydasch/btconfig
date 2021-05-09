@@ -1,12 +1,11 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-from tabulate import tabulate
-
 import logging
 import btconfig
+import backtrader as bt
 
-from btconfig.helper import sqn2rating
+from tabulate import tabulate
+from btconfig.helper import sqn_rating
 from btconfig.observers import BuySellMarker
 from btconfig.analyzers import TradeList
 
@@ -153,7 +152,7 @@ def create_report(result, startcash) -> str:
 
     kpi_perf = [
         ['sqn_score', sqn],
-        ['sqn_human', sqn2rating(sqn)]
+        ['sqn_human', sqn_rating(sqn)]
     ]
     if sharpe:
         kpi_perf.append(['sharpe_ratio (SR)', sharpe])

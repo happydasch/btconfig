@@ -1,10 +1,9 @@
 from __future__ import division, absolute_import, print_function
 
-from tabulate import tabulate
-
 import logging
 import btconfig
 
+from tabulate import tabulate
 from btconfig.helper import get_classes
 
 

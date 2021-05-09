@@ -1,10 +1,9 @@
 from __future__ import division, absolute_import, print_function
 
-import pandas as pd
-from dateutil import parser
-
 import v20
+import pandas as pd
 
+from dateutil import parser
 from btoandav20.stores import OandaV20Store
 
 

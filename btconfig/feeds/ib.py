@@ -1,15 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-from datetime import timedelta
-from backtrader.utils import date2num
-
 import os
 import btconfig
+import backtrader as bt
 
-from btconfig.helper import get_data_params
+from datetime import timedelta
+from backtrader.utils import date2num
+from btconfig.helper import get_data_dates, get_starttime
 from btconfig.feeds.csv import CSVAdjustTime
-from btconfig.utils.date import getstarttime
 from btconfig.utils.download import IBDownloadApp
 
 
@@ -18,7 +16,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
     def _load_rtbar(self, rtbar, hist=False):
         res = super(IBDataAdjustTime, self)._load_rtbar(rtbar, hist)
         if res and hist:
-            new_date = getstarttime(
+            new_date = get_starttime(
                 self._timeframe,
                 self._compression,
                 self.datetime.datetime(0),
@@ -41,12 +39,13 @@ class IBDownload(btconfig.BTConfigDataloader):
         store = self._cfg.get('store')
         if not store:
             raise Exception('Store not defined')
-        params = get_data_params(self._cfg, self._tz)
         dataname = self._cfg['dataname']
         timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
         compression = self._cfg['granularity'][1]
-        fromdate = params.get('fromdate')
-        todate = params.get('todate')
+        fromdate, todate = get_data_dates(
+            self._cfg['backfill_days'],
+            self._cfg['fromdate'],
+            self._cfg['todate'])
         what = self._cfg['params'].get('what', 'MIDPOINT')
         useRTH = self._cfg['params'].get('useRTH', False)
         if not os.path.isfile(self._filename) or not todate:

@@ -3,10 +3,9 @@ from __future__ import division, absolute_import, print_function
 import os
 import logging
 import btconfig
-
-from telethon import TelegramClient
 import telethon.sync  # noqa: * keep for async->sync wrapper
 
+from telethon import TelegramClient
 from btplotting.tabs.log import init_log_tab
 
 

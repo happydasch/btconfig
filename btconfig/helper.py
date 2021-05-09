@@ -1,11 +1,10 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-
 import sys
 import importlib
 import inspect
 import pkgutil
+import backtrader as bt
 
 from datetime import datetime, time, timedelta
 from dateutil import parser
@@ -34,7 +33,7 @@ def seq(start: float, stop: float, step: float = 1.) -> list:
         return([])
 
 
-def sqn2rating(sqn_score: float) -> str:
+def sqn_rating(sqn_score: float) -> str:
     '''
     Returns a human readable SQN score
 
@@ -153,6 +152,85 @@ def get_classes(modules: list or str, register: bool = True) -> dict:
     return res
 
 
+def parse_dt(dt):
+    return parser.parse(dt)
+
+
+def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
+    '''
+    This method will return the start of the period based on current
+    time (or provided time).
+    '''
+    if sessionstart is None:
+        # use UTC 22:00 (5:00 pm New York) as default
+        sessionstart = time(hour=22, minute=0, second=0)
+    if dt is None:
+        dt = datetime.utcnow()
+    if timeframe == bt.TimeFrame.Seconds:
+        dt = dt.replace(
+            second=(dt.second // compression) * compression,
+            microsecond=0)
+        if offset:
+            dt = dt - timedelta(seconds=compression * offset)
+    elif timeframe == bt.TimeFrame.Minutes:
+        if compression >= 60:
+            hours = 0
+            minutes = 0
+            # get start of day
+            dtstart = get_starttime(bt.TimeFrame.Days, 1, dt, sessionstart)
+            # diff start of day with current time to get seconds
+            # since start of day
+            dtdiff = dt - dtstart
+            hours = dtdiff.seconds // ((60 * 60) * (compression // 60))
+            minutes = compression % 60
+            dt = dtstart + timedelta(hours=hours, minutes=minutes)
+        else:
+            dt = dt.replace(
+                minute=(dt.minute // compression) * compression,
+                second=0,
+                microsecond=0)
+        if offset:
+            dt = dt - timedelta(minutes=compression * offset)
+    elif timeframe == bt.TimeFrame.Days:
+        if dt.hour < sessionstart.hour:
+            dt = dt - timedelta(days=1)
+        if offset:
+            dt = dt - timedelta(days=offset)
+        dt = dt.replace(
+            hour=sessionstart.hour,
+            minute=sessionstart.minute,
+            second=sessionstart.second,
+            microsecond=sessionstart.microsecond)
+    elif timeframe == bt.TimeFrame.Weeks:
+        if dt.weekday() != 6:
+            # sunday is start of week at 5pm new york
+            dt = dt - timedelta(days=dt.weekday() + 1)
+        if offset:
+            dt = dt - timedelta(days=offset * 7)
+        dt = dt.replace(
+            hour=sessionstart.hour,
+            minute=sessionstart.minute,
+            second=sessionstart.second,
+            microsecond=sessionstart.microsecond)
+    elif timeframe == bt.TimeFrame.Months:
+        if offset:
+            dt = dt - timedelta(days=(min(28 + dt.day, 31)))
+        # last day of month
+        last_day_of_month = dt.replace(day=28) + timedelta(days=4)
+        last_day_of_month = last_day_of_month - timedelta(
+            days=last_day_of_month.day)
+        last_day_of_month = last_day_of_month.day
+        # start of month (1 at 0, 22 last day of prev month)
+        if dt.day < last_day_of_month:
+            dt = dt - timedelta(days=dt.day)
+        dt = dt.replace(
+            hour=sessionstart.hour,
+            minute=sessionstart.minute,
+            second=sessionstart.second,
+            microsecond=sessionstart.microsecond)
+    return dt
+
+
 def get_data_params(cfg: dict, tz: str) -> dict:
     '''
     Returns params to use for data sources
@@ -166,32 +244,43 @@ def get_data_params(cfg: dict, tz: str) -> dict:
         compression=compression,
         tz=tz)
     # session start and end
-    sessstart = cfg.get('sessionstart', [])
-    if isinstance(sessstart, list) and len(sessstart) >= 4:
-        dargs['sessionstart'] = time(
-            sessstart[0], sessstart[1], sessstart[2], sessstart[3])
-    sessend = cfg.get('sessionend', [])
-    if isinstance(sessend, list) and len(sessend) >= 4:
-        dargs['sessionend'] = time(
-            sessend[0], sessend[1], sessend[2], sessend[3])
+    dargs['sessionstart'] = get_data_session(cfg.get('sessionstart', []))
+    dargs['sessionend'] = get_data_session(cfg.get('sessionend', []))
     # fromdate and todate
-    backfill_days = cfg.get('backfill_days', 0)
-    fromdate = cfg.get('fromdate')
-    todate = cfg.get('todate')
-    if backfill_days and backfill_days > 0:
-        # date for backfill start
-        dt = datetime.now() - timedelta(days=backfill_days)
-        dargs['fromdate'] = dt
-        dargs['backfill_start'] = True
-    elif fromdate:
-        dargs['fromdate'] = parser.parse(fromdate)
-        if todate:
-            dargs['todate'] = parser.parse(todate)
-            # with a todate, this is always historical
-            dargs['historical'] = True
-        dargs['backfill_start'] = True
-    else:
-        dargs['backfill_start'] = False
+    fromdate, todate = get_data_dates(
+        cfg.get('backfill_days', 0),
+        cfg.get('fromdate'),
+        cfg.get('todate'))
+    dargs['fromdate'] = fromdate
+    dargs['todate'] = todate
+    if todate:
+        # with a todate, this is always historical
+        dargs['historical'] = True
     # append args from params
     dargs.update(cfg.get('params', {}))
     return dargs
+
+
+def get_data_session(session):
+    '''
+    Returns a session time object
+    '''
+    res = None
+    if isinstance(session, list) and len(session) >= 4:
+        res = time(
+            session[0], session[1], session[2], session[3])
+    return res
+
+
+def get_data_dates(backfill_days, fromdate, todate):
+    '''
+    Returns fromdate and todate datetime objects
+    '''
+    if backfill_days and backfill_days > 0:
+        # date for backfill start
+        fromdate = datetime.now() - timedelta(days=backfill_days)
+    elif fromdate:
+        fromdate = parser.parse(fromdate)
+        if todate:
+            todate = parser.parse(todate)
+    return fromdate, todate

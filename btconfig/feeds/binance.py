@@ -1,13 +1,11 @@
 from __future__ import division, absolute_import, print_function
 
-from btconfig.helper import get_data_params
-from btconfig.utils.download import BinanceDownloadApp
-
-import backtrader as bt
-
 import os
 import btconfig
+import backtrader as bt
 
+from btconfig.helper import get_data_dates
+from btconfig.utils.download import BinanceDownloadApp
 from btconfig.feeds.csv import CSVAdjustTime
 
 
@@ -19,10 +17,11 @@ class BinanceDownload(btconfig.BTConfigDataloader):
         self._cls = CSVAdjustTime
 
     def _loadData(self):
-        params = get_data_params(self._cfg, self._tz)
         dataname = self._cfg['dataname']
-        fromdate = params.get('fromdate')
-        todate = params.get('todate')
+        fromdate, todate = get_data_dates(
+            self._cfg['backfill_days'],
+            self._cfg['fromdate'],
+            self._cfg['todate'])
         timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
         compression = self._cfg['granularity'][1]
         if not os.path.isfile(self._filename) or not todate:

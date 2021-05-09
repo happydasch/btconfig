@@ -4,7 +4,9 @@ import backtrader as bt
 # Trade list similar to Amibroker output
 class TradeList(bt.Analyzer):
 
-    ''' https://community.backtrader.com/topic/1274/closed-trade-list-including-mfe-mae-analyzer/ '''
+    '''
+    Source: https://community.backtrader.com/topic/1274/closed-trade-list-including-mfe-mae-analyzer/
+    '''
 
     def get_analysis(self):
 

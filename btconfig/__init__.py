@@ -245,19 +245,16 @@ Config file
 """
 from __future__ import division, absolute_import, print_function
 
-from datetime import datetime, time
-from urllib.parse import urlencode
-
-import backtrader as bt
-
 import os
 import json
 import logging
 import requests
 import random
+import backtrader as bt
 
-from .helper import get_classes, merge_dicts, get_data_params
-from .utils.date import parse_dt
+from datetime import datetime, time
+from urllib.parse import urlencode
+from .helper import get_classes, merge_dicts, get_data_params, parse_dt
 
 
 # dev info
@@ -566,7 +563,7 @@ class BTConfigDataloader:
             fromdate = None
             todate = None
         # filename
-        file_args = ([self.PREFIX] 
+        file_args = ([self.PREFIX]
                      + self._additional
                      + [dataname,
                         self._cfg['granularity'][0],

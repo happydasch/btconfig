@@ -1,9 +1,10 @@
 from __future__ import division, absolute_import, print_function
 
-from datetime import timedelta
 import backtrader as bt
+
+from datetime import timedelta
 from backtrader.utils import date2num
-from btconfig.utils.date import getstarttime
+from btconfig.helper import get_starttime
 
 
 class CSVAdjustTime(bt.feeds.GenericCSVData):
@@ -20,7 +21,7 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
             # move time to start time of next candle
             # and subtract 0.1 miliseconds (ensures no
             # rounding issues, 10 microseconds is minimum)
-            new_date = getstarttime(
+            new_date = get_starttime(
                 self._timeframe,
                 self._compression,
                 self.datetime.datetime(0),

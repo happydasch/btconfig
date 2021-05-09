@@ -2,11 +2,10 @@ from __future__ import division, absolute_import, print_function
 
 import logging
 import pytz
-
 import backtrader as bt
+
 from backtrader.brokers.ibbroker import IBOrder
 from ib.ext.ContractDetails import ContractDetails
-
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)

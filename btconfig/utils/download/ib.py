@@ -1,18 +1,16 @@
 from __future__ import division, absolute_import, print_function
 
+import itertools
+import pandas as pd
+import ib.opt as ibopt
+import backtrader as bt
+
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from dateutil import parser
 from time import sleep
-import itertools
-
-import pandas as pd
-
 from ib.ext.EClientSocket import EClientSocket
-import ib.opt as ibopt
-
-import backtrader as bt
 from backtrader.feeds import IBData
 from backtrader.stores import IBStore
 
@@ -289,7 +287,7 @@ class IBDownloadApp:
             return
         # ensure time contains datetime objects
         df.time = pd.to_datetime(
-            df.time, format='%Y%m%d  %H:%M:%S', utc=True)
+            df.time, format='%Y%m%d %H:%M:%S', utc=True)
         # either create new file or append data
         if data_len == 0:
 

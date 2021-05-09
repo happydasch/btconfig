@@ -1,4 +1,5 @@
 from __future__ import division, absolute_import, print_function
+
 import backtrader as bt
 
 from btconfig import BTConfigApiClient
@@ -129,3 +130,37 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getMVRVRatio(self, assets):
         return self.getAssetMetrics(assets, 'CapMVRVCur')
+
+
+def create_data_df(data):
+    res = pd.DataFrame(data)
+    res.time = pd.to_datetime(res.time)
+    for c in ['price_open', 'price_close', 'price_high',
+              'price_low', 'volume']:
+        res[c] = pd.to_numeric(res[c])
+    res.rename(
+        columns={'price_open': 'open', 'price_close': 'close',
+                 'price_high': 'high', 'price_low': 'low'},
+        inplace=True)
+    res.drop(columns=['market', 'vwap'], inplace=True)
+    return res[['time', 'open', 'high', 'low', 'close', 'volume']]
+
+
+def create_metrics_df(data, metrics_cols):
+    res = pd.DataFrame(data)
+    res.time = pd.to_datetime(res.time)
+    for m in metrics_cols.keys():
+        res[m] = pd.to_numeric(res[m])
+    res.rename(columns=metrics_cols, inplace=True)
+    res.drop(columns=['asset'], inplace=True)
+    return res
+
+
+def get_market_name(exchange='bitstamp', base='btc', quote='usd', type='spot'):
+    market = f'{exchange}-{base}-{quote}-{type}'
+    return market
+
+
+def get_market_parts(market):
+    exchange, base, quote, type = market.split('-')
+    return exchange, base, quote, type

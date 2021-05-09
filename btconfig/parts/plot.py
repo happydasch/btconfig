@@ -1,6 +1,8 @@
 from __future__ import division, absolute_import, print_function
 
-
+import os
+import logging
+import btconfig
 import backtrader as bt
 import backtrader.plot.scheme as btplotscheme
 
@@ -8,13 +10,7 @@ from btplotting.schemes import Tradimo
 from btplotting import (
     BacktraderPlotting, BacktraderPlottingLive,
     BacktraderPlottingOptBrowser)
-
 from btplotting.tabs import AnalyzerTab, MetadataTab, ConfigTab, LogTab
-
-import os
-import logging
-import btconfig
-
 from btconfig import (
     MODE_LIVE,  MODE_BACKTEST, MODE_OPTIMIZE,
     NUMBERFORMAT, TIMEFORMAT)

@@ -1,10 +1,10 @@
 from __future__ import division, absolute_import, print_function
 
-import backtrader as bt
-from tabulate import tabulate
-
 import logging
 import btconfig
+import backtrader as bt
+
+from tabulate import tabulate
 
 
 class PartCerebro(btconfig.BTConfigPart):

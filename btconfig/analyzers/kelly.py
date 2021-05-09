@@ -1,30 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8; py-indent-offset:4 -*-
 ###############################################################################
 #
 # This 'kelly.py' module was written by Richard O'Regan (London) September 2017
 #
 ###############################################################################
-# Copyright (C) 2015, 2016, 2017 Daniel Rodriguez
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-###############################################################################
-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 
 from backtrader import Analyzer
 from backtrader.mathsupport import average
@@ -74,8 +52,8 @@ class Kelly(Analyzer):
     is returned.
 
     Note: A negative Kelly percent e.g. -1.16 or -0.08, means the strategy lost
-    money. The sign is important here. The actual value does not give any useful
-    information as far as I can see.
+    money. The sign is important here. The actual value does not give any
+    useful information as far as I can see.
 
     Methods:
 
@@ -103,21 +81,23 @@ class Kelly(Analyzer):
 
     def notify_trade(self, trade):
         if trade.status == trade.Closed:  # i.e. trade had both an entry & exit
-        # Note: for trades that scratch (=breakeven), i.e. a trade has exactly
-        # 0.0 points profits. Should they be classed as a winner or loser?
-        # Or perhaps create a seperate category for 'breakeven'?
+            '''
+            Note: for trades that scratch (=breakeven), i.e. a trade has
+            exactly 0.0 points profits. Should they be classed as a
+            winner or loser?
+            Or perhaps create a seperate category for 'breakeven'?
 
-        # On balance it probably doesn't make much difference.
-        # If we class as a win, the win percent will increase but the average
-        # win will decrease, i.e. maths balances out. Vice versa with losers.
+            On balance it probably doesn't make much difference.
+            If we class as a win, the win percent will increase but the average
+            win will decrease, i.e. maths balances out. Vice versa with losers.
 
-        # I notice Backtrader defaults to trades of 0.0 or greater are
-        # classed as winners. [Used in modules such as 'tradeanalyzer.py']
+            I notice Backtrader defaults to trades of 0.0 or greater are
+            classed as winners. [Used in modules such as 'tradeanalyzer.py']
 
-        # Likewise I will choose to class trades >=0 as winners.
-
+            Likewise I will choose to class trades >=0 as winners.
+            '''
             # Trades >=0 classed as profitable
-            if trade.pnlcomm >=0:
+            if trade.pnlcomm >= 0:
                 # Trade made money -> add to win list
                 self.pnlWins.append(trade.pnlcomm)
             else:

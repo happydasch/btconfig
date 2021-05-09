@@ -1,13 +1,11 @@
 from __future__ import division, absolute_import, print_function
 
-from btconfig.helper import get_classes, get_data_params
-
-import backtrader as bt
-from tabulate import tabulate
-
-
 import logging
 import btconfig
+import backtrader as bt
+
+from tabulate import tabulate
+from btconfig.helper import get_classes, get_data_params
 
 
 class PartDatas(btconfig.BTConfigPart):
