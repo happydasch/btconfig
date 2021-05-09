@@ -527,6 +527,7 @@ class BTConfigPart:
 class BTConfigDataloader:
 
     PREFIX = None
+    DATEFORMAT = '%Y-%m-%dT%H:%M:%S.%f000Z'
 
     def __init__(self,
                  instance: BTConfig,
@@ -590,17 +591,16 @@ class BTConfigDataloader:
             return
         if self._filelen == 0:
             data.to_csv(
-                self._filename,
-                index=False)
+                self._filename, index=False,
+                date_format=self.DATEFORMAT)
         else:
             data.index = data.time
             data = data[self._filedate:].iloc[1:]
             if len(data):
                 data.to_csv(
-                    self._filename,
-                    index=False,
-                    header=None,
-                    mode='a')
+                    self._filename, index=False,
+                    date_format=self.DATEFORMAT,
+                    header=None, mode='a')
         if len(data):
             self._filelen += len(data)
             self._filedate = data.iloc[-1].time
