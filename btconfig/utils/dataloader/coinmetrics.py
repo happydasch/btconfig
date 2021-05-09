@@ -1,21 +1,20 @@
 from __future__ import division, absolute_import, print_function
 
-import pandas as pd
-
-from dateutil import parser
 from btconfig.utils.api.coinmetrics import (
-    CoinMetricsClient, create_data_df, create_metrics_df, get_market_parts)
+    CoinMetricsClient,
+    create_data_df,
+    create_metrics_df,
+    get_market_parts)
 
 
-class CoinMetricsDownloadApp:
+class CoinMetricsDataloaderApp:
 
     def __init__(self, api_key):
         self.client = CoinMetricsClient(api_key)
 
-    def download(self, filename, symbol, timeframe, compression, fromdate,
-                 todate, add_mvrv=False, use_base_asset=True):
-        """
-        :param filename:
+    def request(self, symbol, timeframe, compression, fromdate,
+                todate, add_mvrv=False, use_base_asset=True):
+        '''
         :param symbol:
         :param timeframe:
         :param compression:
@@ -23,20 +22,13 @@ class CoinMetricsDownloadApp:
         :param todate:
         :param add_mvrv:
         :param use_base_asset:
-        :return:
-        """
+        :return pd.DataFrame | None:
+        '''
         if (timeframe, compression) not in CoinMetricsClient.FREQUENCY:
             raise Exception(
                 f'Unsupported ({timeframe}-{compression})'
                 + ' granularity provided')
         frequency = CoinMetricsClient.FREQUENCY[(timeframe, compression)]
-        try:
-            data = pd.read_csv(filename)
-            data_len = len(data)
-            fromdate = parser.parse(data.iloc[-1].time, ignoretz=True)
-        except IOError:
-            data_len = 0
-
         fromdate_str = None
         if fromdate:
             fromdate_str = fromdate.strftime(CoinMetricsClient.FMT)
@@ -63,9 +55,4 @@ class CoinMetricsDownloadApp:
                 values = metrics_df.loc[start:end, c].values
                 data_df.loc[data_df[data_df.time == start].index[0]:
                             data_df[data_df.time == end].index[0], c] = values
-        # if first line then output also headers
-        if data_len == 0:
-            data_df.to_csv(filename, index=False)
-        else:
-            data_df[1:].to_csv(filename, header=None,
-                               index=False, mode='a')
+        return data_df

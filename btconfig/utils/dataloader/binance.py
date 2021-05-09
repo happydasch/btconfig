@@ -7,7 +7,6 @@ import pandas as pd
 import backtrader as bt
 
 from datetime import datetime
-from dateutil import parser
 from binance.client import Client
 
 
@@ -42,73 +41,61 @@ class BinanceDownloadApp:
         self.api_secret = api_secret
         self.client = Client(self.api_key, self.api_secret)
 
-    def download(self, filename, symbol, timeframe, compression,
-                 from_date, to_date, pause=-1):
-        """
-        :param filename:
+    def request(self, symbol, timeframe, compression,
+                fromdate, todate, pause=-1):
+        '''
         :param symbol:
         :param timeframe:
         :param compression:
-        :param from_date:
-        :param to_date:
+        :param fromdate:
+        :param todate:
         :param pause: pause seconds before downloading next batch.
             if pause == -1 --> random sleep(2,5)
             if pause == 0 --> no sleep
             if pause == num--> sleep for num of seconds
-        :return:
-        """
+        :return pd.DataFrame | None:
+        '''
         if (timeframe, compression) not in self.INTERVALS:
             raise Exception(
                 f'Unsupported ({timeframe}-{compression})'
                 + ' granularity provided')
         interval = self.INTERVALS[(timeframe, compression)]
-        try:
-            data = pd.read_csv(filename)
-            data_len = len(data)
-            from_date = parser.parse(data.iloc[-1].time, ignoretz=True)
-        except IOError:
-            data_len = 0
-        from_millis = self._toUnixMillis(from_date)
+        from_millis = self._toUnixMillis(fromdate)
         to_millis = None
-        if to_date:
-            to_millis = self._toUnixMillis(to_date)
-        count = 0
+        if todate:
+            to_millis = self._toUnixMillis(todate)
+        data_df = None
         while True:
             klines = self.client.get_historical_klines(
                 symbol, interval, str(from_millis), str(to_millis))
             new_columns = self.ORG_COLS.copy()
             new_columns.insert(0, 'time')
             if len(klines) > 0:
-                data_df = pd.DataFrame(
+                tmp_df = pd.DataFrame(
                     klines, columns=new_columns)
             else:
                 break
             for i in self.ORG_COLS:
                 if i not in self.COLS:
-                    del data_df[i]
-            data_df['time'] = pd.to_datetime(
-                data_df['time'], unit='ms')
+                    del tmp_df[i]
+            tmp_df['time'] = pd.to_datetime(tmp_df['time'], unit='ms')
 
-            # if first line then output also headers
-            if data_len == 0:
-                data_df.to_csv(filename, index=False)
+            if not data_df:
+                data_df = tmp_df
             else:
-                data_df[1:].to_csv(filename, header=None,
-                                   index=False, mode='a')
-            data_len += len(data_df)
-
+                data_df.append(tmp_df[1:])
             # check for exit
             if to_millis and from_millis >= to_millis:
                 break
-            if from_date == data_df.iloc[-1].time:
+            if fromdate == data_df.iloc[-1].time:
                 break
             # move to next step of batches
-            from_date = data_df.iloc[-1].time
-            from_millis = self._toUnixMillis(from_date)
-            count = count + 1
+            fromdate = data_df.iloc[-1].time
+            from_millis = self._toUnixMillis(fromdate)
             if pause == -1:
                 pause = np.random.randint(2, 5)
             time.sleep(pause)
+        return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
 
     def _convertTimeToUtc(self, pst_time):
         utc = pytz.utc

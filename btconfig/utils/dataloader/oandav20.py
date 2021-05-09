@@ -7,7 +7,7 @@ from dateutil import parser
 from btoandav20.stores import OandaV20Store
 
 
-class OandaV20DownloadApp:
+class OandaV20DataloaderApp:
 
     def __init__(self, token, practice):
         self.token = token
@@ -15,8 +15,8 @@ class OandaV20DownloadApp:
         self.ctx = v20.Context(OandaV20Store._OAPI_URL[int(practice)],
                                token=token, port=443, ssl=True)
 
-    def download(self, filename, instrument, timeframe, compression,
-                 fromdate, todate, bidask, useask):
+    def request(self, instrument, timeframe, compression,
+                fromdate, todate, bidask, useask):
 
         # set fetch params
         granularity = OandaV20Store._GRANULARITIES.get(
@@ -25,29 +25,11 @@ class OandaV20DownloadApp:
         ratesHeaders = ['time', 'open', 'high', 'low', 'close', 'mid_close',
                         'bid_close', 'ask_close', 'volume']
 
-        # Get start values
-        try:
-            data = pd.read_csv(filename)
-            data_len = len(data)
-            start = data.iloc[-1].time
-            start = parser.parse(start, ignoretz=True)
-        except IOError:
-            data_len = 0
-            start = fromdate
-        end = None
-        if todate:
-            end = todate
-
+        data_df = None
         while True:
-            # set new start time
-            params['fromTime'] = start.strftime(OandaV20Store._DATE_FORMAT)
-
-            # don't include first row if any row available, since start time
-            # is the date of last row already downloaded
-            if data_len > 0:
+            params['fromTime'] = fromdate.strftime(OandaV20Store._DATE_FORMAT)
+            if data_df:
                 params['includeFirst'] = False
-
-            # fetch data
             response = self.ctx.instrument.candles(instrument, **params)
             candles = response.get('candles', 200)
             data = []
@@ -74,33 +56,28 @@ class OandaV20DownloadApp:
                     o_price, h_price, l_price, c_price = price['mid'].values()
                 # store candle
                 data.append({
-                    'time': curtime, 'volume': volume,
+                    'time': curtime,
                     'open': o_price, 'high': h_price,
                     'low': l_price, 'close': c_price,
                     'mid_close': price['mid']['close'],
                     'bid_close': price['bid']['close'],
-                    'ask_close': price['ask']['close']
+                    'ask_close': price['ask']['close'],
+                    'volume': volume
                 })
 
             # check if data contains any candles
             if len(data) > 0:
-                ratesFromServer = pd.DataFrame(data, columns=ratesHeaders)
+                tmp_df = pd.DataFrame(data, columns=ratesHeaders)
             else:
                 break
 
-            # if first line then output also headers
-            if data_len == 0:
-                ratesFromServer.to_csv(filename, index=False)
+            if not data_df:
+                data_df = tmp_df
             else:
-                ratesFromServer.to_csv(filename, header=None,
-                                       index=False, mode='a')
-
-            # set new start time and update number of downloaded rows
-            start = parser.parse(
-                ratesFromServer.iloc[-1].time,
+                data_df.append(tmp_df[1:])
+            fromdate = parser.parse(
+                data_df.iloc[-1].time,
                 ignoretz=True)
-            data_len += len(ratesFromServer)
-
             # stop if start time is higher than end date if defined
-            if end and start > end:
+            if todate and fromdate > todate:
                 break

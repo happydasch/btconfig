@@ -6,10 +6,10 @@ import backtrader as bt
 
 from btconfig.helper import get_data_params
 from btconfig.feeds.csv import CSVBidAskAdjustTime
-from btconfig.utils.download import OandaV20DownloadApp
+from btconfig.utils.dataloader import OandaV20DataloaderApp
 
 
-class OandaV20Download(btconfig.BTConfigDataloader):
+class OandaV20Dataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'OANDA'
 
@@ -38,9 +38,9 @@ class OandaV20Download(btconfig.BTConfigDataloader):
         bidask = self._cfg['params'].get('bidask', True)
         useask = self._cfg['params'].get('useask', False)
         if not os.path.isfile(self._filename) or not todate:
-            app = OandaV20DownloadApp(
+            loader = OandaV20DataloaderApp(
                 self._instance.config['stores'][store]['params']['token'],
                 self._instance.config['stores'][store]['params']['practice'])
-            app.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate, bidask, useask)
+            return loader.request(
+                dataname, timeframe, compression, fromdate, todate,
+                bidask, useask)

@@ -250,9 +250,11 @@ import json
 import logging
 import requests
 import random
+import pandas as pd
 import backtrader as bt
 
 from datetime import datetime, time
+from dateutil import parser
 from urllib.parse import urlencode
 from .helper import get_classes, merge_dicts, get_data_params, parse_dt
 
@@ -541,6 +543,8 @@ class BTConfigDataloader:
         self._tz = tz
         self._additional = []
         self._filename = None
+        self._filelen = 0
+        self._filedate = None
         self.prepare()
 
     def _loadData(self):
@@ -549,9 +553,9 @@ class BTConfigDataloader:
         '''
         pass
 
-    def _setFilename(self):
+    def _setFile(self):
         '''
-        Sets the filename for dataloader source
+        Sets the file for dataloader source
         '''
         commoncfg = self._instance.config.get('common', {})
         path = commoncfg.get('data_path', './data')
@@ -573,8 +577,32 @@ class BTConfigDataloader:
         filename = f'{"_".join(file_args)}.csv'
         filename = os.path.join(path, filename)
         self._filename = filename
+        try:
+            data = pd.read_csv(filename)
+            self._filelen = len(data)
+            self._filedate = parser.parse(data.iloc[-1].time, ignoretz=True)
+        except IOError:
+            self._filelen = 0
+            self._filedate = None
 
-    def _loadFile(self):
+    def _updateFile(self, data):
+        if not data or not len(data):
+            return
+        if self._filelen == 0:
+            data.to_csv(
+                self._filename,
+                index=False)
+        else:
+            df_new = data.time[self._filedate:].iloc[1:]
+            df_new.to_csv(
+                self._filename,
+                index=False,
+                header=None,
+                mode='a')
+        self._filelen += len(data)
+        self._filedate = data.iloc[-1].time
+
+    def _createFeed(self):
         params = get_data_params(self._cfg, self._tz)
         params['dataname'] = self._filename
         params['headers'] = True
@@ -585,6 +613,9 @@ class BTConfigDataloader:
     def prepare(self):
         '''
         Prepare method
+
+        This method can be overwritten to prepare
+        needed functionality.
         '''
         pass
 
@@ -598,9 +629,9 @@ class BTConfigDataloader:
         '''
         Loads a custom data source
         '''
-        self._setFilename()
-        self._loadData()
-        return self._loadFile()
+        self._setFile()
+        self._updateFile(self._loadData())
+        return self._createFeed()
 
 
 class BTConfigApiClient:

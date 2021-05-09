@@ -6,10 +6,10 @@ import backtrader as bt
 from btconfig import BTConfigDataloader
 from btconfig.helper import get_data_dates
 from btconfig.feeds.csv import CSVAdjustTime
-from btconfig.utils.download import CoinAPIDownloadApp
+from btconfig.utils.dataloader import CoinAPIDataloaderApp
 
 
-class CoinAPIDownload(BTConfigDataloader):
+class CoinAPIDataloader(BTConfigDataloader):
 
     PREFIX = 'COINAPI'
 
@@ -26,7 +26,6 @@ class CoinAPIDownload(BTConfigDataloader):
             self._cfg['todate'])
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
-            client = CoinAPIDownloadApp(api_key)
-            client.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate)
+            loader = CoinAPIDataloaderApp(api_key)
+            return loader.request(
+                dataname, timeframe, compression, fromdate, todate)

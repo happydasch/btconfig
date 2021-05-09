@@ -8,7 +8,7 @@ from datetime import timedelta
 from backtrader.utils import date2num
 from btconfig.helper import get_data_dates, get_starttime
 from btconfig.feeds.csv import CSVAdjustTime
-from btconfig.utils.download import IBDownloadApp
+from btconfig.utils.dataloader import IBDataloaderApp
 
 
 class IBDataAdjustTime(bt.feeds.IBData):
@@ -26,7 +26,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
         return res
 
 
-class IBDownload(btconfig.BTConfigDataloader):
+class IBDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'IB'
 
@@ -49,10 +49,10 @@ class IBDownload(btconfig.BTConfigDataloader):
         what = self._cfg['params'].get('what', 'MIDPOINT')
         useRTH = self._cfg['params'].get('useRTH', False)
         if not os.path.isfile(self._filename) or not todate:
-            app = IBDownloadApp(
+            loader = IBDataloaderApp(
                 self._instance.config['stores'][store]['params']['host'],
                 self._instance.config['stores'][store]['params']['port'],
                 self._instance.config['stores'][store]['params']['clientId'])
-            app.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate, what, useRTH)
+            return loader.request(
+                dataname, timeframe, compression, fromdate, todate,
+                what, useRTH)

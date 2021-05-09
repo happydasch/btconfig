@@ -5,11 +5,11 @@ import btconfig
 import backtrader as bt
 
 from btconfig.helper import get_data_dates
-from btconfig.utils.download import BinanceDownloadApp
 from btconfig.feeds.csv import CSVAdjustTime
+from btconfig.utils.dataloader import BinanceDataloaderApp
 
 
-class BinanceDownload(btconfig.BTConfigDataloader):
+class BinanceDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'IB'
 
@@ -18,16 +18,15 @@ class BinanceDownload(btconfig.BTConfigDataloader):
 
     def _loadData(self):
         dataname = self._cfg['dataname']
+        timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
+        compression = self._cfg['granularity'][1]
         fromdate, todate = get_data_dates(
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
-        timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
-        compression = self._cfg['granularity'][1]
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             api_secret = self._cfg.get('api_secret', '')
-            client = BinanceDownloadApp(api_key, api_secret)
-            client.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate)
+            loader = BinanceDataloaderApp(api_key, api_secret)
+            return loader.request(
+                dataname, timeframe, compression, fromdate, todate)

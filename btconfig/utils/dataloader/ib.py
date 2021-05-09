@@ -8,7 +8,6 @@ import backtrader as bt
 from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
-from dateutil import parser
 from time import sleep
 from ib.ext.EClientSocket import EClientSocket
 from backtrader.feeds import IBData
@@ -103,7 +102,7 @@ class IBDownloadEngine_Conn(IBDownloadEngine):
             WAP=msg.WAP, hasGaps=msg.hasGaps)
 
 
-class IBDownloadApp:
+class IBDataloaderApp:
 
     # Set a base for the data requests (historical/realtime) to distinguish the
     # id in the error notifications from orders, where the basis (usually
@@ -265,53 +264,3 @@ class IBDownloadApp:
 
             # process all requests
             return self._processRequests()
-
-    def download(self, filename, instrument, timeframe, compression,
-                 fromdate, todate, what, useRTH):
-        '''
-        Downloads historical data and stores the result in a csv file
-        '''
-        try:
-            # use last datetime if file already exists
-            data = pd.read_csv(filename)
-            data_len = len(data)
-            # ensure fromdate is set to the last row's time
-            # which is needed for appending data
-            fromdate = parser.parse(data.iloc[-1].time, ignoretz=True)
-        except IOError:
-            data_len = 0
-        # fetch data in DataFrame
-        df = self.request(instrument, timeframe, compression,
-                          fromdate, todate, what, useRTH)
-        if not df or not len(df):
-            return
-        # ensure time contains datetime objects
-        df.time = pd.to_datetime(
-            df.time, format='%Y%m%d %H:%M:%S', utc=True)
-        # either create new file or append data
-        if data_len == 0:
-
-            # no file or data in file
-
-            df.to_csv(filename, index=False)
-        else:
-
-            # file exists already
-
-            df.index = df.time  # ensure using time as index
-            start = None  # start of df slice (datetime)
-            end = None  # end of df slice (datetime)
-            if fromdate is not None:
-                start = fromdate
-            if todate is not None:
-                end = todate
-            # only append if there is any new data
-            df_new = df[start:end].iloc[1:]
-            if len(df_new) > 0:
-                # append to csv file
-                # the first row is being skipped because
-                # fromtime was previously set to last row's
-                # time
-                df_new.to_csv(
-                    filename, header=None, index=False,
-                    mode='a')

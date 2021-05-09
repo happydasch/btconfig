@@ -6,10 +6,10 @@ import backtrader as bt
 from btconfig import BTConfigDataloader
 from btconfig.helper import get_data_dates
 from btconfig.feeds.csv import CSVAdjustTime, CSVMVRVData
-from btconfig.utils.download import CoinMetricsDownloadApp
+from btconfig.utils.dataloader import CoinMetricsDataloaderApp
 
 
-class CoinMetricsDownload(BTConfigDataloader):
+class CoinMetricsDataloader(BTConfigDataloader):
 
     PREFIX = 'COINMETRICS'
 
@@ -26,10 +26,9 @@ class CoinMetricsDownload(BTConfigDataloader):
             self._cfg['todate'])
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
-            client = CoinMetricsDownloadApp(api_key)
-            client.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate)
+            client = CoinMetricsDataloaderApp(api_key)
+            return client.request(
+                dataname, timeframe, compression, fromdate, todate)
 
 
 class CoinMetricsMVRVDownload(BTConfigDataloader):
@@ -49,8 +48,7 @@ class CoinMetricsMVRVDownload(BTConfigDataloader):
             self._cfg['todate'])
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
-            client = CoinMetricsDownloadApp(api_key)
-            client.download(
-                self._filename, dataname, timeframe, compression,
-                fromdate, todate, add_mvrv=True,
-                use_base_asset=True)
+            loader = CoinMetricsDataloaderApp(api_key)
+            return loader.request(
+                dataname, timeframe, compression, fromdate, todate,
+                add_mvrv=True, use_base_asset=True)
