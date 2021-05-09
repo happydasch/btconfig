@@ -50,12 +50,7 @@ class OandaV20DownloadApp:
 
             # fetch data
             response = self.ctx.instrument.candles(instrument, **params)
-            try:
-                candles = response.get('candles', 200)
-            except Exception as e:
-                print(e, response.body)
-                return
-
+            candles = response.get('candles', 200)
             data = []
             for candle in candles:
                 if not candle.complete:

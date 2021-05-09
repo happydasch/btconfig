@@ -49,28 +49,28 @@ class IBDownloadEngine_Eclient(IBDownloadEngine):
         self.conn = EClientSocket(self)
 
     def error(self, id=None, errorCode=None, errorMsg=None):
-        print(id, errorCode, errorMsg)
+        pass
 
     def error_0(self, strval):
-        print(strval)
+        pass
 
     def error_1(self, id, errorCode, errorMsg):
-        print(id, errorCode, errorMsg)
+        pass
 
     def connectionClosed(self):
-        print('Connection closed')
+        pass
+
+    def managedAccounts(self, accountsList):
+        pass
+
+    def nextValidId(self, orderId):
+        pass
 
     def connect(self):
         self.conn.eConnect(self.host, self.port, self.clientId)
 
     def disconnect(self):
         self.conn.eDisconnect()
-
-    def managedAccounts(self, accountsList):
-        print(accountsList)
-
-    def nextValidId(self, orderId):
-        print(orderId)
 
     def historicalData(self, reqId, date, open, high, low, close,
                        volume, count, WAP, hasGaps):
@@ -89,17 +89,12 @@ class IBDownloadEngine_Conn(IBDownloadEngine):
         self.conn = ibopt.ibConnection(
             host=self.host, port=self.port, clientId=self.clientId)
         self.conn.register(self.historicalData, 'HistoricalData')
-        self.conn.registerAll(self.watcher)
 
     def connect(self):
         self.conn.connect()
 
     def disconnect(self):
         self.conn.disconnect()
-
-    def watcher(self, msg):
-        if msg.typeName != 'historicalData':
-            print(msg)
 
     def historicalData(self, msg):
         self.app._processHistoricalData(
@@ -175,8 +170,6 @@ class IBDownloadApp:
                 sleep(.5)
             if not self.engine.isConnected():
                 break
-            print(f'processed request {r} - {len(self._requests)} remaining')
-        print('finished processing')
 
         if self.engine.isConnected():
             self.engine.disconnect()

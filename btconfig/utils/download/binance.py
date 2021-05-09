@@ -75,9 +75,6 @@ class BinanceDownloadApp:
             to_millis = self._toUnixMillis(to_date)
         count = 0
         while True:
-            # download data
-            print(f'Fetching binance historical data for {symbol}'
-                  + f' {from_date} ({count + 1})')
             klines = self.client.get_historical_klines(
                 symbol, interval, str(from_millis), str(to_millis))
             new_columns = self.ORG_COLS.copy()

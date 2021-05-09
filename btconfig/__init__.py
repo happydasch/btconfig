@@ -609,17 +609,26 @@ class BTConfigDataloader:
 class BTConfigApiClient:
 
     def __init__(self, base_url, headers={}, debug=False, pause=0):
+        '''
+        Initialization
+        '''
         self.base_url = base_url
         self.headers = headers
         self.debug = debug
         self.pause = pause
 
     def _getUrl(self, path, **kwargs):
+        '''
+        Returns the complete api url
+        '''
         params = '?' + urlencode(kwargs) if len(kwargs) else ''
         url = self.base_url + path + params
         return url
 
     def _request(self, path, exceptions=False, json=False, **kwargs):
+        '''
+        Runs a request to the given api path
+        '''
         url = self._getUrl(path, **kwargs)
         response = self._requestUrl(url)
         if response.status_code == 200:
@@ -633,6 +642,9 @@ class BTConfigApiClient:
         return response
 
     def _requestUrl(self, url):
+        '''
+        Runs a request to the given url
+        '''
         if self.debug:
             print('Requesting', url)
         response = requests.get(url, headers=self.headers)
