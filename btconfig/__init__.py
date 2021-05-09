@@ -586,21 +586,24 @@ class BTConfigDataloader:
             self._filedate = None
 
     def _updateFile(self, data):
-        if not data or not len(data):
+        if data is None or not len(data):
             return
         if self._filelen == 0:
             data.to_csv(
                 self._filename,
                 index=False)
         else:
-            df_new = data.time[self._filedate:].iloc[1:]
-            df_new.to_csv(
-                self._filename,
-                index=False,
-                header=None,
-                mode='a')
-        self._filelen += len(data)
-        self._filedate = data.iloc[-1].time
+            data.index = data.time
+            data = data[self._filedate:].iloc[1:]
+            if len(data):
+                data.to_csv(
+                    self._filename,
+                    index=False,
+                    header=None,
+                    mode='a')
+        if len(data):
+            self._filelen += len(data)
+            self._filedate = data.iloc[-1].time
 
     def _createFeed(self):
         params = get_data_params(self._cfg, self._tz)

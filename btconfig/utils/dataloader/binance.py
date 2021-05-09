@@ -10,7 +10,7 @@ from datetime import datetime
 from binance.client import Client
 
 
-class BinanceDownloadApp:
+class BinanceDataloaderApp:
 
     # https://github.com/pratikpv/cryptocurrency_data_downloader/blob/master/download_data_from_binance.py
 

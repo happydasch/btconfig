@@ -24,6 +24,8 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
+        if self._filedate:
+            fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             api_secret = self._cfg.get('api_secret', '')

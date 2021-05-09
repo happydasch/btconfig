@@ -1,6 +1,7 @@
 from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
+import pandas as pd
 
 from btconfig import BTConfigApiClient
 

@@ -24,6 +24,8 @@ class CoinMetricsDataloader(BTConfigDataloader):
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
+        if self._filedate:
+            fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             client = CoinMetricsDataloaderApp(api_key)
@@ -31,7 +33,7 @@ class CoinMetricsDataloader(BTConfigDataloader):
                 dataname, timeframe, compression, fromdate, todate)
 
 
-class CoinMetricsMVRVDownload(BTConfigDataloader):
+class CoinMetricsMVRVDataloader(BTConfigDataloader):
 
     PREFIX = 'COINMETRICS_MVRV'
 
@@ -46,6 +48,8 @@ class CoinMetricsMVRVDownload(BTConfigDataloader):
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
+        if self._filedate:
+            fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             loader = CoinMetricsDataloaderApp(api_key)

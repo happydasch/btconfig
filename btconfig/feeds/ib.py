@@ -46,6 +46,8 @@ class IBDataloader(btconfig.BTConfigDataloader):
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
+        if self._filedate:
+            fromdate = self._filedate
         what = self._cfg['params'].get('what', 'MIDPOINT')
         useRTH = self._cfg['params'].get('useRTH', False)
         if not os.path.isfile(self._filename) or not todate:
