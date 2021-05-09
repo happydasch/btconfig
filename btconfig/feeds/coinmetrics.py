@@ -47,10 +47,11 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
             self._cfg['backfill_days'],
             self._cfg['fromdate'],
             self._cfg['todate'])
+        use_base_asset = self._cfg.get('use_base_asset', True)
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             loader = CoinMetricsDataloaderApp()
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate,
-                add_mvrv=True, use_base_asset=True)
+                add_mvrv=True, use_base_asset=use_base_asset)
