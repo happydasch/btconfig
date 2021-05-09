@@ -1,11 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
+import backtrader as bt
+
 import sys
 import importlib
 import inspect
 import pkgutil
 
-from datetime import datetime
+from datetime import datetime, time, timedelta
 from dateutil import parser
 
 
@@ -30,21 +32,6 @@ def seq(start: float, stop: float, step: float = 1.) -> list:
         return([start])
     else:
         return([])
-
-
-def parse_time(date: str) -> datetime:
-    '''
-    Datetime parser for csv datetime
-
-    Args:
-    -----
-    * date (str): Date as string
-
-    Returns:
-    --------
-    Parsed datetime object
-    '''
-    return parser.parse(date)
 
 
 def sqn2rating(sqn_score: float) -> str:
@@ -164,3 +151,47 @@ def get_classes(modules: list or str, register: bool = True) -> dict:
     for x in modules:
         res.update(_iter_classes_submodules(x, register))
     return res
+
+
+def get_data_params(cfg: dict, tz: str) -> dict:
+    '''
+    Returns params to use for data sources
+    '''
+    timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
+    compression = cfg['granularity'][1]
+    # basic params
+    dargs = dict(
+        dataname=cfg['dataname'],
+        timeframe=timeframe,
+        compression=compression,
+        tz=tz)
+    # session start and end
+    sessstart = cfg.get('sessionstart', [])
+    if isinstance(sessstart, list) and len(sessstart) >= 4:
+        dargs['sessionstart'] = time(
+            sessstart[0], sessstart[1], sessstart[2], sessstart[3])
+    sessend = cfg.get('sessionend', [])
+    if isinstance(sessend, list) and len(sessend) >= 4:
+        dargs['sessionend'] = time(
+            sessend[0], sessend[1], sessend[2], sessend[3])
+    # fromdate and todate
+    backfill_days = cfg.get('backfill_days', 0)
+    fromdate = cfg.get('fromdate')
+    todate = cfg.get('todate')
+    if backfill_days and backfill_days > 0:
+        # date for backfill start
+        dt = datetime.now() - timedelta(days=backfill_days)
+        dargs['fromdate'] = dt
+        dargs['backfill_start'] = True
+    elif fromdate:
+        dargs['fromdate'] = parser.parse(fromdate)
+        if todate:
+            dargs['todate'] = parser.parse(todate)
+            # with a todate, this is always historical
+            dargs['historical'] = True
+        dargs['backfill_start'] = True
+    else:
+        dargs['backfill_start'] = False
+    # append args from params
+    dargs.update(cfg.get('params', {}))
+    return dargs

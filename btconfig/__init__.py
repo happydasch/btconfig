@@ -20,8 +20,8 @@ Intention
     use and so on.
 
     Additionally btconfig helps with data from different data sources, provides
-    generic api access to different data providers. It also provides basic crypto
-    support.
+    generic api access to different data providers. It also provides basic
+    crypto support.
 
 
 How to run
@@ -78,12 +78,18 @@ Config file
     #### [logging]
     Configuration for logging
 
-        * enabled (bool): Should logging be enabled (true/false)
-        * log_to_console (bool): Should log entries be logged to console (true/false)
-        * log_to_file (bool): Should log entries be logged into files (true/false)
-        * log_to_telegram (bool): Should log entries be logged to telegram (true/false)
-        * telegram (dict): Config for telegram
-        * level (string): Log level to log (ex. "INFO")
+        * enabled (bool):
+          Should logging be enabled (true/false)
+        * log_to_console (bool):
+          Should log entries be logged to console (true/false)
+        * log_to_file (bool):
+          Should log entries be logged into files (true/false)
+        * log_to_telegram (bool):
+          Should log entries be logged to telegram (true/false)
+        * telegram (dict):
+          Config for telegram
+        * level (string):
+          Log level to log (ex. "INFO")
 
     See btconfig.parts.logging for more details
 
@@ -237,18 +243,22 @@ Config file
             * valuename: ["range", 8, 10, 1]:
             Range of numerical values to use: start, end, step
 """
-
 from __future__ import division, absolute_import, print_function
 
 from datetime import datetime, time
 from urllib.parse import urlencode
 
+import backtrader as bt
+
+import os
 import json
 import logging
 import requests
 import random
 
-from .helper import get_classes, merge_dicts
+from .helper import get_classes, merge_dicts, get_data_params
+from .utils.date import parse_dt
+
 
 # dev info
 __author__ = 'Daniel Schindler <daniel@vcard24.de>'
@@ -491,6 +501,9 @@ class BTConfigPart:
         self.prepare()
 
     def prepare(self):
+        '''
+        Prepare method
+        '''
         pass
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
@@ -514,6 +527,8 @@ class BTConfigPart:
 
 class BTConfigDataloader:
 
+    PREFIX = None
+
     def __init__(self,
                  instance: BTConfig,
                  data_id: str,
@@ -522,13 +537,58 @@ class BTConfigDataloader:
         '''
         Initialization
         '''
+        self._cls = bt.feeds.GenericCSV
         self._instance = instance
         self._data_id = data_id
         self._cfg = cfg
         self._tz = tz
+        self._additional = []
+        self._filename = None
         self.prepare()
 
+    def _loadData(self):
+        '''
+        Load data method
+        '''
+        pass
+
+    def _setFilename(self):
+        '''
+        Sets the filename for dataloader source
+        '''
+        commoncfg = self._instance.config.get('common', {})
+        path = commoncfg.get('data_path', './data')
+        dataname = self._cfg['dataname']
+        fromdate = self._cfg.get('fromdate', None)
+        todate = self._cfg.get('todate', None)
+        backfill_days = self._cfg.get('backfill_days', None)
+        if backfill_days:
+            fromdate = None
+            todate = None
+        # filename
+        file_args = ([self.PREFIX] 
+                     + self._additional
+                     + [dataname,
+                        self._cfg['granularity'][0],
+                        self._cfg['granularity'][1],
+                        fromdate, todate, backfill_days])
+        file_args = [str(x) for x in file_args]
+        filename = f'{"_".join(file_args)}.csv'
+        filename = os.path.join(path, filename)
+        self._filename = filename
+
+    def _loadFile(self):
+        params = get_data_params(self._cfg, self._tz)
+        params['dataname'] = self._filename
+        params['headers'] = True
+        params['dtformat'] = parse_dt
+        data = self._cls(**params)
+        return data
+
     def prepare(self):
+        '''
+        Prepare method
+        '''
         pass
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
@@ -541,7 +601,9 @@ class BTConfigDataloader:
         '''
         Loads a custom data source
         '''
-        raise Exception('Method load needs to be overwritten')
+        self._setFilename()
+        self._loadData()
+        return self._loadFile()
 
 
 class BTConfigApiClient:

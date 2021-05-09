@@ -1,11 +1,10 @@
 from __future__ import division, absolute_import, print_function
 
-from btconfig.helper import get_classes
+from btconfig.helper import get_classes, get_data_params
 
 import backtrader as bt
-from dateutil import parser
-from datetime import datetime, timedelta, time
 from tabulate import tabulate
+
 
 import logging
 import btconfig
@@ -202,47 +201,3 @@ class PartDatas(btconfig.BTConfigPart):
             f'Feed {name} {mode}: [{cfg[0]}, {cfg[1]}] created',
             logging.INFO)
         return d
-
-
-def get_data_params(cfg: dict, tz: str) -> dict:
-    '''
-    Returns params to use for data sources
-    '''
-    timeframe = bt.TimeFrame.TFrame(cfg['granularity'][0])
-    compression = cfg['granularity'][1]
-    # basic params
-    dargs = dict(
-        dataname=cfg['dataname'],
-        timeframe=timeframe,
-        compression=compression,
-        tz=tz)
-    # session start and end
-    sessstart = cfg.get('sessionstart', [])
-    if isinstance(sessstart, list) and len(sessstart) >= 4:
-        dargs['sessionstart'] = time(
-            sessstart[0], sessstart[1], sessstart[2], sessstart[3])
-    sessend = cfg.get('sessionend', [])
-    if isinstance(sessend, list) and len(sessend) >= 4:
-        dargs['sessionend'] = time(
-            sessend[0], sessend[1], sessend[2], sessend[3])
-    # fromdate and todate
-    backfill_days = cfg.get('backfill_days', 0)
-    fromdate = cfg.get('fromdate')
-    todate = cfg.get('todate')
-    if backfill_days and backfill_days > 0:
-        # date for backfill start
-        dt = datetime.now() - timedelta(days=backfill_days)
-        dargs['fromdate'] = dt
-        dargs['backfill_start'] = True
-    elif fromdate:
-        dargs['fromdate'] = parser.parse(fromdate)
-        if todate:
-            dargs['todate'] = parser.parse(todate)
-            # with a todate, this is always historical
-            dargs['historical'] = True
-        dargs['backfill_start'] = True
-    else:
-        dargs['backfill_start'] = False
-    # append args from params
-    dargs.update(cfg.get('params', {}))
-    return dargs

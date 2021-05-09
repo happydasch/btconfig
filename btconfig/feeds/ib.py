@@ -7,9 +7,9 @@ from backtrader.utils import date2num
 import os
 import btconfig
 
-from btconfig.utils.date import getstarttime, parse_dt
+from btconfig.helper import get_data_params
 from btconfig.feeds.csv import CSVAdjustTime
-from btconfig.parts.data import get_data_params
+from btconfig.utils.date import getstarttime
 from btconfig.utils.download import IBDownloadApp
 
 
@@ -30,52 +30,30 @@ class IBDataAdjustTime(bt.feeds.IBData):
 
 class IBDownload(btconfig.BTConfigDataloader):
 
-    def load(self):
-        commoncfg = self._instance.config.get('common', {})
-        path = commoncfg.get('data_path', './data')
-        dataname = self._cfg['dataname']
+    PREFIX = 'IB'
+
+    def prepare(self):
+        what = self._cfg['params'].get('what', 'MIDPOINT')
+        self._additional.append(what)
+        self._cls = CSVAdjustTime
+
+    def _loadData(self):
         store = self._cfg.get('store')
         if not store:
             raise Exception('Store not defined')
-        # params for filename
-        what = self._cfg['params'].get('what', 'MIDPOINT')
-        fromdate = self._cfg.get('fromdate', None)
-        todate = self._cfg.get('todate', None)
-        backfill_days = self._cfg.get('backfill_days', None)
-        if backfill_days:
-            fromdate = None
-            todate = None
-        filename = 'IB_{}_{}_{}_{}_{}_{}_{}.csv'.format(
-            what, dataname,
-            self._cfg['granularity'][0],
-            self._cfg['granularity'][1],
-            fromdate, todate, backfill_days
-        )
-        filename = os.path.join(path, filename)
-        # get params for data
         params = get_data_params(self._cfg, self._tz)
+        dataname = self._cfg['dataname']
+        timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
+        compression = self._cfg['granularity'][1]
         fromdate = params.get('fromdate')
         todate = params.get('todate')
-        if fromdate is None and todate is None:
-            raise Exception('fromdate and todate is not set')
-        # download data into csv file
-        if not fromdate or not todate or not os.path.isfile(filename):
-            timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
-            compression = self._cfg['granularity'][1]
-            useRTH = self._cfg['params'].get('useRTH', False)
+        what = self._cfg['params'].get('what', 'MIDPOINT')
+        useRTH = self._cfg['params'].get('useRTH', False)
+        if not os.path.isfile(self._filename) or not todate:
             app = IBDownloadApp(
                 self._instance.config['stores'][store]['params']['host'],
                 self._instance.config['stores'][store]['params']['port'],
                 self._instance.config['stores'][store]['params']['clientId'])
             app.download(
-                filename, dataname, timeframe, compression,
+                self._filename, dataname, timeframe, compression,
                 fromdate, todate, what, useRTH)
-        # set csv file from download
-        for i in ['fromdate', 'todate']:
-            if i in params:
-                del params[i]
-        params['dataname'] = filename
-        params['headers'] = True
-        params['dtformat'] = parse_dt
-        data = CSVAdjustTime(**params)
-        return data
