@@ -37,6 +37,8 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
     PREFIX = 'COINMETRICS_MVRV'
 
     def prepare(self):
+        use_base_asset = self._cfg.get('use_base_asset', True)
+        self._additional.append('BASE' if use_base_asset else 'QUOTE')
         self._cls = CSVMVRVData
 
     def _loadData(self):

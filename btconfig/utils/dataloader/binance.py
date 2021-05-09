@@ -95,7 +95,8 @@ class BinanceDataloaderApp:
             if pause == -1:
                 pause = np.random.randint(2, 5)
             time.sleep(pause)
-        return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
+        if data_df:
+            return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
 
     def _convertTimeToUtc(self, pst_time):
         utc = pytz.utc
