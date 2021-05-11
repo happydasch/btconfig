@@ -42,10 +42,10 @@ class OandaV20DataloaderApp:
                 # get candle data
                 price = {'bid': {}, 'ask': {}, 'mid': {}}
                 for price_side in price:
-                    price[price_side]['open'] = c_data[price_side]['o']
-                    price[price_side]['high'] = c_data[price_side]['h']
-                    price[price_side]['low'] = c_data[price_side]['l']
-                    price[price_side]['close'] = c_data[price_side]['c']
+                    price[price_side]['open'] = float(c_data[price_side]['o'])
+                    price[price_side]['high'] = float(c_data[price_side]['h'])
+                    price[price_side]['low'] = float(c_data[price_side]['l'])
+                    price[price_side]['close'] = float(c_data[price_side]['c'])
 
                 if bidask:
                     if useask:

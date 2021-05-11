@@ -1,6 +1,7 @@
 from __future__ import division, absolute_import, print_function
 
 import backtrader as bt
+import pandas as pd
 
 from btconfig import BTConfigApiClient
 
@@ -120,6 +121,8 @@ class CoinApiClient(BTConfigApiClient):
 
 
 def create_data_df(data):
+    if data is None:
+        return
     data_df = pd.DataFrame(data)
     data_df['time_period_start'] = pd.to_datetime(
         data_df['time_period_start'])
@@ -131,4 +134,6 @@ def create_data_df(data):
             'price_high': 'high', 'price_low': 'low',
             'price_close': 'close', 'volume_traded': 'volume'},
         inplace=True)
+    for i in ['open', 'high', 'low', 'close', 'volume']:
+        data_df[i] = pd.to_numeric(data_df[i])
     return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]

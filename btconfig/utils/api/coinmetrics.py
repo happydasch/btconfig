@@ -134,6 +134,8 @@ class CoinMetricsClient(BTConfigApiClient):
 
 
 def create_data_df(data):
+    if data is None:
+        return
     res = pd.DataFrame(data)
     res.time = pd.to_datetime(res.time)
     for c in ['price_open', 'price_close', 'price_high',

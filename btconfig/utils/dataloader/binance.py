@@ -96,6 +96,8 @@ class BinanceDataloaderApp:
                 pause = np.random.randint(2, 5)
             time.sleep(pause)
         if data_df is not None:
+            for i in ['open', 'high', 'low', 'close', 'volume']:
+                data_df[i] = pd.to_numeric(data_df[i])
             return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
 
     def _convertTimeToUtc(self, pst_time):
