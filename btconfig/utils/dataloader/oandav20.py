@@ -71,7 +71,7 @@ class OandaV20DataloaderApp:
             else:
                 break
 
-            if not data_df:
+            if data_df is None:
                 data_df = tmp_df
             else:
                 data_df.append(tmp_df[1:])
