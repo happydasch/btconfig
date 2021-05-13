@@ -21,6 +21,7 @@ class PartPlot(btconfig.BTConfigPart):
     PRIORITY = 90
 
     def prepare(self):
+        self.btplotting = None
         self.plotfigs = None
 
     def setup(self):
@@ -87,7 +88,8 @@ class PartPlot(btconfig.BTConfigPart):
                 commoncfg.get('strategy'),
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
             kwargs['filename'] = output_file
-            res = self._instance.cerebro.plot(BacktraderPlotting(**kwargs))
+            self.btplotting = BacktraderPlotting(**kwargs)
+            res = self._instance.cerebro.plot(self.btplotting)
         self.plotfigs = res
 
     def _createOptimizePlotting(self, result):
@@ -106,9 +108,9 @@ class PartPlot(btconfig.BTConfigPart):
         kwargs['use_default_tabs'] = False
         kwargs['tabs'] = [AnalyzerTab, MetadataTab]
         kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)
-        btp = BacktraderPlotting(**kwargs)
+        self.btplotting = BacktraderPlotting(**kwargs)
         browser = BacktraderPlottingOptBrowser(
-            btp,
+            self.btplotting,
             result,
             usercolumns={'Profit & Loss': _analyzer_df},
             sortcolumn='Profit & Loss',
