@@ -20,6 +20,9 @@ class PartPlot(btconfig.BTConfigPart):
 
     PRIORITY = 90
 
+    def prepare(self):
+        self.plotfigs = None
+
     def setup(self):
         commoncfg = self._instance.config.get('common', {})
         if not commoncfg.get('create_plot', False):
@@ -68,7 +71,7 @@ class PartPlot(btconfig.BTConfigPart):
         plotscheme = self._getPlotscheme()
         # plot
         if plotcfg.get('use', 'web') != 'web':
-            self._instance.cerebro.plot(
+            res = self._instance.cerebro.plot(
                 use=plotcfg.get('use', 'web'),
                 style=plotcfg.get('style', 'candle'),
                 scheme=plotscheme)
@@ -84,7 +87,8 @@ class PartPlot(btconfig.BTConfigPart):
                 commoncfg.get('strategy'),
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
             kwargs['filename'] = output_file
-            self._instance.cerebro.plot(BacktraderPlotting(**kwargs))
+            res = self._instance.cerebro.plot(BacktraderPlotting(**kwargs))
+        self.plotfigs = res
 
     def _createOptimizePlotting(self, result):
         '''
