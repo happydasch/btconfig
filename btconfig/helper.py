@@ -147,6 +147,8 @@ def get_classes(modules: list or str, register: bool = True) -> dict:
     if type(modules) == str:
         modules = [modules]
     res = {}
+    for m in inspect.getmembers(sys.modules['__main__'], inspect.isclass):
+        res[m[0]] = m[1]
     for x in modules:
         res.update(_iter_classes_submodules(x, register))
     return res
