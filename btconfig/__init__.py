@@ -287,6 +287,9 @@ CONFIG_OPTIMIZE = {
     **{'cerebro': {'optreturn': False}}}
 
 
+instances = []
+
+
 class BTConfig:
 
     # default module paths
@@ -319,6 +322,8 @@ class BTConfig:
         '''
         Initialization
         '''
+        global instances
+        instances.append(self)
         # misc vars
         self._filename = configfile  # filename of config
         self._config = None          # complete configuration
@@ -490,7 +495,7 @@ class BTConfig:
         '''
         if self.config is None:
             raise Exception('No config loaded')
-        if self.config['logging'].get('enabled', True):
+        if self.config['common'].get('create_log', False):
             self.logger.log(level, txt)
         else:
             print(txt)
