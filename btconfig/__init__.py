@@ -408,10 +408,11 @@ class BTConfig:
         # load config from filename
         if configfile is not None:
             self._filename = configfile
-        if self._filename is None:
-            raise Exception('No config file defined')
-        with open(self._filename, 'r') as file:
-            self._config = json.load(file)
+        if self._filename:
+            with open(self._filename, 'r') as file:
+                self._config = json.load(file)
+        if self._config is None:
+            raise Exception('No config provided')
         merge_dicts(self._config, CONFIG_DEFAULT)
         # store time at which btconfig was initialized
         self._config['common']['time'] = datetime.now()
@@ -453,6 +454,12 @@ class BTConfig:
         self.result = self.cerebro.run()
         for p in self._getParts():
             p.finish(self.result)
+
+    def setConfig(self, config):
+        '''
+        Sets the config dict
+        '''
+        self._config = config
 
     def run(self, mode: int = None, configfile: str = None) -> None:
         '''
