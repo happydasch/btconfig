@@ -15,7 +15,6 @@ class PartLogging(btconfig.BTConfigPart):
 
         Params:
         -------
-        - enabled: Is logging enabled
         - log_to_console: Should log entries be logged to console
         - log_to_file: Should log entries be logged to file
         - log_to_telegram: Should log entries be logged to telegram
@@ -26,10 +25,10 @@ class PartLogging(btconfig.BTConfigPart):
         Config Example:
         ---------------
         "common": {
+            "create_log": true,
             "log_path": "./logs"
         },
         "logging": {
-            "enabled": true,
             "log_to_console": true,
             "log_to_file": true,
             "log_to_telegram": false,
@@ -50,22 +49,21 @@ class PartLogging(btconfig.BTConfigPart):
     def setup(self) -> None:
         logcfg = self._instance.config.get('logging', {})
         commoncfg = self._instance.config.get('common', {})
+        if not commoncfg.get('create_log', True):
+            return
         path = commoncfg.get('log_path', './logs')
         level = logcfg.get('level', 'INFO')
         logconsole = logcfg.get('log_to_console', True)
         logfile = logcfg.get('log_to_file', True)
         logtelegram = logcfg.get('log_to_telegram', False)
-        enabled = logcfg.get('enabled', True)
-        if not enabled:
-            return
         # set default log level
         self._instance.logger.setLevel(level)
         # add console handler
         if logconsole:
             console = logging.StreamHandler()
-            logging.getLogger().addHandler(console)
+            self._instance.logger.addHandler(console)
         else:
-            logging.basicConfig(handlers=[logging.NullHandler()])
+            self._instance.logger.addHandler(logging.NullHandler())
         # add file handler
         if logfile:
             strategy = commoncfg['strategy']
@@ -75,12 +73,12 @@ class PartLogging(btconfig.BTConfigPart):
                     strategy, exectime))
             file = logging.FileHandler(filename=filename)
             file.setLevel(level)
-            logging.getLogger().addHandler(file)
+            self._instance.logger.addHandler(file)
         # add telegram handler
         if logtelegram:
             telegramcfg = logcfg.get('telegram', {})
             telegram = TelegramHandler(telegramcfg)
-            logging.getLogger().addHandler(telegram)
+            self._instance.logger.addHandler(telegram)
         # enable logging in strategy
         if 'ProtoStrategy' in self._instance.config['strategy']:
             config = self._instance.config['strategy']['ProtoStrategy']

@@ -69,6 +69,7 @@ Config file
         * timezone (string): The timezone of data
         * create_plot (bool): Should the plot be created
         * create_report (bool): Should a report be created
+        * create_log (bool): Should a log be created
         * broker (string): The broker to use
         * cash (float): The start amount of cash
         * log_path (str): Path for log files
@@ -78,8 +79,6 @@ Config file
     #### [logging]
     Configuration for logging
 
-        * enabled (bool):
-          Should logging be enabled (true/false)
         * log_to_console (bool):
           Should log entries be logged to console (true/false)
         * log_to_file (bool):
