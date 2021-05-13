@@ -16,14 +16,16 @@ class PartBacktrader(btconfig.BTConfigPart):
 
     def setup(self) -> None:
         commoncfg = self._instance.config.get('common', {})
-        if (commoncfg.get('create_plot', False)
-                or commoncfg.get('create_report', False)):
+        if commoncfg.get('add_observer', False):
             self._addObserver()
+        if commoncfg.get('add_analyzer', False):
             self._addAnalyzer()
         self.log('Backtrader configured\n', logging.INFO)
 
     def finish(self, result) -> None:
         commoncfg = self._instance.config.get('common', {})
+        if not commoncfg.get('add_analyzer', False):
+            return
         if commoncfg.get('create_report', False):
             for r in result:
                 if isinstance(r, list):

@@ -69,13 +69,13 @@ class PartPlot(btconfig.BTConfigPart):
         # plot
         if plotcfg.get('use', 'web') != 'web':
             self._instance.cerebro.plot(
-                use=plotcfg.get('use'),
-                style=plotcfg.get('style'),
+                use=plotcfg.get('use', 'web'),
+                style=plotcfg.get('style', 'candle'),
                 scheme=plotscheme)
         else:
             kwargs = {}
-            kwargs['style'] = plotcfg.get('style')
-            kwargs['port'] = plotcfg.get('port')
+            kwargs['style'] = plotcfg.get('style', 'candle')
+            kwargs['port'] = plotcfg.get('port', 80)
             kwargs['use_default_tabs'] = False
             kwargs['tabs'] = [AnalyzerTab, MetadataTab, LogTab]
             kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)

@@ -70,6 +70,8 @@ Config file
         * create_plot (bool): Should the plot be created
         * create_report (bool): Should a report be created
         * create_log (bool): Should a log be created
+        * add_observer (bool): Should observers be added
+        * add_analyzer (bool): Should analyzers be added
         * broker (string): The broker to use
         * cash (float): The start amount of cash
         * log_path (str): Path for log files
