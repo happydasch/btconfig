@@ -76,7 +76,7 @@ class PartDatas(btconfig.BTConfigPart):
         self.all_classes = get_classes(self._instance.PATH_FEED)
 
     def setup(self) -> None:
-        feedscfg = self._instance.config.get('feeds', {})
+        feedscfg = self._instance.config.get('feeds', {}).copy()
         datascfg = self._instance.config.get('datas', {})
         commoncfg = self._instance.config.get('common', {})
         tz = commoncfg.get('timezone', None)
