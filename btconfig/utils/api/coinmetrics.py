@@ -133,11 +133,63 @@ class CoinMetricsClient(BTConfigApiClient):
         return self.getAssetMetrics(assets, 'CapMVRVCur')
 
 
+class CoinMetricsDataClient(BTConfigApiClient):
+
+    '''
+    CoinMetrics Data Client
+    '''
+
+    def __init__(self, debug=False):
+        super(CoinMetricsDataClient, self).__init__(
+            base_url='https://asset-data-proxy.coinmetrics.io/traditionalAssetData',
+            debug=debug)
+
+    def getLibor(self):  # Libor USD
+        '''
+        LIBOR USD
+        metrics: ReferenceRateLondon1100am
+        '''
+        path = '/v4/libor'
+        return self._request(path, exceptions=True, json=True)['data']
+
+    def getDollar(self):  # U.S. Dollar Index
+        '''
+        U.S. Dollar Index
+        metrics: ReferenceRateNewYork1200pm
+        '''
+        path = '/v4/dollar'
+        return self._request(path, exceptions=True, json=True)['data']
+
+    def getGold(self):  # Gold
+        '''
+        Gold
+        metrics: ReferenceRateLondon1030am
+        '''
+        path = '/v4/gold'
+        return self._request(path, exceptions=True, json=True)['data']
+
+    def getSP500(self):  # S&P 500
+        '''
+        S&P 500
+        metrics: ReferenceRateNewYork0400pm
+        '''
+        path = '/v4/sp500'
+        return self._request(path, exceptions=True, json=True)['data']
+
+    def getVix(self):  # CBOE Volatility Index
+        '''
+        CBOE Volatility Index
+        metrics: ReferenceRateChicago0315pm
+        '''
+        path = '/v4/vix'
+        return self._request(path, exceptions=True, json=True)['data']
+
+
 def create_data_df(data):
     if data is None:
         return
     res = pd.DataFrame(data)
-    res.time = pd.to_datetime(res.time)
+    res['time'] = pd.to_datetime(res['time'])
     for c in ['price_open', 'price_close', 'price_high',
               'price_low', 'volume']:
         res[c] = pd.to_numeric(res[c])
@@ -150,12 +202,24 @@ def create_data_df(data):
 
 
 def create_metrics_df(data, metrics_cols):
+    if data is None:
+        return
     res = pd.DataFrame(data)
-    res.time = pd.to_datetime(res.time)
+    res['time'] = pd.to_datetime(res['time'])
     for m in metrics_cols.keys():
         res[m] = pd.to_numeric(res[m])
     res.rename(columns=metrics_cols, inplace=True)
     res.drop(columns=['asset'], inplace=True)
+    return res
+
+
+def create_traditionaldata_df(data):
+    if data is None:
+        return
+    res = pd.DataFrame(data)
+    res['time'] = pd.to_datetime(res['time'])
+    res['close'] = pd.to_numeric(res['PriceUSD'])
+    res.drop(columns=['asset', 'PriceUSD'], inplace=True)
     return res
 
 

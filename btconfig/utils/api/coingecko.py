@@ -70,7 +70,12 @@ class CoinGeckoClient(BTConfigApiClient):
         mchart = self._request(path, exceptions=True, json=True, **kwargs)
         return mchart
 
-    def getExchangesList(self):
-        path = '/v3/coins/exchanges'
+    def getExchanges(self):
+        path = '/v3/exchanges'
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
+
+    def getIndexes(self):
+        path = '/v3/indexes'
+        indexes = self._request(path, exceptions=True, json=True)
+        return indexes
