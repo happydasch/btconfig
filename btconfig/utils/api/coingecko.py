@@ -82,5 +82,5 @@ class CoinGeckoClient(BTConfigApiClient):
 
     def getGlobal(self):
         path = '/v3/global'
-        global = self._request(path, exceptions=True, json=True)
-        return global
+        glob = self._request(path, exceptions=True, json=True)
+        return glob
