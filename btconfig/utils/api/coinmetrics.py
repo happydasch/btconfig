@@ -85,42 +85,48 @@ class CoinMetricsClient(BTConfigApiClient):
         # Available assets
         path = '/v4/catalog/assets'
         kwargs = {'assets': assets}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getPairs(self, pairs=''):
         # Available pairs
         path = '/v4/catalog/pairs'
         kwargs = {'pairs': pairs}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getMetrics(self, metrics=''):
         # Available metrics
         path = '/v4/catalog/metrics'
         kwargs = {'metrics': metrics}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getExchanges(self, exchanges=''):
         # Available exchanges
         path = '/v4/catalog/exchanges'
         kwargs = {'exchanges': exchanges}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getMarkets(self, markets=''):
         # Available markets
         path = '/v4/catalog/markets'
         kwargs = {'markets': markets}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getIndexes(self, indexes=''):
         # Available indexes
         path = '/v4/catalog/indexes'
         kwargs = {'indexes': indexes}
-        res = self._request(path, json=True, **kwargs)
+        res = self._request(
+            path, exceptions=True, json=True, **kwargs)
         return res['data']
 
     def getMarketCapitalization(self, assets):
