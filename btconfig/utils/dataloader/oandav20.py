@@ -22,8 +22,8 @@ class OandaV20DataloaderApp:
         granularity = OandaV20Store._GRANULARITIES.get(
             (timeframe, compression), None)
         params = {'granularity': granularity, 'count': 5000, 'price': 'ABM'}
-        ratesHeaders = ['time', 'open', 'high', 'low', 'close', 'mid_close',
-                        'bid_close', 'ask_close', 'volume']
+        ratesHeaders = ['datetime', 'open', 'high', 'low', 'close',
+                        'mid_close', 'bid_close', 'ask_close', 'volume']
 
         data_df = None
         while True:
@@ -36,7 +36,7 @@ class OandaV20DataloaderApp:
             for candle in candles:
                 if not candle.complete:
                     continue
-                curtime = candle.time
+                curtime = candle.datetime
                 volume = candle.volume
                 c_data = candle.dict()
                 # get candle data
@@ -56,7 +56,7 @@ class OandaV20DataloaderApp:
                     o_price, h_price, l_price, c_price = price['mid'].values()
                 # store candle
                 data.append({
-                    'time': curtime,
+                    'datetime': curtime,
                     'open': o_price, 'high': h_price,
                     'low': l_price, 'close': c_price,
                     'mid_close': price['mid']['close'],
@@ -76,7 +76,7 @@ class OandaV20DataloaderApp:
             else:
                 data_df.append(tmp_df[1:])
             fromdate = parser.parse(
-                data_df.iloc[-1].time,
+                data_df.iloc[-1].datetime,
                 ignoretz=True)
             # stop if start time is higher than end date if defined
             if todate and fromdate > todate:

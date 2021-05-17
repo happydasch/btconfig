@@ -130,10 +130,10 @@ def create_data_df(data):
                   'trades_count'], inplace=True)
     data_df.rename(
         columns={
-            'time_period_start': 'time', 'price_open': 'open',
+            'time_period_start': 'datetime', 'price_open': 'open',
             'price_high': 'high', 'price_low': 'low',
             'price_close': 'close', 'volume_traded': 'volume'},
         inplace=True)
     for i in ['open', 'high', 'low', 'close', 'volume']:
         data_df[i] = pd.to_numeric(data_df[i])
-    return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
+    return data_df[['datetime', 'open', 'high', 'low', 'close', 'volume']]

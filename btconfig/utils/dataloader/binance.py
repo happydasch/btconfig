@@ -69,7 +69,7 @@ class BinanceDataloaderApp:
             klines = self.client.get_historical_klines(
                 symbol, interval, str(from_millis), str(to_millis))
             new_columns = self.ORG_COLS.copy()
-            new_columns.insert(0, 'time')
+            new_columns.insert(0, 'datetime')
             if len(klines) > 0:
                 tmp_df = pd.DataFrame(
                     klines, columns=new_columns)
@@ -78,7 +78,7 @@ class BinanceDataloaderApp:
             for i in self.ORG_COLS:
                 if i not in self.COLS:
                     del tmp_df[i]
-            tmp_df['time'] = pd.to_datetime(tmp_df['time'], unit='ms')
+            tmp_df['datetime'] = pd.to_datetime(tmp_df['datetime'], unit='ms')
 
             if not data_df:
                 data_df = tmp_df
@@ -87,10 +87,10 @@ class BinanceDataloaderApp:
             # check for exit
             if to_millis and from_millis >= to_millis:
                 break
-            if fromdate == data_df.iloc[-1].time:
+            if fromdate == data_df.iloc[-1].datetime:
                 break
             # move to next step of batches
-            fromdate = data_df.iloc[-1].time
+            fromdate = data_df.iloc[-1].datetime
             from_millis = self._toUnixMillis(fromdate)
             if pause == -1:
                 pause = np.random.randint(2, 5)
@@ -98,7 +98,8 @@ class BinanceDataloaderApp:
         if data_df is not None:
             for i in ['open', 'high', 'low', 'close', 'volume']:
                 data_df[i] = pd.to_numeric(data_df[i])
-            return data_df[['time', 'open', 'high', 'low', 'close', 'volume']]
+            return data_df[
+                ['datetime', 'open', 'high', 'low', 'close', 'volume']]
 
     def _convertTimeToUtc(self, pst_time):
         utc = pytz.utc

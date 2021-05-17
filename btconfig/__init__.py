@@ -594,7 +594,8 @@ class BTConfigDataloader:
         try:
             data = pd.read_csv(filename)
             self._filelen = len(data)
-            self._filedate = parser.parse(data.iloc[-1].time, ignoretz=True)
+            self._filedate = parser.parse(
+                data.iloc[-1].datetime, ignoretz=True)
         except IOError:
             self._filelen = 0
             self._filedate = None
@@ -607,7 +608,7 @@ class BTConfigDataloader:
                 self._filename, index=False,
                 date_format=self.DATEFORMAT)
         else:
-            data.index = data.time
+            data.index = data.datetime
             data = data[self._filedate:].iloc[1:]
             if len(data):
                 data.to_csv(
@@ -616,7 +617,7 @@ class BTConfigDataloader:
                     header=None, mode='a')
         if len(data):
             self._filelen += len(data)
-            self._filedate = data.iloc[-1].time
+            self._filedate = data.iloc[-1].datetime
 
     def _createFeed(self):
         params = get_data_params(self._cfg, self._tz)

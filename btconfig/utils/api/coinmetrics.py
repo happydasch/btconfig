@@ -201,10 +201,11 @@ def create_data_df(data):
         res[c] = pd.to_numeric(res[c])
     res.rename(
         columns={'price_open': 'open', 'price_close': 'close',
-                 'price_high': 'high', 'price_low': 'low'},
+                 'price_high': 'high', 'price_low': 'low',
+                 'time': 'datetime'},
         inplace=True)
     res.drop(columns=['market', 'vwap'], inplace=True)
-    return res[['time', 'open', 'high', 'low', 'close', 'volume']]
+    return res[['datetime', 'open', 'high', 'low', 'close', 'volume']]
 
 
 def create_metrics_df(data, metrics_cols):
@@ -214,6 +215,7 @@ def create_metrics_df(data, metrics_cols):
     res['time'] = pd.to_datetime(res['time'])
     for m in metrics_cols.keys():
         res[m] = pd.to_numeric(res[m])
+    res.rename(columns={'time': 'datetime'}, inplace=True)
     res.rename(columns=metrics_cols, inplace=True)
     res.drop(columns=['asset'], inplace=True)
     return res
@@ -225,6 +227,7 @@ def create_traditionaldata_df(data):
     res = pd.DataFrame(data)
     res['time'] = pd.to_datetime(res['time'])
     res['close'] = pd.to_numeric(res['PriceUSD'])
+    res.rename(columns={'time': 'datetime'}, inplace=True)
     res.drop(columns=['asset', 'PriceUSD'], inplace=True)
     return res
 

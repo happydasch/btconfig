@@ -178,11 +178,11 @@ class IBDataloaderApp:
         '''
         Response for historical data request
         '''
-        if date in self._columns['time']:
+        if date in self._columns['datetime']:
             # ensure there are no double entries
             return
         if not date.startswith('finished-'):
-            self._columns['time'].append(date)
+            self._columns['datetime'].append(date)
             self._columns['open'].append(open)
             self._columns['high'].append(high)
             self._columns['low'].append(low)

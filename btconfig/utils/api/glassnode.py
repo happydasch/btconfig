@@ -45,6 +45,6 @@ def create_indicator_df(data):
     res['t'] = pd.to_datetime(res['t'], unit='s')
     res['v'] = pd.to_numeric(res['v'])
     res.rename(
-        columns={'t': 'time', 'v': 'value'},
+        columns={'t': 'datetime', 'v': 'close'},
         inplace=True)
-    return res[['time', 'value']]
+    return res[['datetime', 'close']]

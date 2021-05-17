@@ -47,12 +47,12 @@ class CoinMetricsDataloaderApp:
                 base_asset if use_base_asset else quote_asset,
                 ','.join(metrics_cols.keys()))
             metrics_df = create_metrics_df(metrics, metrics_cols)
-            metrics_df.set_index('time', inplace=True)
+            metrics_df.set_index('datetime', inplace=True)
             # update data with metrics values
-            start = max(data_df.time.iloc[0], metrics_df.index[0])
-            end = min(data_df.time.iloc[-1], metrics_df.index[-1])
+            start = max(data_df.datetime.iloc[0], metrics_df.index[0])
+            end = min(data_df.datetime.iloc[-1], metrics_df.index[-1])
             for c in metrics_cols.values():
                 values = metrics_df.loc[start:end, c].values
-                data_df.loc[data_df[data_df.time == start].index[0]:
-                            data_df[data_df.time == end].index[0], c] = values
+                data_df.loc[data_df[data_df.datetime == start].index[0]:
+                            data_df[data_df.datetime == end].index[0], c] = values
         return data_df
