@@ -188,6 +188,7 @@ Config file
         single plot (true/false)
         * port (int): Web port for btplotting (ex. 80)
         * live_lookback (int): Lockback of bars for live plotting (ex. 50)
+        * override (dict): Plot scheme override vales
 
     See btconfig.parts.plot for more details
 

@@ -135,7 +135,9 @@ class PartPlot(btconfig.BTConfigPart):
         '''
         Returns a scheme for btplotting
         '''
-        scheme = Tradimo(
+        plotcfg = self._instance.config.get('plot', {})
+        override = plotcfg.get('override', {})
+        kwargs = dict(
             hovertool_timeformat=TIMEFORMAT,
             number_format=plotscheme.number_format,
             volume=plotscheme.volume,
@@ -144,7 +146,10 @@ class PartPlot(btconfig.BTConfigPart):
             obs_aspectratio=8.5,
             ind_aspectratio=11.5,
             xaxis_pos='bottom',
-            plot_title=False)
+            plot_title=False
+        )
+        kwargs.update(override)
+        scheme = Tradimo(**kwargs)
         return scheme
 
 
