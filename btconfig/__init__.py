@@ -498,8 +498,6 @@ class BTConfig:
             raise Exception('No config loaded')
         if self.config['common'].get('create_log', False):
             self.logger.log(level, txt)
-        else:
-            print(txt)
 
 
 class BTConfigPart:
