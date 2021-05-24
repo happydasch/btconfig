@@ -233,10 +233,10 @@ def create_traditionaldata_df(data):
 
 
 def get_market_name(exchange='bitstamp', base='btc', quote='usd', type='spot'):
-    market = f'{exchange}-{base}-{quote}-{type}'
+    market = f'{exchange}-{base}-{quote}-{type}'.lower()
     return market
 
 
 def get_market_parts(market):
-    exchange, base, quote, type = market.split('-')
+    exchange, base, quote, type = market.lower().split('-')
     return exchange, base, quote, type
