@@ -249,13 +249,14 @@ from __future__ import division, absolute_import, print_function
 
 import os
 import json
+import time
 import logging
 import requests
 import random
 import pandas as pd
 import backtrader as bt
 
-from datetime import datetime, time
+from datetime import datetime
 from dateutil import parser
 from urllib.parse import urlencode
 from .helper import get_classes, merge_dicts, get_data_params, parse_dt

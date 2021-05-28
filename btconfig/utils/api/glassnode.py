@@ -19,11 +19,11 @@ class GlassnodeClient(BTConfigApiClient):
         (bt.TimeFrame.Days, 1): '24h'
     }
 
-    def __init__(self, api_key, debug=False):
+    def __init__(self, api_key, **kwargs):
         self.api_key = api_key
         super(GlassnodeClient, self).__init__(
             base_url='https://api.glassnode.com',
-            debug=debug)
+            **kwargs)
 
     def _request(self, path, exceptions=False, json=False, **kwargs):
         kwargs['api_key'] = self.api_key

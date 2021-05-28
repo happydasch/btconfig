@@ -17,10 +17,10 @@ class CoinGeckoClient(BTConfigApiClient):
     https://www.coingecko.com/en/api#explore-api
     '''
 
-    def __init__(self, debug=False):
+    def __init__(self, **kwargs):
         super(CoinGeckoClient, self).__init__(
             base_url='https://api.coingecko.com/api',
-            debug=debug)
+            **kwargs)
 
     def getCoinsList(self):
         path = '/v3/coins/list'
@@ -74,6 +74,21 @@ class CoinGeckoClient(BTConfigApiClient):
         path = '/v3/exchanges'
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
+
+    def getExchangeTickers(self, exchange, coin_id=''):
+        path = f'/v3/exchanges/{exchange}/tickers'
+        kwargs = {
+            'coin_ids': coin_id,
+            'page': 1}
+        tickers = []
+        while True:
+            tmp = self._request(
+                path, exceptions=True, json=True, **kwargs)
+            if 'tickers' not in tmp or not len(tmp['tickers']):
+                break
+            tickers.extend(tmp['tickers'])
+            kwargs['page'] += 1
+        return tickers
 
     def getIndexes(self):
         path = '/v3/indexes'

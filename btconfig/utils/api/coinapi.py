@@ -74,12 +74,12 @@ class CoinApiClient(BTConfigApiClient):
         (bt.TimeFrame.Years, 1): '1YRS'
     }
 
-    def __init__(self, api_key, debug=False):
+    def __init__(self, api_key, **kwargs):
         self.api_key = api_key
         super(CoinApiClient, self).__init__(
             base_url='https://rest.coinapi.io',
             headers={'X-CoinAPI-Key': api_key},
-            debug=debug)
+            **kwargs)
 
     def getOHLCVHistory(self, symbol, period, time_start, time_end=None):
         path = f'/v1/ohlcv/{symbol}/history'

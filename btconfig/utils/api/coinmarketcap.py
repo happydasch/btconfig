@@ -5,12 +5,12 @@ from btconfig import BTConfigApiClient
 
 class CoinMarketCapClient(BTConfigApiClient):
 
-    def __init__(self, api_key, debug=False):
+    def __init__(self, api_key, **kwargs):
         self.api_key = api_key
         super(CoinMarketCapClient, self).__init__(
             base_url='https://pro-api.coinmarketcap.com',
             headers={'X-CMC_PRO_API_KEY': api_key},
-            debug=debug)
+            **kwargs)
 
     def getCryptoList(self):
         path = '/v1/cryptocurrency/map'

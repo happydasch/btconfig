@@ -19,9 +19,10 @@ class CoinMetricsClient(BTConfigApiClient):
         (bt.TimeFrame.Days, 1): '1d'
     }
 
-    def __init__(self, debug=False):
+    def __init__(self, **kwargs):
         super(CoinMetricsClient, self).__init__(
-            base_url='https://community-api.coinmetrics.io', debug=debug)
+            base_url='https://community-api.coinmetrics.io',
+            **kwargs)
 
     def getAssetMetrics(
             self, assets, metrics, start_time=None, end_time=None,
