@@ -36,10 +36,11 @@ class BinanceDataloaderApp:
         (bt.TimeFrame.Months, 1): '1M'
     }
 
-    def __init__(self, api_key, api_secret):
+    def __init__(self, api_key, api_secret, **kwargs):
         self.api_key = api_key
         self.api_secret = api_secret
-        self.client = Client(self.api_key, self.api_secret)
+        self.client = Client(
+            self.api_key, self.api_secret, **kwargs)
 
     def request(self, symbol, timeframe, compression,
                 fromdate, todate, pause=-1):

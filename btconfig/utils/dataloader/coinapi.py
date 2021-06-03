@@ -5,8 +5,8 @@ from btconfig.utils.api.coinapi import CoinApiClient, create_data_df
 
 class CoinAPIDataloaderApp:
 
-    def __init__(self, api_key):
-        self.client = CoinApiClient(api_key)
+    def __init__(self, api_key, **kwargs):
+        self.client = CoinApiClient(api_key, **kwargs)
 
     def request(self, symbol, timeframe, compression, fromdate, todate):
         '''

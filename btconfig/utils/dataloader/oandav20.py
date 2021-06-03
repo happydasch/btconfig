@@ -9,11 +9,11 @@ from btoandav20.stores import OandaV20Store
 
 class OandaV20DataloaderApp:
 
-    def __init__(self, token, practice):
+    def __init__(self, token, practice, **kwargs):
         self.token = token
         self.practice = practice
         self.ctx = v20.Context(OandaV20Store._OAPI_URL[int(practice)],
-                               token=token, port=443, ssl=True)
+                               token=token, port=443, ssl=True, **kwargs)
 
     def request(self, instrument, timeframe, compression,
                 fromdate, todate, bidask, useask):

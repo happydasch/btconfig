@@ -9,8 +9,8 @@ from btconfig.utils.api.coinmetrics import (
 
 class CoinMetricsDataloaderApp:
 
-    def __init__(self):
-        self.client = CoinMetricsClient()
+    def __init__(self, **kwargs):
+        self.client = CoinMetricsClient(**kwargs)
 
     def request(self, symbol, timeframe, compression, fromdate,
                 todate, add_mvrv=False, use_base_asset=True):
