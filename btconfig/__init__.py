@@ -540,7 +540,6 @@ class BTConfigPart:
 class BTConfigDataloader:
 
     PREFIX = None
-    DATEFORMAT = '%Y-%m-%dT%H:%M:%S.%f000Z'
 
     def __init__(self,
                  instance: BTConfig,
@@ -605,19 +604,17 @@ class BTConfigDataloader:
             return
         if self._filelen == 0:
             data.to_csv(
-                self._filename, index=False,
-                date_format=self.DATEFORMAT)
+                self._filename, index=False)
         else:
-            data.index = data.datetime
+            data.set_index('datetime', inplace=True)
             data = data[self._filedate:].iloc[1:]
             if len(data):
                 data.to_csv(
-                    self._filename, index=False,
-                    date_format=self.DATEFORMAT,
+                    self._filename, index=True,
                     header=None, mode='a')
         if len(data):
             self._filelen += len(data)
-            self._filedate = data.iloc[-1].datetime
+            self._filedate = data.iloc[-1]['datetime']
 
     def _createFeed(self):
         params = get_data_params(self._cfg, self._tz)
