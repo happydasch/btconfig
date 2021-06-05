@@ -591,10 +591,9 @@ class BTConfigDataloader:
         filename = os.path.join(path, filename)
         self._filename = filename
         try:
-            data = pd.read_csv(filename)
+            data = pd.read_csv(filename, parse_dates=[0])
             self._filelen = len(data)
-            self._filedate = parser.parse(
-                data.iloc[-1].datetime, ignoretz=True)
+            self._filedate = data.iloc[-1].datetime
         except IOError:
             self._filelen = 0
             self._filedate = None
@@ -612,6 +611,7 @@ class BTConfigDataloader:
                 data.to_csv(
                     self._filename, index=True,
                     header=None, mode='a')
+            data.reset_index(inplace=True)
         if len(data):
             self._filelen += len(data)
             self._filedate = data.iloc[-1]['datetime']

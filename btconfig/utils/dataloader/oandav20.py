@@ -81,3 +81,6 @@ class OandaV20DataloaderApp:
             # stop if start time is higher than end date if defined
             if todate and fromdate > todate:
                 break
+        if data_df is not None:
+            data_df['datetime'] = pd.to_datetime(data_df['datetime'])
+        return data_df

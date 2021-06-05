@@ -192,15 +192,16 @@ class IBDataloaderApp:
             self._df = pd.DataFrame.from_dict(self._columns, orient='columns')
             del(self._requests[reqId])
 
-    def get_df(self, copy=True):
+    def get_df(self):
         '''
         Returns the latest DataFrame
         '''
+        res = None
         if self._df is None:
             return None
-        if copy:
-            return self._df.copy()
-        return self._df
+        res = self._df.copy()
+        res['datetime'] = pd.to_datetime(res['datetime'])
+        return res
 
     def request(self, instrument, timeframe, compression,
                 fromdate, todate, what, useRTH):
