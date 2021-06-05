@@ -4,7 +4,7 @@ import os
 import btconfig
 import backtrader as bt
 
-from datetime import timedelta
+from datetime import timedelta, timezone
 from backtrader.utils import date2num
 from btconfig.helper import get_data_dates, get_starttime
 from btconfig.feeds.csv import CSVAdjustTime
@@ -19,7 +19,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
             new_date = get_starttime(
                 self._timeframe,
                 self._compression,
-                self.datetime.datetime(0),
+                self.datetime.datetime(0, tz=timezone.utc),
                 self.p.sessionstart,
                 -1) - timedelta(microseconds=100)
             self.lines.datetime[0] = date2num(new_date)
