@@ -601,6 +601,8 @@ class BTConfigDataloader:
     def _updateFile(self, data):
         if data is None or not len(data):
             return
+        if not os.path.isdir(os.path.dirname(self._filename)):
+            os.makedirs(os.path.dirname(self._filename))
         if self._filelen == 0:
             data.to_csv(
                 self._filename, index=False)
