@@ -17,8 +17,9 @@ It supports different execution modes:
 * Additional Dataloader: CoinMetrics, CoinAPI
 * API Clients for: CoinAPI, CoinMetrics, CoinGecko, CoinMarketCap
 * Custom Feeds with time correction (useful for resample and replay)
-* Live Plotting, Optimiziation Browser, Backtest Results using btplotting
-* Prototype Strategies for Forex Trading with functionality to work with pips
+* Live Plotting, Optimization Browser, Backtest Results using btplotting
+* Prototype Strategies for Forex Trading with functionality to work with
+  pips, market hours, logging etc.
 * Additional Analysers for Backtesting
 
 ## Contribute
