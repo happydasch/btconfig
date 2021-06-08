@@ -265,3 +265,6 @@ class IBDataloaderApp:
 
             # process all requests
             return self._processRequests()
+
+
+testdownload = IBDataloaderApp()
