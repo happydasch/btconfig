@@ -206,6 +206,7 @@ def create_data_df(data):
                  'time': 'datetime'},
         inplace=True)
     res.drop(columns=['market', 'vwap'], inplace=True)
+    res['datetime'] = res['datetime'].dt.tz_localize(None)
     return res[['datetime', 'open', 'high', 'low', 'close', 'volume']]
 
 
@@ -219,6 +220,7 @@ def create_metrics_df(data, metrics_cols):
     res.rename(columns={'time': 'datetime'}, inplace=True)
     res.rename(columns=metrics_cols, inplace=True)
     res.drop(columns=['asset'], inplace=True)
+    res['datetime'] = res['datetime'].dt.tz_localize(None)
     return res
 
 
@@ -230,6 +232,7 @@ def create_traditionaldata_df(data):
     res['close'] = pd.to_numeric(res['PriceUSD'])
     res.rename(columns={'time': 'datetime'}, inplace=True)
     res.drop(columns=['asset', 'PriceUSD'], inplace=True)
+    res['datetime'] = res['datetime'].dt.tz_localize(None)
     return res
 
 
