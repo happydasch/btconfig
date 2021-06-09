@@ -62,7 +62,7 @@ class BinanceDataloaderApp:
                 + ' granularity provided')
         interval = self.INTERVALS[(timeframe, compression)]
         from_millis = self._toUnixMillis(fromdate)
-        to_millis = None
+        to_millis = self._toUnixMillis(datetime.utcnow())
         if todate:
             to_millis = self._toUnixMillis(todate)
         data_df = None
