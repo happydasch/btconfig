@@ -146,10 +146,10 @@ class CoinMetricsDataClient(BTConfigApiClient):
     CoinMetrics Data Client
     '''
 
-    def __init__(self, debug=False):
+    def __init__(self, **kwargs):
         super(CoinMetricsDataClient, self).__init__(
             base_url='https://asset-data-proxy.coinmetrics.io/traditionalAssetData',
-            debug=debug)
+            **kwargs)
 
     def getLibor(self):  # Libor USD
         '''
