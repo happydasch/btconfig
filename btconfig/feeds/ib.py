@@ -51,10 +51,12 @@ class IBDataloader(btconfig.BTConfigDataloader):
         what = self._cfg['params'].get('what', 'MIDPOINT')
         useRTH = self._cfg['params'].get('useRTH', False)
         if not os.path.isfile(self._filename) or not todate:
+            storecfg = self._instance.config['stores'].get(store, {})
             loader = IBDataloaderApp(
-                self._instance.config['stores'][store]['params']['host'],
-                self._instance.config['stores'][store]['params']['port'],
-                self._instance.config['stores'][store]['params']['clientId'])
+                storecfg['params']['host'],
+                storecfg['params']['port'],
+                storecfg['params']['clientId'],
+                debug=storecfg.get('debug', False))
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 what, useRTH)
