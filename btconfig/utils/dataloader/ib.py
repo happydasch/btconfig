@@ -9,6 +9,8 @@ from abc import abstractmethod
 from collections import defaultdict
 from datetime import datetime
 from time import sleep
+from time import time as timer
+from datetime import timedelta
 from ib.ext.EClientSocket import EClientSocket
 from backtrader.feeds import IBData
 from backtrader.stores import IBStore
@@ -151,6 +153,9 @@ class IBDataloaderApp:
         Processes all pending requests
         '''
         self.engine.connect()
+        num_requests = len(self._requests)
+        i = 1
+        request_processed = 0
 
         for r in list(self._requests.keys()):
             request = self._requests[r]
@@ -163,8 +168,26 @@ class IBDataloaderApp:
                 whatToShow=str(request['what']),
                 useRTH=int(request['useRTH']),
                 formatDate=1)
+
             while r in self._requests and self.engine.isConnected():
+
+                if request_processed == r:
+                    pass
+                else:  
+                    if i == 1:
+                        start_time = timer()
+                        print(f'Processing {i} / {num_requests} Requests')
+                        i += 1
+                    elif i % 10 == 0:
+                        end_time = timer()
+                        print(f'Processing {i} / {num_requests} Requests. Time lapsed {timedelta(seconds=end_time - start_time)}')
+                        i += 1
+                    else:
+                        print(f'Processing {i} / {num_requests} Requests')
+                        i += 1
+                    request_processed = r
                 sleep(.5)
+
             if not self.engine.isConnected():
                 break
 
@@ -266,5 +289,3 @@ class IBDataloaderApp:
             # process all requests
             return self._processRequests()
 
-
-testdownload = IBDataloaderApp()
