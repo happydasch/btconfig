@@ -2,8 +2,10 @@ from __future__ import division, absolute_import, print_function
 
 from btconfig.utils.api.coinmetrics import (
     CoinMetricsClient,
+    CoinMetricsDataClient,
     create_data_df,
     create_metrics_df,
+    create_traditionaldata_df,
     get_market_parts)
 
 
@@ -56,3 +58,30 @@ class CoinMetricsDataloaderApp:
                 data_df.loc[data_df[data_df.datetime == start].index[0]:
                             data_df[data_df.datetime == end].index[0], c] = values
         return data_df
+
+
+class CoinMetricsDataDataloaderApp:
+
+    def __init__(self, **kwargs):
+        self.client = CoinMetricsDataClient(**kwargs)
+
+    def request(self, symbol, timeframe, compression, fromdate, todate):
+        '''
+        :param symbol:
+        :param timeframe:
+        :param compression:
+        :param fromdate:
+        :param todate:
+        :return pd.DataFrame | None:
+        '''
+        if (timeframe, compression) not in CoinMetricsClient.FREQUENCY:
+            raise Exception(
+                f'Unsupported ({timeframe}-{compression})'
+                + ' granularity provided')
+        data = self.client.getData(symbol)
+        data_df = create_traditionaldata_df(data)
+        data_df.set_index('datetime', inplace=True)
+        data_df = data_df.loc[fromdate:]
+        if todate:
+            data_df = data_df.loc[:todate]
+        return data_df.reset_index()
