@@ -4,15 +4,16 @@ import backtrader as bt
 
 from datetime import timedelta, timezone
 from backtrader.utils import date2num
-from btconfig.helper import get_starttime
+from btconfig.helper import get_starttime, parse_dt
 
 
 class CSVAdjustTime(bt.feeds.GenericCSVData):
 
     params = dict(
         adjstarttime=False,
-        datetime=0, time=-1, open=1, high=2, low=3,
-        close=4, volume=5, openinterest=-1
+        dtformat=parse_dt,
+        datetime=0, open=1, high=2, low=3, close=4, volume=5,
+        time=None, openinterest=None
     )
 
     def _loadline(self, linetokens):
@@ -33,13 +34,20 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
         return res
 
 
+class CSVAdjustTimeCloseOnly(CSVAdjustTime):
+
+    params = dict(
+        datetime=0, close=1, time=None, open=None, high=None, low=None,
+        volume=None, openinterest=None
+    )
+
+
 class CSVBidAskAdjustTime(CSVAdjustTime):
 
     lines = ('mid_close', 'bid_close', 'ask_close',)
 
     params = dict(
-        mid_close=5, bid_close=6, ask_close=7,
-        volume=8
+        mid_close=5, bid_close=6, ask_close=7, volume=8
     )
 
 
@@ -47,8 +55,6 @@ class CSVMVRVData(CSVAdjustTime):
 
     lines = ('mv', 'rv', 'mvrv')
     params = dict(
-        dtformat='%Y-%m-%d %H:%M:%S%z',
-        datetime=0, time=-1, open=1, high=2, low=3,
-        close=4, volume=5, openinterest=-1,
-        mv=6, rv=7, mvrv=8
+        datetime=0, open=1, high=2, low=3, close=4, volume=5,
+        mv=6, rv=7, mvrv=8, time=None, openinterest=None
     )

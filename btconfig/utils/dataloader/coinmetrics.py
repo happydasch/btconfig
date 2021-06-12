@@ -78,7 +78,7 @@ class CoinMetricsDataDataloaderApp:
             raise Exception(
                 f'Unsupported ({timeframe}-{compression})'
                 + ' granularity provided')
-        data = self.client.getData(symbol)
+        data = getattr(self.client, f'get{symbol}')()
         data_df = create_traditionaldata_df(data)
         data_df.set_index('datetime', inplace=True)
         data_df = data_df.loc[fromdate:]

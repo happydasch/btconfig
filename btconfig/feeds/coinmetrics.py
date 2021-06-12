@@ -5,7 +5,7 @@ import backtrader as bt
 
 from btconfig import BTConfigDataloader
 from btconfig.helper import get_data_dates
-from btconfig.feeds.csv import CSVAdjustTime, CSVMVRVData
+from btconfig.feeds.csv import CSVAdjustTime, CSVMVRVData, CSVAdjustTimeCloseOnly
 from btconfig.utils.dataloader import CoinMetricsDataloaderApp
 from btconfig.utils.dataloader import CoinMetricsDataDataloaderApp
 
@@ -65,7 +65,7 @@ class CoinMetricsDataDataloader(BTConfigDataloader):
     PREFIX = 'COINMETRICS'
 
     def prepare(self):
-        self._cls = CSVAdjustTime
+        self._cls = CSVAdjustTimeCloseOnly
 
     def _loadData(self):
         dataname = self._cfg['dataname']
