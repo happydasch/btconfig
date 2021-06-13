@@ -13,7 +13,7 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
         adjstarttime=False,
         dtformat=parse_dt,
         datetime=0, open=1, high=2, low=3, close=4, volume=5,
-        time=None, openinterest=None
+        openinterest=-1
     )
 
     def _loadline(self, linetokens):
@@ -37,8 +37,8 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
 class CSVAdjustTimeCloseOnly(CSVAdjustTime):
 
     params = dict(
-        datetime=0, close=1, time=None, open=None, high=None, low=None,
-        volume=None, openinterest=None
+        datetime=0, open=1, high=1, low=1, close=1,
+        volume=-1, openinterest=-1
     )
 
 
@@ -56,5 +56,5 @@ class CSVMVRVData(CSVAdjustTime):
     lines = ('mv', 'rv', 'mvrv')
     params = dict(
         datetime=0, open=1, high=2, low=3, close=4, volume=5,
-        mv=6, rv=7, mvrv=8, time=None, openinterest=None
+        mv=6, rv=7, mvrv=8, openinterest=-1
     )
