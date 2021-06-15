@@ -214,6 +214,7 @@ class IBDataloaderApp:
             return None
         res = self._df.copy()
         res['datetime'] = pd.to_datetime(res['datetime'])
+        res = res.set_index(['datetime'])
         return res
 
     def request(self, instrument, timeframe, compression,
