@@ -41,9 +41,11 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
         bidask = self._cfg['params'].get('bidask', True)
         useask = self._cfg['params'].get('useask', False)
         if not os.path.isfile(self._filename) or not todate:
+            debug = self._cfg.get('debug', False)
             loader = OandaV20DataloaderApp(
                 self._instance.config['stores'][store]['params']['token'],
-                self._instance.config['stores'][store]['params']['practice'])
+                self._instance.config['stores'][store]['params']['practice'],
+                debug=debug)
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 bidask, useask)

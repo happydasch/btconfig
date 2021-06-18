@@ -28,6 +28,8 @@ class CoinAPIDataloader(BTConfigDataloader):
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
-            loader = CoinAPIDataloaderApp(api_key)
+            debug = self._cfg.get('debug', False)
+            loader = CoinAPIDataloaderApp(
+                api_key, debug=debug)
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate)

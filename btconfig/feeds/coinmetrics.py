@@ -28,7 +28,8 @@ class CoinMetricsDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            client = CoinMetricsDataloaderApp()
+            debug = self._cfg.get('debug', False)
+            client = CoinMetricsDataloaderApp(debug=debug)
             return client.request(
                 dataname, timeframe, compression, fromdate, todate)
 
@@ -54,7 +55,8 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            loader = CoinMetricsDataloaderApp()
+            debug = self._cfg.get('debug', False)
+            loader = CoinMetricsDataloaderApp(debug=debug)
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 add_mvrv=True, use_base_asset=use_base_asset)

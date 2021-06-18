@@ -169,7 +169,7 @@ class IBDataloaderApp:
                 formatDate=1)
             while r in self._requests and self.engine.isConnected():
                 sleep(.5)
-            if (self.debug and (i == 1 or i % 10 == 0 or num_requests == i)):
+            if self.debug:
                 currtime = time()
                 prevdiff = timedelta(seconds=int(currtime-prevtime))
                 totaldiff = timedelta(seconds=int(currtime-starttime))

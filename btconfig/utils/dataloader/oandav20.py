@@ -3,15 +3,17 @@ from __future__ import division, absolute_import, print_function
 import v20
 import pandas as pd
 
+from datetime import datetime, tzinfo
 from dateutil import parser
 from btoandav20.stores import OandaV20Store
 
 
 class OandaV20DataloaderApp:
 
-    def __init__(self, token, practice, **kwargs):
+    def __init__(self, token, practice, debug=False, **kwargs):
         self.token = token
         self.practice = practice
+        self.debug = debug
         self.ctx = v20.Context(OandaV20Store._OAPI_URL[int(practice)],
                                token=token, port=443, ssl=True, **kwargs)
 
@@ -28,15 +30,20 @@ class OandaV20DataloaderApp:
         data_df = None
         while True:
             params['fromTime'] = fromdate.strftime(OandaV20Store._DATE_FORMAT)
-            if data_df:
+            if data_df is not None:
                 params['includeFirst'] = False
             response = self.ctx.instrument.candles(instrument, **params)
+            if self.debug:
+                print(f'Processing {response.path}')
             candles = response.get('candles', 200)
+
             data = []
             for candle in candles:
                 if not candle.complete:
                     continue
-                curtime = candle.datetime
+                curtime = datetime.strptime(
+                    candle.time,
+                    OandaV20Store._DATE_FORMAT)
                 volume = candle.volume
                 c_data = candle.dict()
                 # get candle data
@@ -74,10 +81,8 @@ class OandaV20DataloaderApp:
             if data_df is None:
                 data_df = tmp_df
             else:
-                data_df.append(tmp_df[1:])
-            fromdate = parser.parse(
-                data_df.iloc[-1].datetime,
-                ignoretz=True)
+                data_df = data_df.append(tmp_df)
+            fromdate = data_df['datetime'].iloc[-1]
             # stop if start time is higher than end date if defined
             if todate and fromdate > todate:
                 break

@@ -27,6 +27,6 @@ class CoinAPIDataloaderApp:
         if todate:
             todate_str = todate.strftime(CoinApiClient.FMT)
         data = self.client.getOHLCVHistory(
-            symbol, period, fromdate_str,  todate_str)
+            symbol, period, fromdate_str, todate_str)
         data_df = create_data_df(data)
         return data_df

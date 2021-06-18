@@ -84,7 +84,7 @@ class BinanceDataloaderApp:
             if not data_df:
                 data_df = tmp_df
             else:
-                data_df.append(tmp_df[1:])
+                data_df = data_df.append(tmp_df[1:])
             # check for exit
             if to_millis and from_millis >= to_millis:
                 break
