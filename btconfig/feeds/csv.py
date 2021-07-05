@@ -11,6 +11,8 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
 
     params = dict(
         adjstarttime=False,
+        roundvalues=False,
+        roundprecision=8,
         dtformat=parse_dt,
         datetime=0, open=1, high=2, low=3, close=4, volume=5,
         openinterest=-1
@@ -18,6 +20,15 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
 
     def _loadline(self, linetokens):
         res = super(CSVAdjustTime, self)._loadline(linetokens)
+        # if values should be rounded, all lines will get rounded
+        if self.p.roundvalues:
+            for linefield in (x for x in self.getlinealiases() if x != 'datetime'):
+                csvidx = getattr(self.params, linefield)
+                if csvidx is None or csvidx < 0:
+                    continue
+                line = getattr(self.lines, linefield)
+                if line[0] == line[0]:
+                    line[0] = round(line[0], self.p.roundprecision)
         # ensure that utc time is being used
         dt = self.datetime.datetime(0, tz=timezone.utc)
         if self.p.adjstarttime:
