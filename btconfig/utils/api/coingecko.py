@@ -99,6 +99,11 @@ class CoinGeckoClient(BTConfigApiClient):
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
 
+    def getExchangesList(self):
+        path = '/exchanges/list'
+        exchanges = self._request(path, exceptions=True, json=True)
+        return exchanges
+
     def getExchangeTickers(self, exchange_id, coin_id=''):
         path = f'/exchanges/{exchange_id}/tickers'
         kwargs = {
