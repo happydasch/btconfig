@@ -7,3 +7,5 @@ from .sizer import *  # noqa: *
 from .comminfo import *  # noqa: *
 from .strategy import *  # noqa: *
 from .plot import *  # noqa: *
+from .report import *  # noqa: *
+from .tearsheet import *  # noqa: *

@@ -317,7 +317,8 @@ class BTConfig:
     # default different parts to load
     LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
                         'PartDatas', 'PartLogging', 'PartPlot', 'PartSizer',
-                        'PartStores', 'PartStrategy']
+                        'PartStores', 'PartStrategy', 'PartReport',
+                        'PartTearsheet']
 
     def __init__(self, mode: int = None, configfile: str = None,
                  add_local_paths: bool = True) -> None:
