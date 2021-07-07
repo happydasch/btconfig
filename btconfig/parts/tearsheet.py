@@ -24,14 +24,13 @@ class PartTearsheet(btconfig.BTConfigPart):
 
         if not commoncfg.get('create_tearsheet', False):
             return
-        for r in result:
+        for i, r in enumerate(result):
             if isinstance(r, list):
                 r = r.pop()
             params = r.p._getkwargs()
             filename = os.path.abspath(path)
             filename = os.path.join(filename, 'tearsheet_{}_{}_{}.html'.format(
-                commoncfg.get('strategy'),
-                '_'.join([str(x) for x in params.values()]),
+                i, commoncfg.get('strategy'),
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
             title = commoncfg.get('strategy')
             create_tearsheet(r, filename, title)
