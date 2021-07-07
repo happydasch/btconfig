@@ -12,9 +12,7 @@ class PartReport(btconfig.BTConfigPart):
 
     def finish(self, result) -> None:
         commoncfg = self._instance.config.get('common', {})
-        path = commoncfg.get('report_path', './backtest')
-
-        if not (commoncfg.get('create_report', False)
+        if (not commoncfg.get('create_report', False)
                 or not commoncfg.get('add_analyzer', False)):
             return
         for r in result:
