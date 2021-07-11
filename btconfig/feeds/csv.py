@@ -53,7 +53,7 @@ class CSVAdjustTimeCloseOnly(CSVAdjustTime):
     )
 
 
-class CSVBidAskAdjustTime(CSVAdjustTime):
+class CSVAdjustTimeBidAsk(CSVAdjustTime):
 
     lines = ('mid_close', 'bid_close', 'ask_close',)
 
@@ -62,7 +62,7 @@ class CSVBidAskAdjustTime(CSVAdjustTime):
     )
 
 
-class CSVMVRVData(CSVAdjustTime):
+class CSVAdjustTimeMVRVData(CSVAdjustTime):
 
     lines = ('mv', 'rv', 'mvrv')
     params = dict(

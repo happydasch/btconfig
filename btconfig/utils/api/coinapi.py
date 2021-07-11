@@ -77,12 +77,12 @@ class CoinApiClient(BTConfigApiClient):
     def __init__(self, api_key, **kwargs):
         self.api_key = api_key
         super(CoinApiClient, self).__init__(
-            base_url='https://rest.coinapi.io',
+            base_url='https://rest.coinapi.io/v1/',
             headers={'X-CoinAPI-Key': api_key},
             **kwargs)
 
     def getOHLCVHistory(self, symbol, period, time_start, time_end=None):
-        path = f'/v1/ohlcv/{symbol}/history'
+        path = f'ohlcv/{symbol}/history'
         res = []
         while True:
             kwargs = {
@@ -105,17 +105,17 @@ class CoinApiClient(BTConfigApiClient):
         return res
 
     def getExchanges(self):
-        path = '/v1/exchanges'
+        path = 'exchanges'
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
 
     def getAssets(self):
-        path = '/v1/exchanges'
+        path = 'assets'
         assets = self._request(path, exceptions=True, json=True)
         return assets
 
     def getSymbols(self):
-        path = '/v1/symbols'
+        path = 'symbols'
         symbols = self._request(path, exceptions=True, json=True)
         return symbols
 

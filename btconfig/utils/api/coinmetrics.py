@@ -21,13 +21,13 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def __init__(self, **kwargs):
         super(CoinMetricsClient, self).__init__(
-            base_url='https://community-api.coinmetrics.io',
+            base_url='https://community-api.coinmetrics.io/v4/',
             **kwargs)
 
     def getAssetMetrics(
             self, assets, metrics, start_time=None, end_time=None,
             frequency='1d'):
-        path = '/v4/timeseries/asset-metrics'
+        path = 'timeseries/asset-metrics'
         kwargs = {
             'assets': assets,
             'metrics': metrics,
@@ -56,7 +56,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getMarketCandles(
             self, markets, start_time=None, end_time=None, frequency='1d'):
-        path = '/v4/timeseries/market-candles'
+        path = 'timeseries/market-candles'
         kwargs = {
             'markets': markets,
             'page_size': 10000,
@@ -84,7 +84,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getAssets(self, assets=''):
         # Available assets
-        path = '/v4/catalog/assets'
+        path = 'catalog/assets'
         kwargs = {'assets': assets}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -92,7 +92,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getPairs(self, pairs=''):
         # Available pairs
-        path = '/v4/catalog/pairs'
+        path = 'catalog/pairs'
         kwargs = {'pairs': pairs}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -100,7 +100,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getMetrics(self, metrics=''):
         # Available metrics
-        path = '/v4/catalog/metrics'
+        path = 'catalog/metrics'
         kwargs = {'metrics': metrics}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -108,7 +108,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getExchanges(self, exchanges=''):
         # Available exchanges
-        path = '/v4/catalog/exchanges'
+        path = 'catalog/exchanges'
         kwargs = {'exchanges': exchanges}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -116,7 +116,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getMarkets(self, markets=''):
         # Available markets
-        path = '/v4/catalog/markets'
+        path = 'catalog/markets'
         kwargs = {'markets': markets}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -124,7 +124,7 @@ class CoinMetricsClient(BTConfigApiClient):
 
     def getIndexes(self, indexes=''):
         # Available indexes
-        path = '/v4/catalog/indexes'
+        path = 'catalog/indexes'
         kwargs = {'indexes': indexes}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)
@@ -148,7 +148,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
 
     def __init__(self, **kwargs):
         super(CoinMetricsDataClient, self).__init__(
-            base_url='https://asset-data-proxy.coinmetrics.io/traditionalAssetData',
+            base_url='https://asset-data-proxy.coinmetrics.io/traditionalAssetData/',
             **kwargs)
 
     def getLibor(self):  # Libor USD
@@ -156,7 +156,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         LIBOR USD
         metrics: ReferenceRateLondon1100am
         '''
-        path = '/v4/libor'
+        path = 'libor'
         return self._request(path, exceptions=True, json=True)['data']
 
     def getDollar(self):  # U.S. Dollar Index
@@ -164,7 +164,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         U.S. Dollar Index
         metrics: ReferenceRateNewYork1200pm
         '''
-        path = '/v4/dollar'
+        path = 'dollar'
         return self._request(path, exceptions=True, json=True)['data']
 
     def getGold(self):  # Gold
@@ -172,7 +172,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         Gold
         metrics: ReferenceRateLondon1030am
         '''
-        path = '/v4/gold'
+        path = 'gold'
         return self._request(path, exceptions=True, json=True)['data']
 
     def getSP500(self):  # S&P 500
@@ -180,7 +180,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         S&P 500
         metrics: ReferenceRateNewYork0400pm
         '''
-        path = '/v4/sp500'
+        path = 'sp500'
         return self._request(path, exceptions=True, json=True)['data']
 
     def getVix(self):  # CBOE Volatility Index
@@ -188,7 +188,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         CBOE Volatility Index
         metrics: ReferenceRateChicago0315pm
         '''
-        path = '/v4/vix'
+        path = 'vix'
         return self._request(path, exceptions=True, json=True)['data']
 
 

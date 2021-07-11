@@ -21,16 +21,16 @@ class CoinGeckoClient(BTConfigApiClient):
 
     def __init__(self, **kwargs):
         super(CoinGeckoClient, self).__init__(
-            base_url='https://api.coingecko.com/api/v3',
+            base_url='https://api.coingecko.com/api/v3/',
             **kwargs)
 
     def getCoinsList(self):
-        path = '/coins/list'
+        path = 'coins/list'
         coins = self._request(path, exceptions=True, json=True)
         return coins
 
     def getCoinsMarkets(self, vs_currency='usd', coin_ids=''):
-        path = '/coins/markets'
+        path = 'coins/markets'
         kwargs = {
             'vs_currency': vs_currency,
             'ids': coin_ids,
@@ -48,7 +48,7 @@ class CoinGeckoClient(BTConfigApiClient):
         return coins
 
     def getCoinsTickers(self, id, exchange_ids=''):
-        path = f'/coins/{id}/tickers'
+        path = f'coins/{id}/tickers'
         kwargs = {
             'exchange_ids': exchange_ids,
             'page': 1
@@ -66,7 +66,7 @@ class CoinGeckoClient(BTConfigApiClient):
         return tickers
 
     def getCoinsHistory(self, coin_id, date, localization=False):
-        path = f'/coins/{coin_id}/history'
+        path = f'coins/{coin_id}/history'
         kwargs = {
             'date': date,
             'localization': 'false' if not localization else 'true'
@@ -75,7 +75,7 @@ class CoinGeckoClient(BTConfigApiClient):
         return history
 
     def getCoinsMarketChart(self, coin_id, vs_currency, days):
-        path = f'/coins/{coin_id}/market_chart'
+        path = f'coins/{coin_id}/market_chart'
         kwargs = {
             'vs_currency': vs_currency,
             'days': days
@@ -85,7 +85,7 @@ class CoinGeckoClient(BTConfigApiClient):
 
     def getCoinsMarketChartRange(self, coin_id, vs_currency, date_from, date_to):
         # date: timestamp ex: 1422577232
-        path = f'/coins/{coin_id}/market_chart/range'
+        path = f'coins/{coin_id}/market_chart/range'
         kwargs = {
             'vs_currency': vs_currency,
             'from': date_from,
@@ -95,17 +95,17 @@ class CoinGeckoClient(BTConfigApiClient):
         return mchart
 
     def getExchanges(self):
-        path = '/exchanges'
+        path = 'exchanges'
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
 
     def getExchangesList(self):
-        path = '/exchanges/list'
+        path = 'exchanges/list'
         exchanges = self._request(path, exceptions=True, json=True)
         return exchanges
 
     def getExchangeTickers(self, exchange_id, coin_id=''):
-        path = f'/exchanges/{exchange_id}/tickers'
+        path = f'exchanges/{exchange_id}/tickers'
         kwargs = {
             'coin_ids': coin_id,
             'page': 1
@@ -121,12 +121,12 @@ class CoinGeckoClient(BTConfigApiClient):
         return tickers
 
     def getIndexes(self):
-        path = '/indexes'
+        path = 'indexes'
         indexes = self._request(path, exceptions=True, json=True)
         return indexes
 
     def getGlobal(self):
-        path = '/global'
+        path = 'global'
         glob = self._request(path, exceptions=True, json=True)
         return glob
 

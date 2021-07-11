@@ -22,7 +22,7 @@ class GlassnodeClient(BTConfigApiClient):
     def __init__(self, api_key, **kwargs):
         self.api_key = api_key
         super(GlassnodeClient, self).__init__(
-            base_url='https://api.glassnode.com',
+            base_url='https://api.glassnode.com/v1/',
             **kwargs)
 
     def _request(self, path, exceptions=False, json=False, **kwargs):
@@ -31,7 +31,7 @@ class GlassnodeClient(BTConfigApiClient):
             path, exceptions=exceptions, json=json, **kwargs)
 
     def getIndicator(self, ind, asset, since='', until='', interval=''):
-        path = f'/v1/metrics/indicators/{ind}'
+        path = f'metrics/indicators/{ind}'
         kwargs = {'a': asset, 's': since, 'u': until, 'i': interval}
         res = self._request(
             path, exceptions=True, json=True, **kwargs)

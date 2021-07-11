@@ -5,7 +5,7 @@ import btconfig
 import backtrader as bt
 
 from btconfig.helper import get_data_dates
-from btconfig.feeds.csv import CSVBidAskAdjustTime
+from btconfig.feeds.csv import CSVAdjustTimeBidAsk
 from btconfig.utils.dataloader import OandaV20DataloaderApp
 
 
@@ -23,7 +23,7 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
         else:
             ctype = 'MID'
         self._additional.append(ctype)
-        self._cls = CSVBidAskAdjustTime
+        self._cls = CSVAdjustTimeBidAsk
 
     def _loadData(self):
         store = self._cfg.get('store')

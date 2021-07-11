@@ -29,8 +29,6 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             api_secret = self._cfg.get('api_secret', '')
-            debug = self._cfg.get('debug', False)
-            loader = BinanceDataloaderApp(
-                api_key, api_secret, debug=debug)
+            loader = BinanceDataloaderApp(api_key, api_secret)
             return loader.request(
                 dataname, timeframe, compression, fromdate, todate)

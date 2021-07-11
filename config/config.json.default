@@ -151,7 +151,7 @@
         },
 
         "ident_csv_ticks": {
-            "classname": "CSVBidAskAdjustTime",
+            "classname": "CSVAdjustTimeBidAsk",
             "name": "OANDA_EUR_USD_TICKS.csv",
             "sessionstart": [22, 0, 0, 0],
             "sessionend": [21, 59, 59, 999999],
