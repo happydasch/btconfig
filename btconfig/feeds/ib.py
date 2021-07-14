@@ -58,6 +58,7 @@ class IBDataloader(btconfig.BTConfigDataloader):
                 storecfg['params']['port'],
                 storecfg['params']['clientId'],
                 debug=debug)
-            return loader.request(
+            data = loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 what, useRTH)
+            return data

@@ -6,7 +6,7 @@
 
     "common": {
         "strategy": "StrategyName",
-        "timezone": "Europe/Dublin",
+        "timezone": "Europe/Warsaw",
         "create_plot": false,
         "create_report": false,
         "broker": null,

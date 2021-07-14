@@ -50,7 +50,7 @@ class PartLogging(btconfig.BTConfigPart):
         if len(btconfig.instances) > 1:
             return
         commoncfg = self._instance.config.get('common', {})
-        if not commoncfg.get('create_log', True):
+        if not commoncfg.get('create_log', False):
             return
         logger = self._instance.logger
         logcfg = self._instance.config.get('logging', {})

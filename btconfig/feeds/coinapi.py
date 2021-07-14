@@ -31,5 +31,6 @@ class CoinAPIDataloader(BTConfigDataloader):
             debug = self._cfg.get('debug', False)
             loader = CoinAPIDataloaderApp(
                 api_key, debug=debug)
-            return loader.request(
+            data = loader.request(
                 dataname, timeframe, compression, fromdate, todate)
+            return data

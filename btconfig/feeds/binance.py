@@ -30,5 +30,6 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
             api_key = self._cfg.get('api_key', '')
             api_secret = self._cfg.get('api_secret', '')
             loader = BinanceDataloaderApp(api_key, api_secret)
-            return loader.request(
+            data = loader.request(
                 dataname, timeframe, compression, fromdate, todate)
+            return data

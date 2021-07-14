@@ -46,6 +46,7 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
                 self._instance.config['stores'][store]['params']['token'],
                 self._instance.config['stores'][store]['params']['practice'],
                 debug=debug)
-            return loader.request(
+            data = loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 bidask, useask)
+            return data
