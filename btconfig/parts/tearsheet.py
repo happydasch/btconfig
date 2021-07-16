@@ -20,10 +20,11 @@ class PartTearsheet(btconfig.BTConfigPart):
 
     def finish(self, result) -> None:
         commoncfg = self._instance.config.get('common', {})
-        path = commoncfg.get('report_path', './backtest')
-
         if not commoncfg.get('create_tearsheet', False):
             return
+        path = commoncfg.get('report_path', './backtest')
+        if not os.path.isdir(path):
+            os.makedirs(path)
         for i, r in enumerate(result):
             if isinstance(r, list):
                 r = r.pop()

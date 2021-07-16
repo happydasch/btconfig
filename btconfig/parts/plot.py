@@ -63,6 +63,8 @@ class PartPlot(btconfig.BTConfigPart):
         '''
         commoncfg = self._instance.config.get('common', {})
         path = commoncfg.get('report_path', './backtest')
+        if not os.path.isdir(path):
+            os.makedirs(path)
         plotcfg = self._instance.config.get('plot', {})
         # if plots should be combined, set up datafeeds
         if plotcfg.get('combine', False):

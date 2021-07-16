@@ -55,6 +55,8 @@ class PartLogging(btconfig.BTConfigPart):
         logger = self._instance.logger
         logcfg = self._instance.config.get('logging', {})
         path = commoncfg.get('log_path', './logs')
+        if not os.path.isdir(path):
+            os.makedirs(path)
         level = logcfg.get('level', 'INFO')
         logconsole = logcfg.get('log_to_console', True)
         logfile = logcfg.get('log_to_file', True)
