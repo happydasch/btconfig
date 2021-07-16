@@ -110,7 +110,7 @@ class IBDataloaderApp:
     REQIDBASE = 0x01000000
 
     def __init__(self, host='127.0.0.1', port=7496, clientId=35,
-                 e=IBDownloadEngine_Eclient, debug=False):
+                 e=IBDownloadEngine_Eclient, debug=False, pause=None):
         '''
         Initializes download app
         '''
@@ -118,6 +118,7 @@ class IBDataloaderApp:
         self.data = IBData()
         self.store = IBStore()
         self.debug = debug
+        self.pause = pause
         self._tickerId = itertools.count(self.REQIDBASE)  # unique tickerIds
         self._prepare()
 
@@ -177,6 +178,8 @@ class IBDataloaderApp:
                       + f' Time lapsed {prevdiff}.'
                       + f' Total time lapsed {totaldiff}.')
                 prevtime = currtime
+            if self.pause:
+                sleep(self.pause)
             i += 1
             if not self.engine.isConnected():
                 break
