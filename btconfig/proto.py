@@ -41,10 +41,9 @@ class ProtoStrategy(bt.Strategy):
         if len(self.data):
             dt = dt or self.data.datetime.datetime(0)
             txt = f'{dt.isoformat()}: {txt}'
-        if self.p.use_logging:
-            self.cerebro.btconfig.log(txt, level)
-        else:
-            print(txt)
+        if not self.p.use_logging:
+            return
+        self.cerebro.btconfig.log(txt, level)
 
     def notify_store(self, msg, *args, **kwargs):
         ''' Store notification '''

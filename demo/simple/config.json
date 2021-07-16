@@ -1,22 +1,52 @@
 {
     "common": {
-        "strategy": "Strategy",
-        "timezone": "Europe/Dublin"
+        "strategy": "SimpleStrategy",
+        "timezone": "Europe/Warsaw",
+        "create_plot": true,
+        "create_tearsheet": true,
+        "create_log": true
     },
     "logging": {
-        "enabled": false
+        "log_to_console": true,
+        "log_to_file": true
     },
     "feeds": {
-        "primary": ["Minutes", 5, "resample", {}]
+        "primary": ["Days", 1, "add", {}]
     },
     "datas": {
-        "csv": {}
+        "primary": {
+            "classname": "GenericCSVData",
+            "dataname": "sp500_prices.csv",
+            "granularity": ["Days", 1],
+            "fromdate": null,
+            "todate": null,
+            "params": {
+                "datetime": 0, "high": 1, "low": 2, "open": 3, "close": 4,
+                "volume": 5, "openinterest": -1, "dtformat": "%Y-%m-%d"
+            },
+            "for": ["primary"]
+        }
     },
     "plot": {
         "plot_volume": true,
         "bar_dist": 0.0003,
-        "style": "candle"
+        "style": "line"
     },
-    "TestStrategy": {
+    "_optimize": {
+        "common": {
+            "create_log": false
+        },
+        "optimize": {
+            "revert_pos": ["list", [true, false]],
+            "period1": ["range", 5, 11, 2],
+            "period2": ["range", 20, 30, 2]
+        }
+    },
+    "strategy": {
+        "SimpleStrategy": {
+            "period1": 9,
+            "period2": 26,
+            "revert_pos": true
+        }
     }
 }
