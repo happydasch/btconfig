@@ -61,6 +61,6 @@ class SimpleStrategy(ForexProtoStrategy):
         if close:
             self.order = self.close()
         if sell:
-            self.order = self.sell()
+            self.order = self.sell(size=1)
         if buy:
-            self.order = self.buy()
+            self.order = self.buy(size=1)

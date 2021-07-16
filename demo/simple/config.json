@@ -4,7 +4,9 @@
         "timezone": "Europe/Warsaw",
         "create_plot": true,
         "create_tearsheet": true,
-        "create_log": true
+        "create_log": true,
+        "add_observer": true,
+        "add_analyzer": true
     },
     "logging": {
         "log_to_console": true,
@@ -21,7 +23,7 @@
             "fromdate": null,
             "todate": null,
             "params": {
-                "datetime": 0, "high": 1, "low": 2, "open": 3, "close": 4,
+                "datetime": 0, "high": 4, "low": 4, "open": 4, "close": 4,
                 "volume": 5, "openinterest": -1, "dtformat": "%Y-%m-%d"
             },
             "for": ["primary"]
