@@ -5,7 +5,7 @@ import btconfig
 import backtrader as bt
 
 from btconfig.helper import get_data_dates
-from btconfig.feeds.csv import CSVAdjustTimeBidAsk
+from btconfig.feeds.misc import CSVAdjustTimeBidAsk
 from btconfig.utils.dataloader import OandaV20DataloaderApp
 
 

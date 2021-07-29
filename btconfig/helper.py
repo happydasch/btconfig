@@ -1,13 +1,21 @@
 from __future__ import division, absolute_import, print_function
 
+import pandas as pd
 import sys
 import importlib
 import inspect
 import pkgutil
+import json
 import backtrader as bt
 
 from datetime import datetime, time, timedelta
 from dateutil import parser
+
+
+def load_json(filename):
+    with open(filename, 'r') as file:
+        res = json.load(file)
+    return res
 
 
 def seq(start: float, stop: float, step: float = 1.) -> list:
@@ -96,6 +104,24 @@ def merge_dicts(dict1: dict, dict2: dict) -> None:
             merge_dicts(dict1[k], dict2[k])
         else:
             dict1[k] = dict2[k]
+
+
+def make_equal_dfs(datas, key=None, dropna=True):
+    if not key:
+        key = list(datas.keys())[0]
+    src_df = pd.DataFrame(datas[key]['datetime'])
+    for i in datas:
+        if i == key:
+            continue
+        df_new = pd.merge(
+            left=src_df,
+            right=datas[i],
+            on='datetime',
+            how='left')
+        if dropna:
+            df_new = df_new.dropna()
+        datas[i] = df_new.reset_index(drop=True)
+    return datas
 
 
 def get_classes(modules: list or str, register: bool = True) -> dict:
@@ -255,9 +281,6 @@ def get_data_params(cfg: dict, tz: str) -> dict:
         cfg.get('todate'))
     dargs['fromdate'] = fromdate
     dargs['todate'] = todate
-    if todate:
-        # with a todate, this is always historical
-        dargs['historical'] = True
     # append args from params
     dargs.update(cfg.get('params', {}))
     return dargs

@@ -37,7 +37,8 @@ class PartPlot(btconfig.BTConfigPart):
         commoncfg = self._instance.config.get('common', {})
         if not commoncfg.get('create_plot', False):
             return
-
+        if not len(result):
+            return
         if self._instance.mode == MODE_BACKTEST:
             self._createBacktestPlotting()
         elif self._instance.mode == MODE_OPTIMIZE:

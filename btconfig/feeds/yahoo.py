@@ -6,12 +6,12 @@ import backtrader as bt
 
 from btconfig.helper import get_data_dates
 from btconfig.feeds.misc import CSVAdjustTime
-from btconfig.utils.dataloader import BinanceDataloaderApp
+from btconfig.utils.dataloader import YahooDataloaderApp
 
 
-class BinanceDataloader(btconfig.BTConfigDataloader):
+class YahooDataloader(btconfig.BTConfigDataloader):
 
-    PREFIX = 'BINANCE'
+    PREFIX = 'YAHOO'
 
     def prepare(self):
         self._cls = CSVAdjustTime
@@ -27,9 +27,8 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            api_key = self._cfg.get('api_key', '')
-            api_secret = self._cfg.get('api_secret', '')
-            loader = BinanceDataloaderApp(api_key, api_secret)
+            debug = self._cfg.get('debug', False)
+            loader = YahooDataloaderApp(debug=debug)
             data = loader.request(
                 dataname, timeframe, compression, fromdate, todate)
             return data

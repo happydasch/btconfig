@@ -5,7 +5,7 @@ import backtrader as bt
 
 from btconfig import BTConfigDataloader
 from btconfig.helper import get_data_dates
-from btconfig.feeds.csv import CSVAdjustTime
+from btconfig.feeds.misc import CSVAdjustTime
 from btconfig.utils.dataloader import CoinAPIDataloaderApp
 
 

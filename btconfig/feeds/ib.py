@@ -7,7 +7,7 @@ import backtrader as bt
 from datetime import timedelta, timezone
 from backtrader.utils import date2num
 from btconfig.helper import get_data_dates, get_starttime
-from btconfig.feeds.csv import CSVAdjustTime
+from btconfig.feeds.misc import CSVAdjustTime
 from btconfig.utils.dataloader import IBDataloaderApp
 
 
