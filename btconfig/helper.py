@@ -8,6 +8,7 @@ import pkgutil
 import json
 import backtrader as bt
 
+from zipimport import zipimporter
 from datetime import datetime, time, timedelta
 from dateutil import parser
 
@@ -161,7 +162,12 @@ def get_classes(modules: list or str, register: bool = True) -> dict:
         Imports a module by spec
         '''
         mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        if isinstance(spec.loader, zipimporter):
+            exec(
+                spec.loader.get_code(mod.__name__),
+                mod.__dict__)
+        else:
+            spec.loader.exec_module(mod)
         return mod
 
     def _register_module(module):
