@@ -53,7 +53,7 @@ class PartPlot(btconfig.BTConfigPart):
             BacktraderPlottingLive,
             lookback=cfg.get('live_lookback', 50),
             style=cfg.get('style', 'candle'),
-            port=cfg.get('port',  80),
+            port=cfg.get('port', 80),
             use_default_tabs=False,
             tabs=[AnalyzerTab, MetadataTab, ConfigTab, LogTab],
             scheme=self._getBTPlottingScheme(self._getPlotscheme()))
@@ -82,7 +82,6 @@ class PartPlot(btconfig.BTConfigPart):
         else:
             kwargs = {}
             kwargs['style'] = plotcfg.get('style', 'candle')
-            kwargs['port'] = plotcfg.get('port', 80)
             kwargs['use_default_tabs'] = False
             kwargs['tabs'] = [AnalyzerTab, MetadataTab, LogTab]
             kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)
@@ -106,8 +105,7 @@ class PartPlot(btconfig.BTConfigPart):
         plotcfg = self._instance.config.get('plot', {})
         plotscheme = self._getPlotscheme()
         kwargs = {}
-        kwargs['style'] = plotcfg.get('style')
-        kwargs['port'] = plotcfg.get('port')
+        kwargs['style'] = plotcfg.get('style', 'candle')
         kwargs['use_default_tabs'] = False
         kwargs['tabs'] = [AnalyzerTab, MetadataTab]
         kwargs['scheme'] = self._getBTPlottingScheme(plotscheme)
@@ -115,6 +113,7 @@ class PartPlot(btconfig.BTConfigPart):
         browser = BacktraderPlottingOptBrowser(
             self.btplotting,
             result,
+            port=plotcfg.get('port', 80),
             usercolumns={'Profit & Loss': _analyzer_df},
             sortcolumn='Profit & Loss',
             sortasc=False)
