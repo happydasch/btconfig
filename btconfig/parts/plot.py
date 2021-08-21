@@ -12,7 +12,7 @@ from btplotting import (
     BacktraderPlottingOptBrowser)
 from btplotting.tabs import AnalyzerTab, MetadataTab, ConfigTab, LogTab
 from btconfig import (
-    MODE_LIVE,  MODE_BACKTEST, MODE_OPTIMIZE,
+    MODE_LIVE,  MODE_BACKTEST, MODE_OPTIMIZE, MODE_OPTIMIZEGENETIC,
     NUMBERFORMAT, TIMEFORMAT)
 
 
@@ -41,7 +41,7 @@ class PartPlot(btconfig.BTConfigPart):
             return
         if self._instance.mode == MODE_BACKTEST:
             self._createBacktestPlotting()
-        elif self._instance.mode == MODE_OPTIMIZE:
+        elif self._instance.mode in [MODE_OPTIMIZE, MODE_OPTIMIZEGENETIC]:
             self._createOptimizePlotting(result)
 
     def _createLivePlotting(self):

@@ -8,18 +8,45 @@ It supports different execution modes:
 * LIVE: Executes live trading mode
 * BACKTEST: Executes backtest mode
 * OPTIMIZE: Executes optimization mode
+* OPTIMIZEGENETIC: Executes genetic optimization mode (WIP)
+
+## Modes
+
+Btconfig can be executed in different run modes.
+
+### Mode: LIVE
+
+Executes backtrader in live mode with live plotting support
+
+### Mode: BACKTEST
+
+Executes backtrader in backtest mode with web plotting support
+
+### Mode: OPTIMIZE
+
+Executes backtrader in optimization mode
+using backtrader built-in `optstrategy` with
+optimization results browseable in a browser
+
+### Mode: OPTIMIZEGENETIC
+
+Executes backtrader in optimization mode
+using `Gradient-Free-Optimizers` [https://github.com/SimonBlanke/Gradient-Free-Optimizers]
+with optimization results browseable in a browser
 
 ## Features
 
 * Execution of strategies without code
 * Configuration of backtrader components using config files
-* Data Downloader for Oanda, Interactive Brokers, Binance included
+* Data downloader for Oanda, Interactive Brokers, Binance, Yahoo included
 * Additional Dataloader: CoinMetrics, CoinAPI
 * API Clients for: CoinAPI, CoinMetrics, CoinGecko, CoinMarketCap
-* Custom Feeds with time correction (useful for resample and replay)
+* Custom feeds with time correction (useful for resample and replay)
+* Custom feeds with data rounding
 * Live Plotting, Optimization Browser, Backtest Results using btplotting
 * Prototype Strategies for Forex Trading with functionality to work with
   pips, market hours, logging etc.
+* Tearsheet support using QuantStats
 * Additional Analysers for Backtesting
 
 ## Contribute

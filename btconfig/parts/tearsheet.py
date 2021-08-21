@@ -27,7 +27,9 @@ class PartTearsheet(btconfig.BTConfigPart):
             os.makedirs(path)
         for i, r in enumerate(result):
             if isinstance(r, list):
-                r = r.pop()
+                r = r[0]
+            if 'cashmarket' not in r.analyzers._names:
+                continue
             params = r.p._getkwargs()
             filename = os.path.abspath(path)
             filename = os.path.join(filename, 'tearsheet_{}_{}_{}.html'.format(
@@ -35,11 +37,12 @@ class PartTearsheet(btconfig.BTConfigPart):
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
             title = commoncfg.get('strategy')
             create_tearsheet(r, filename, title)
-            view(filename)
+            if os.path.isfile(filename):
+                view(filename)
 
 
 def create_tearsheet(result, filename, title, bm=None):
-   
+
     '''
     Creates a tearsheet from result
 

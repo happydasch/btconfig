@@ -15,6 +15,7 @@ Intention
     * LIVE
     * BACKTEST
     * OPTIMIZE
+    * OPTIMIZEGENETIC
 
     Every execution mode can set different settings for data sources, parts to
     use and so on.
@@ -267,10 +268,10 @@ __author__ = 'Daniel Schindler <daniel@vcard24.de>'
 __status__ = 'development'
 
 # constants
-TIMEFORMAT = '%Y-%m-%dT%H:%M:%S'
-NUMBERFORMAT = '0,0.000[000]'
-MODES = ['LIVE', 'BACKTEST', 'OPTIMIZE']
-MODE_LIVE, MODE_BACKTEST, MODE_OPTIMIZE = range(3)
+TIMEFORMAT = '%Y-%m-%d %H:%M:%S'
+NUMBERFORMAT = '0,0[.]00[000000]'
+MODES = ['LIVE', 'BACKTEST', 'OPTIMIZE', 'OPTIMIZEGENETIC']
+MODE_LIVE, MODE_BACKTEST, MODE_OPTIMIZE, MODE_OPTIMIZEGENETIC = range(len(MODES))
 
 # default config dicts
 CONFIG_DEFAULT = {
@@ -288,37 +289,28 @@ CONFIG_OPTIMIZE = {
     **CONFIG_DEFAULT, **CONFIG_BACKTEST,
     **{'cerebro': {'optreturn': False}}}
 
+# default module paths
+PATH_COMMINFO = ['backtrader.commissions']
+PATH_SIZER    = ['backtrader.sizers']
+PATH_ANALYZER = ['backtrader.analyzers', 'btconfig.analyzers']
+PATH_OBSERVER = ['backtrader.observers', 'btconfig.observers']
+PATH_STORE    = ['backtrader.stores', 'btconfig.stores']
+PATH_FEED     = ['backtrader.feeds', 'btconfig.feeds']
+PATH_STRATEGY = []
+
+# default search paths for classes
+PATH_BTCONF_PART = ['btconfig.parts']
+
+# default different parts to load
+LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
+                    'PartDatas', 'PartLogging', 'PartPlot', 'PartSizer',
+                    'PartStores', 'PartStrategy', 'PartReport',
+                    'PartTearsheet']
 
 instances = []
 
 
 class BTConfig:
-
-    # default module paths
-    PATH_COMMINFO = [
-        'backtrader.commissions']
-    PATH_SIZER = [
-        'backtrader.sizers']
-    PATH_ANALYZER = [
-        'backtrader.analyzers',
-        'btconfig.analyzers']
-    PATH_OBSERVER = [
-        'backtrader.observers',
-        'btconfig.observers']
-    PATH_STORE = [
-        'backtrader.stores',
-        'btconfig.stores']
-    PATH_FEED = [
-        'backtrader.feeds',
-        'btconfig.feeds']
-    PATH_STRATEGY = []
-    # default search paths for classes
-    PATH_BTCONF_PART = ['btconfig.parts']
-    # default different parts to load
-    LOAD_BTCONF_PART = ['PartBacktrader', 'PartCerebro', 'PartCommInfo',
-                        'PartDatas', 'PartLogging', 'PartPlot', 'PartSizer',
-                        'PartStores', 'PartStrategy', 'PartReport',
-                        'PartTearsheet']
 
     def __init__(self, mode: int = None, configfile: str = None,
                  add_local_paths: bool = True) -> None:
@@ -339,7 +331,18 @@ class BTConfig:
         self.stores = {}             # current stores available
         self.datas = {}              # current data sources
         self.result = []             # store execution result
-        # local paths
+
+
+        # paths
+        self.PATH_COMMINFO = PATH_COMMINFO.copy()
+        self.PATH_SIZER    = PATH_SIZER.copy()
+        self.PATH_ANALYZER = PATH_ANALYZER.copy()
+        self.PATH_OBSERVER = PATH_OBSERVER.copy()
+        self.PATH_STORE    = PATH_STORE.copy()
+        self.PATH_FEED     = PATH_FEED.copy()
+        self.PATH_STRATEGY = PATH_STRATEGY.copy()
+        self.PATH_BTCONF_PART = PATH_BTCONF_PART.copy()
+        self.LOAD_BTCONF_PART = LOAD_BTCONF_PART.copy()
         if add_local_paths:
             self.PATH_COMMINFO.append('commissions')
             self.PATH_SIZER.append('sizers')
@@ -389,7 +392,7 @@ class BTConfig:
         elif mode == MODE_BACKTEST:
             merge_dicts(res, CONFIG_BACKTEST)
             merge_dicts(res, self._config.get('_backtest', {}))
-        elif mode == MODE_OPTIMIZE:
+        elif mode in [MODE_OPTIMIZE, MODE_OPTIMIZEGENETIC]:
             merge_dicts(res, CONFIG_OPTIMIZE)
             merge_dicts(res, self._config.get('_backtest', {}))
             merge_dicts(res, self._config.get('_optimize', {}))
@@ -444,7 +447,7 @@ class BTConfig:
 
     def _setup(self) -> None:
         '''
-        Sets all parts of backtrader
+        Sets all parts
 
             Returns:
             --------
@@ -453,15 +456,34 @@ class BTConfig:
         for p in self._getParts():
             p.setup()
 
-    def _finish(self) -> None:
+    def _run(self) -> None:
         '''
-        Finishes execution of backtrader
+        Runs all parts
 
             Returns:
             --------
             None
         '''
-        self.result = self.cerebro.run()
+        res = []
+        for p in self._getParts():
+            tmp = p.run()
+            if tmp is None:
+                continue
+            if not isinstance(tmp, list):
+                continue
+            if not len(tmp):
+                continue
+            res.extend(tmp)
+        self.result = res
+
+    def _finish(self) -> None:
+        '''
+        Finishes execution
+
+            Returns:
+            --------
+            None
+        '''
         for p in self._getParts():
             p.finish(self.result)
 
@@ -479,8 +501,11 @@ class BTConfig:
         self._loadParts()
         # prepare and setup everything also run strategy
         self._prepare(mode, configfile)
+        self.log('Preparing execution\n')
         self._setup()
-        self.log('All parts set up and configured, running backtrader\n')
+        self.log('All parts set up and configured, running strategy\n')
+        self._run()
+        self.log('Strategy executed, finishing execution\n')
         self._finish()
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
@@ -531,6 +556,12 @@ class BTConfigPart:
         '''
         pass
 
+    def run(self):
+        '''
+        Runs the part
+        '''
+        pass
+
     def finish(self, result) -> None:
         '''
         Finishes part execution
@@ -550,7 +581,7 @@ class BTConfigDataloader:
         '''
         Initialization
         '''
-        self._cls = bt.feeds.GenericCSV
+        self._cls = bt.feeds.GenericCSVData
         self._instance = instance
         self._data_id = data_id
         self._cfg = cfg
@@ -765,3 +796,17 @@ def run_optimize(configfile: str = None) -> BTConfig:
         BTConfig
     '''
     return run(MODE_OPTIMIZE, configfile)
+
+def run_optimizegenetic(configfile: str = None) -> BTConfig:
+    '''
+    Shortcut method to execute genetic optimization mode
+
+        Args:
+        -----
+        - configfile (str): Config filename to use
+
+        Returns:
+        --------
+        BTConfig
+    '''
+    return run(MODE_OPTIMIZEGENETIC, configfile)

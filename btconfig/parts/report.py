@@ -17,7 +17,7 @@ class PartReport(btconfig.BTConfigPart):
             return
         for r in result:
             if isinstance(r, list):
-                r = r.pop()
+                r = r[0]
             params = r.p._getkwargs()
             report = create_report(r, r.cerebro.broker.startingcash)
             if self._instance.mode == btconfig.MODE_OPTIMIZE:

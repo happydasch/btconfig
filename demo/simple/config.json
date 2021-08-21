@@ -6,7 +6,9 @@
         "create_tearsheet": true,
         "create_log": true,
         "add_observer": true,
-        "add_analyzer": true
+        "add_analyzer": true,
+        "optimize_iterations": 100,
+        "optimizer": "HillClimbingOptimizer"
     },
     "logging": {
         "log_to_console": true,
@@ -34,21 +36,23 @@
         "bar_dist": 0.0003,
         "style": "line"
     },
-    "_optimize": {
-        "common": {
-            "create_log": false
-        },
-        "optimize": {
-            "revert_pos": ["list", [true, false]],
-            "period1": ["range", 5, 11, 2],
-            "period2": ["range", 20, 30, 2]
-        }
+    "optimize": {
+        "revert_pos": ["list", [true, false]],
+        "period1": ["range", 5, 11, 2],
+        "period2": ["range", 20, 30, 2]
     },
     "strategy": {
         "SimpleStrategy": {
             "period1": 9,
             "period2": 26,
             "revert_pos": true
+        }
+    },
+    "_backtest": {
+    },
+    "_optimize": {
+        "common": {
+            "create_log": false
         }
     }
 }
