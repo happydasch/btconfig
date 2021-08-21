@@ -40,16 +40,15 @@ class YahooDataloaderApp:
             end=todate,
             interval=interval,
             debug=self.debug)
-        if data_df is not None:
-            data_df.index.name = 'datetime'
-            data_df.rename(
-                columns={
-                    'Open': 'open', 'High': 'high',
-                    'Low': 'low', 'Close': 'close',
-                    'Volume': 'volume'},
-                inplace=True)
-            data_df.drop(
-                columns=['Dividends', 'Stock Splits'],
-                inplace=True)
-            data_df.reset_index(inplace=True)
-        return data_df
+        if data_df is None:
+            return
+        data_df.index.name = 'datetime'
+        data_df.rename(
+            columns={
+                'Open': 'open', 'High': 'high',
+                'Low': 'low', 'Close': 'close',
+                'Volume': 'volume'},
+            inplace=True)
+        data_df.reset_index(inplace=True)
+        return data_df[['datetime', 'open', 'high', 'low', 'close', 'volume']]
+
