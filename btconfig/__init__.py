@@ -678,7 +678,12 @@ class BTConfigDataloader:
         Loads a custom data source
         '''
         self._setFile()
-        self._updateFile(self._loadData())
+        try:
+            # if update of file fails, still use
+            # the existing data file
+            self._updateFile(self._loadData())
+        except Exception:
+            pass
         return self._createFeed()
 
 
