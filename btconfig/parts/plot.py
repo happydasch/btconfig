@@ -114,6 +114,7 @@ class PartPlot(btconfig.BTConfigPart):
             self.btplotting,
             result,
             port=plotcfg.get('port', 80),
+            autostart=plotcfg.get('autostart', True),
             usercolumns={'Profit & Loss': _analyzer_df},
             sortcolumn='Profit & Loss',
             sortasc=False)
