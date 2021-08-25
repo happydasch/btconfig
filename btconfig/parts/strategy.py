@@ -63,7 +63,7 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimize = []
         self.optimizer = commoncfg.get('optimizer', self.OPTIMIZERS[0])
         self.optimizer_result = None
-        self.optimizer_iterations = commoncfg.get('optimizer_iterations', 100)
+        self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
