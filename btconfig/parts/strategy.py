@@ -99,7 +99,7 @@ class PartStrategy(btconfig.BTConfigPart):
             self.optimizer,
             self.run_instance,
             self.args,
-            self.iterations)
+            self.optimizer_iterations)
         return self.optimize
 
     def run_instance(self, p):
