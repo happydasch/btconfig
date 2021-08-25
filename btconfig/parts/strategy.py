@@ -60,10 +60,11 @@ class PartStrategy(btconfig.BTConfigPart):
         self.cfgargs = cfgargs
         self.args = args
         self.stratname = stratname
-        self.iterations = commoncfg.get('optimize_iterations', 100)
         self.optimize = []
         self.optimizer = commoncfg.get('optimizer', self.OPTIMIZERS[0])
         self.optimizer_result = None
+        self.optimizer_iterations = commoncfg.get('optimizer_iterations', 100)
+        self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
@@ -110,9 +111,13 @@ class PartStrategy(btconfig.BTConfigPart):
         instargs.update(p)
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
-        inst.run()
-        if len(inst.result):
-            self.optimize.append(inst.result)
+        try:
+            inst.run()
+            if len(inst.result):
+                self.optimize.append(inst.result)
+        except Exception as e:
+            if self.optimizer_exceptions:
+                raise(e)
         return inst.cerebro.broker.getvalue()
 
 

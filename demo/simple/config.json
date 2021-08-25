@@ -7,7 +7,8 @@
         "create_log": true,
         "add_observer": true,
         "add_analyzer": true,
-        "optimize_iterations": 100,
+        "optimizer_iterations": 100,
+        "optimizer_exceptions": true,
         "optimizer": "HillClimbingOptimizer"
     },
     "logging": {

@@ -8,7 +8,7 @@ It supports different execution modes:
 * LIVE: Executes live trading mode
 * BACKTEST: Executes backtest mode
 * OPTIMIZE: Executes optimization mode
-* OPTIMIZEGENETIC: Executes genetic optimization mode (WIP)
+* OPTIMIZEGENETIC: Executes genetic optimization mode
 
 ## Modes
 
@@ -48,6 +48,7 @@ with optimization results browseable in a browser
   pips, market hours, logging etc.
 * Tearsheet support using QuantStats
 * Additional Analysers for Backtesting
+* Optimization using the built-in bruteforce method or using genetic algorithms
 
 ## Contribute
 
