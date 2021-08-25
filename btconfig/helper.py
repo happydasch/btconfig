@@ -19,27 +19,29 @@ def load_json(filename):
     return res
 
 
-def seq(start: float, stop: float, step: float = 1.) -> list:
+def seq(start, stop, step = 1) -> list:
     '''
     Returns a list with a given sequence
 
     Args:
     ----
-    * start (float): Start of sequence
-    * stop (float): Stop of sequence
-    * step (float): Step size of sequence
+    * start: Start of sequence
+    * stop: Stop of sequence
+    * step: Step size of sequence
 
     Returns:
     --------
-    list with number sequences (float)
+    list with number sequences (float|int)
     '''
-    n = int(round((stop - start) / float(step)))
+    n = int(round((stop - start) / step))
+    res = []
     if n > 1:
-        return([start + step * i for i in range(n + 1)])
+        res = [start + step * i for i in range(n + 1)]
     elif n == 1:
-        return([start])
-    else:
-        return([])
+        res = [start]
+    for i, v in enumerate(res):
+        res[i] = int(v) if int(v) == float(v) else float(v)
+    return res
 
 
 def sqn_rating(sqn_score: float) -> str:

@@ -107,6 +107,9 @@ class PartStrategy(btconfig.BTConfigPart):
         inst = btconfig.BTConfig(mode=btconfig.MODE_BACKTEST)
         for i in ['PartPlot', 'PartReport', 'PartTearsheet']:
             inst.LOAD_BTCONF_PART.remove(i)
+        # convert numpy numbers to float or int
+        for i, v in p.items():
+            p[i] = int(v) if int(v) == float(v) else float(v)
         instargs = self.cfgargs.copy()
         instargs.update(p)
         cfg['strategy'] = {self.stratname: instargs}
