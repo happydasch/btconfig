@@ -238,10 +238,10 @@
     '
 
     "plot": {
-        ' use=web for web interface, TKAgg etc. 
+        ' use=web for web interface, TKAgg etc.
         "use": "TKAgg",
         "path": "./backtest",
-        "plot_volume": true,
+        "volume": true,
         "bar_dist": 0.0003,
         "style": "candle",
         "combine": true,

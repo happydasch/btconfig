@@ -90,6 +90,7 @@ class PartPlot(btconfig.BTConfigPart):
                 commoncfg.get('strategy'),
                 commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
             kwargs['filename'] = output_file
+            kwargs['headline'] = f'Backtest {commoncfg.get("strategy")}'
             self.btplotting = BacktraderPlotting(**kwargs)
             res = self._instance.cerebro.plot(self.btplotting)
         self.plotfigs = res
@@ -127,7 +128,7 @@ class PartPlot(btconfig.BTConfigPart):
         plotcfg = self._instance.config.get('plot', {})
         scheme = btplotscheme.PlotScheme()
         scheme.number_format = NUMBERFORMAT
-        if not plotcfg.get('plot_volume', False):
+        if not plotcfg.get('volume', False):
             scheme.volume = False
         datas = self._instance.cerebro.datas
         if (len(datas) and datas[0]._timeframe == bt.TimeFrame.Ticks):

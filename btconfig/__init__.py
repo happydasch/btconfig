@@ -182,7 +182,7 @@ Config file
     Configuration for plotting
 
         * use (string): use=web for web interface, TKAgg etc.
-        * plot_volume (bool): Should volume be added to plotting (true/false)
+        * volume (bool): Should volume be added to plotting (true/false)
         * bar_dist (float): Distance of markers to bars (ex. 0.0003)
         * style (string): Plot style for bars (ex. "candle")
         * combine (bool): Should different feeds be combined to a

@@ -33,7 +33,7 @@
         }
     },
     "plot": {
-        "plot_volume": true,
+        "volume": true,
         "bar_dist": 0.0003,
         "style": "line"
     },
