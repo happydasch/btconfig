@@ -1,6 +1,5 @@
 from __future__ import division, absolute_import, print_function
 
-import time
 import logging
 import btconfig
 
@@ -86,9 +85,12 @@ class PartStrategy(btconfig.BTConfigPart):
                 btconfig.MODE_OPTIMIZE, btconfig.MODE_OPTIMIZEGENETIC]:
             return
         if self._instance.mode == btconfig.MODE_OPTIMIZEGENETIC:
-            self.log(f'Optimizer {self.optimizer_result.__class__.__name__}:'
-                     f' score:{self.optimizer_result.best_score}'
-                     f' para:{self.optimizer_result.best_para}')
+            score = self.optimizer_result.best_score
+            para = tabulate(
+                self.optimizer_result.best_para.items(), tablefmt='plain')
+            self.log(f'Optimizer {self.optimizer_result.__class__.__name__}'
+                     f'\nScore:{score}'
+                     f'\nParameters:\n{para}\n')
         else:
             sorted_results = sorted(
                 result, key=lambda x: x[0].broker.getvalue(), reverse=True)
@@ -96,8 +98,8 @@ class PartStrategy(btconfig.BTConfigPart):
             best_para = {}
             for x in self.args:
                 best_para[x] = best_result.params._get(x)
-            self.log(f'Built-In Optimizer: para:{best_para}')
-
+            para = tabulate(best_para.items(), tablefmt='plain')
+            self.log(f'Built-In Optimizer\nParameters:\n{para}\n')
 
     def _run_optimizegenetic(self):
         self.optimizer_result = run_optimizer(
@@ -108,7 +110,6 @@ class PartStrategy(btconfig.BTConfigPart):
         return self.optimize
 
     def run_instance(self, p):
-        t = time.process_time()
         inst = btconfig.BTConfig(mode=btconfig.MODE_BACKTEST)
         # instance args convert numpy numbers to float or int
         for i, v in p.items():
@@ -133,9 +134,8 @@ class PartStrategy(btconfig.BTConfigPart):
                 raise(e)
             self.log(f'Optimizer instance did not finish\n')
         res = self.optimizer_func(inst)
-        elapsed_time = time.process_time() - t
-        time_delta = timedelta(seconds=elapsed_time)
-        self.log(f'Optimizer instance finished with: {res} (Duration: {time_delta})\n')
+        duration = timedelta(seconds=inst.duration)
+        self.log(f'Optimizer instance finished with: {res} (Duration: {duration})\n')
         return res
 
 

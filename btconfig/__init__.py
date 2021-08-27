@@ -258,7 +258,7 @@ import pandas as pd
 import backtrader as bt
 
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 from urllib.parse import urlencode
 from .helper import get_classes, merge_dicts, get_data_params, parse_dt
@@ -332,6 +332,7 @@ class BTConfig:
         self.stores = {}             # current stores available
         self.datas = {}              # current data sources
         self.result = []             # store execution result
+        self.duration = None         # duration of last execution
 
         # paths
         self.PATH_COMMINFO = PATH_COMMINFO.copy()
@@ -464,6 +465,7 @@ class BTConfig:
             --------
             None
         '''
+        t = time.process_time()
         res = []
         for p in self._getParts():
             tmp = p.run()
@@ -475,6 +477,7 @@ class BTConfig:
                 continue
             res.extend(tmp)
         self.result = res
+        self.duration = time.process_time() - t
 
     def _finish(self) -> None:
         '''
@@ -505,7 +508,8 @@ class BTConfig:
         self._setup()
         self.log('All parts set up and configured, running strategy\n')
         self._run()
-        self.log('Strategy executed, finishing execution\n')
+        duration = timedelta(seconds=self.duration)
+        self.log(f'Strategy executed in {duration}, finishing execution\n')
         self._finish()
 
     def log(self, txt: str, level: int = logging.INFO) -> None:
