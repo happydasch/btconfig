@@ -1,8 +1,10 @@
 from __future__ import division, absolute_import, print_function
 
+import time
 import logging
 import btconfig
 
+from datetime import timedelta
 from tabulate import tabulate
 from btconfig.proto import ProtoStrategy, ForexProtoStrategy
 from btconfig.helper import get_classes, create_opt_params
@@ -106,6 +108,7 @@ class PartStrategy(btconfig.BTConfigPart):
         return self.optimize
 
     def run_instance(self, p):
+        t = time.process_time()
         inst = btconfig.BTConfig(mode=btconfig.MODE_BACKTEST)
         # instance args convert numpy numbers to float or int
         for i, v in p.items():
@@ -120,7 +123,7 @@ class PartStrategy(btconfig.BTConfigPart):
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
         strinstargs = tabulate(instargs.items(), tablefmt='plain')
-        self.log(f'Running instance with:\n{strinstargs}')
+        self.log(f'Running optimizer instance with:\n{strinstargs}')
         try:
             inst.run()
             if len(inst.result):
@@ -128,9 +131,11 @@ class PartStrategy(btconfig.BTConfigPart):
         except Exception as e:
             if self.optimizer_exceptions:
                 raise(e)
-            self.log(f'Instance did not finish\n')
+            self.log(f'Optimizer instance did not finish\n')
         res = self.optimizer_func(inst)
-        self.log(f'Instance finished with: {res}\n')
+        elapsed_time = time.process_time() - t
+        time_delta = timedelta(seconds=elapsed_time)
+        self.log(f'Optimizer instance finished with: {res} (Duration: {time_delta})\n')
         return res
 
 
