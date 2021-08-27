@@ -134,8 +134,11 @@ class PartStrategy(btconfig.BTConfigPart):
                 raise(e)
             self.log(f'Optimizer instance did not finish\n')
         res = self.optimizer_func(inst)
-        duration = timedelta(seconds=inst.duration)
-        self.log(f'Optimizer instance finished with: {res} (Duration: {duration})\n')
+        if inst.duration:
+            duration = timedelta(seconds=inst.duration)
+            self.log(f'Optimizer instance finished with: {res} (Duration: {duration})\n')
+        else:
+            self.log(f'Optimizer instance finished with: {res}\n')
         return res
 
 
