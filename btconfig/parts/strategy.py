@@ -139,10 +139,6 @@ class PartStrategy(btconfig.BTConfigPart):
             self.log(
                 f'Optimizer instance finished with: {res} (Duration: {duration})\n',
                 logging.INFO)
-        else:
-            self.log(
-                f'Optimizer instance finished with: {res}\n',
-                logging.INFO)
         return res
 
 
