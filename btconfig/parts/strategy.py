@@ -123,8 +123,8 @@ class PartStrategy(btconfig.BTConfigPart):
             commoncfg[i] = False
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
-        strinstargs = tabulate(instargs.items(), tablefmt='plain')
-        self.log(f'Running optimizer instance with:\n{strinstargs}')
+        strargs = tabulate(p.items(), tablefmt='plain')
+        self.log(f'Running optimizer instance with:\n{strargs}', logging.DEBUG)
         try:
             inst.run()
             if len(inst.result):
@@ -136,9 +136,13 @@ class PartStrategy(btconfig.BTConfigPart):
         res = self.optimizer_func(inst)
         if inst.duration:
             duration = timedelta(seconds=inst.duration)
-            self.log(f'Optimizer instance finished with: {res} (Duration: {duration})\n')
+            self.log(
+                f'Optimizer instance finished with: {res} (Duration: {duration})\n',
+                logging.INFO)
         else:
-            self.log(f'Optimizer instance finished with: {res}\n')
+            self.log(
+                f'Optimizer instance finished with: {res}\n',
+                logging.INFO)
         return res
 
 
