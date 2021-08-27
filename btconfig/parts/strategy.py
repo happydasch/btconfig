@@ -25,6 +25,9 @@ class PartStrategy(btconfig.BTConfigPart):
         'TreeStructuredParzenEstimators',
         'DecisionTreeOptimizer']
 
+    def prepare(self):
+        self.optimizer_func = lambda x: x.cerebro.broker.getvalue()
+
     def setup(self):
         commoncfg = self._instance.config.get('common', {})
         stratcfg = self._instance.config.get('strategy', {})
@@ -103,17 +106,21 @@ class PartStrategy(btconfig.BTConfigPart):
         return self.optimize
 
     def run_instance(self, p):
-        cfg = self._instance._getConfigForMode(btconfig.MODE_BACKTEST)
         inst = btconfig.BTConfig(mode=btconfig.MODE_BACKTEST)
-        for i in ['PartPlot', 'PartReport', 'PartTearsheet']:
-            inst.LOAD_BTCONF_PART.remove(i)
-        # convert numpy numbers to float or int
+        # instance args convert numpy numbers to float or int
         for i, v in p.items():
             p[i] = int(v) if int(v) == float(v) else float(v)
         instargs = self.cfgargs.copy()
         instargs.update(p)
+        # config for instance
+        cfg = self._instance._getConfigForMode(btconfig.MODE_BACKTEST)
+        commoncfg = cfg['common']
+        for i in ['create_plot', 'create_log', 'create_report', 'create_tearsheet']:
+            commoncfg[i] = False
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
+        strinstargs = tabulate(instargs.items(), tablefmt='plain')
+        self.log(f'Running instance with:\n{strinstargs}')
         try:
             inst.run()
             if len(inst.result):
@@ -121,7 +128,10 @@ class PartStrategy(btconfig.BTConfigPart):
         except Exception as e:
             if self.optimizer_exceptions:
                 raise(e)
-        return inst.cerebro.broker.getvalue()
+            self.log(f'Instance did not finish\n')
+        res = self.optimizer_func(inst)
+        self.log(f'Instance finished with: {res}\n')
+        return res
 
 
 def run_optimizer(class_name, runstrat, search_space, iterations=200):

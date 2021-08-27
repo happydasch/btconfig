@@ -257,6 +257,7 @@ import random
 import pandas as pd
 import backtrader as bt
 
+from copy import deepcopy
 from datetime import datetime
 from dateutil import parser
 from urllib.parse import urlencode
@@ -332,7 +333,6 @@ class BTConfig:
         self.datas = {}              # current data sources
         self.result = []             # store execution result
 
-
         # paths
         self.PATH_COMMINFO = PATH_COMMINFO.copy()
         self.PATH_SIZER    = PATH_SIZER.copy()
@@ -385,17 +385,17 @@ class BTConfig:
             dict
         '''
         # use default config based on mode and merge with config
-        res = self._config.copy()
+        res = deepcopy(self._config)
         if mode == MODE_LIVE:
             merge_dicts(res, CONFIG_LIVE)
-            merge_dicts(res, self._config.get('_live', {}))
+            merge_dicts(res, res.get('_live', {}))
         elif mode == MODE_BACKTEST:
             merge_dicts(res, CONFIG_BACKTEST)
-            merge_dicts(res, self._config.get('_backtest', {}))
+            merge_dicts(res, res.get('_backtest', {}))
         elif mode in [MODE_OPTIMIZE, MODE_OPTIMIZEGENETIC]:
             merge_dicts(res, CONFIG_OPTIMIZE)
-            merge_dicts(res, self._config.get('_backtest', {}))
-            merge_dicts(res, self._config.get('_optimize', {}))
+            merge_dicts(res, res.get('_backtest', {}))
+            merge_dicts(res, res.get('_optimize', {}))
         else:
             raise Exception('Unknown mode provided')
         # remove override sections
