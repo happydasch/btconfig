@@ -26,9 +26,6 @@ class PartStrategy(btconfig.BTConfigPart):
         'TreeStructuredParzenEstimators',
         'DecisionTreeOptimizer']
 
-    def prepare(self):
-        self.optimizer_func = lambda x: x.cerebro.broker.getvalue()
-
     def setup(self):
         commoncfg = self._instance.config.get('common', {})
         stratcfg = self._instance.config.get('strategy', {})
@@ -69,6 +66,8 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_result = None
         self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
+        self.optimizer_func = commoncfg.get(
+            'optimizer_func', lambda x: x.cerebro.broker.getvalue())
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
