@@ -8,6 +8,9 @@ from tabulate import tabulate
 from btconfig.proto import ProtoStrategy, ForexProtoStrategy
 from btconfig.helper import get_classes, create_opt_params
 
+from hyperactive import Hyperactive
+from hyperactive.dashboards import ProgressBoard
+
 
 class PartStrategy(btconfig.BTConfigPart):
 
@@ -66,8 +69,7 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_result = None
         self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
-        self.optimizer_func = commoncfg.get(
-            'optimizer_func', lambda x: x.cerebro.broker.getvalue())
+        self.optimizer_func = commoncfg.get('optimizer_func', self._optimizer_func)
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
@@ -100,6 +102,10 @@ class PartStrategy(btconfig.BTConfigPart):
             para = tabulate(best_para.items(), tablefmt='plain')
             self.log(f'Built-In Optimizer\nParameters:\n{para}\n')
 
+    def _optimizer_func(self, instance):
+        return round(instance.cerebro.broker.startingcash
+                - instance.cerebro.broker.getvalue(), 2)
+
     def _run_optimizegenetic(self):
         self.optimizer_result = run_optimizer(
             self.optimizer,
@@ -111,10 +117,12 @@ class PartStrategy(btconfig.BTConfigPart):
     def run_instance(self, p):
         inst = btconfig.BTConfig(mode=btconfig.MODE_BACKTEST)
         # instance args convert numpy numbers to float or int
-        for i, v in p.items():
-            p[i] = int(v) if int(v) == float(v) else float(v)
+        # FIXME with hyperactive this should not be needed
+        # FIXME para_dict is coming from hyperactive, gradient free optimizer do not need that
+        for i, v in p.para_dict.items():
+            p.para_dict[i] = int(v) if int(v) == float(v) else float(v)
         instargs = self.cfgargs.copy()
-        instargs.update(p)
+        instargs.update(p.para_dict)
         # config for instance
         cfg = self._instance._getConfigForMode(btconfig.MODE_BACKTEST)
         commoncfg = cfg['common']
@@ -122,7 +130,7 @@ class PartStrategy(btconfig.BTConfigPart):
             commoncfg[i] = False
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
-        strargs = tabulate(p.items(), tablefmt='plain')
+        strargs = tabulate(p.para_dict.items(), tablefmt='plain')
         self.log(f'Running optimizer instance with:\n{strargs}', logging.DEBUG)
         try:
             inst.run()
@@ -142,8 +150,20 @@ class PartStrategy(btconfig.BTConfigPart):
 
 
 def run_optimizer(class_name, runstrat, search_space, iterations=200):
-    module = __import__('gradient_free_optimizers')
+    module = __import__('hyperactive.optimizers')
     class_ = getattr(module, class_name)
-    opt = class_(search_space)
-    opt.search(runstrat, n_iter=iterations, verbosity=[])
-    return opt
+    opt = class_()
+    progress_board = ProgressBoard()
+    hyper = Hyperactive()
+    hyper.add_search(
+        runstrat, search_space,
+        n_iter=iterations, n_jobs=4,
+        progress_board=progress_board,
+    )
+    hyper.run()
+    # only gradient free optimizers
+    #module = __import__('gradient_free_optimizers')
+    #opt = class_(search_space)
+    #opt.search(runstrat, n_iter=iterations, verbosity=[])
+    #return opt
+    return hyper
