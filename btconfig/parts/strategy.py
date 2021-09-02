@@ -157,7 +157,7 @@ def run_optimizer(class_name, runstrat, search_space, iterations=200):
     hyper = Hyperactive()
     hyper.add_search(
         runstrat, search_space,
-        n_iter=iterations, n_jobs=4,
+        n_iter=iterations, n_jobs=-1,
         progress_board=progress_board,
     )
     hyper.run()
