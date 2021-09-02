@@ -103,8 +103,8 @@ class PartStrategy(btconfig.BTConfigPart):
             self.log(f'Built-In Optimizer\nParameters:\n{para}\n')
 
     def _optimizer_func(self, instance):
-        return round(instance.cerebro.broker.startingcash
-                - instance.cerebro.broker.getvalue(), 2)
+        return round(instance.cerebro.broker.getvalue()
+                     - instance.cerebro.broker.startingcash, 2)
 
     def _run_optimizegenetic(self):
         self.optimizer_result = run_optimizer(
