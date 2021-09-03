@@ -162,4 +162,4 @@ def _analyzer_df(optresults):
     Generates a custom df for optimiziation results
     '''
     a = [x.analyzers.TradeAnalyzer.get_analysis() for x in optresults]
-    return sum([x.pnl.gross.total if 'pnl' in x else 0 for x in a])
+    return sum([x.pnl.net.total if 'pnl' in x else 0 for x in a])

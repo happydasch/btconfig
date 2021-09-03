@@ -70,6 +70,7 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
         self.optimizer_func = commoncfg.get('optimizer_func', self._optimizer_func)
+        self.optimizer_jobs = 1 if commoncfg.get('create_plot', False) else -1
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
@@ -86,12 +87,11 @@ class PartStrategy(btconfig.BTConfigPart):
                 btconfig.MODE_OPTIMIZE, btconfig.MODE_OPTIMIZEGENETIC]:
             return
         if self._instance.mode == btconfig.MODE_OPTIMIZEGENETIC:
-            score = self.optimizer_result.best_score
-            para = tabulate(
-                self.optimizer_result.best_para.items(), tablefmt='plain')
             self.log(f'Optimizer {self.optimizer_result.__class__.__name__}'
-                     f'\nScore:{score}'
-                     f'\nParameters:\n{para}\n')
+                     f'\Results:\n')
+            for x in self.optimizer_result.results_list:
+                results = tabulate(x.items(), tablefmt='plain')
+                self.log(results)
         else:
             sorted_results = sorted(
                 result, key=lambda x: x[0].broker.getvalue(), reverse=True)
@@ -111,7 +111,8 @@ class PartStrategy(btconfig.BTConfigPart):
             self.optimizer,
             self.run_instance,
             self.args,
-            self.optimizer_iterations)
+            self.optimizer_iterations,
+            self.optimizer_jobs)
         return self.optimize
 
     def run_instance(self, p):
@@ -149,7 +150,7 @@ class PartStrategy(btconfig.BTConfigPart):
         return res
 
 
-def run_optimizer(class_name, runstrat, search_space, iterations=200):
+def run_optimizer(class_name, runstrat, search_space, iterations=200, jobs=1):
     module = __import__('hyperactive.optimizers')
     class_ = getattr(module, class_name)
     opt = class_()
@@ -157,7 +158,7 @@ def run_optimizer(class_name, runstrat, search_space, iterations=200):
     hyper = Hyperactive()
     hyper.add_search(
         runstrat, search_space,
-        n_iter=iterations, n_jobs=-1,
+        n_iter=iterations, n_jobs=jobs,
         progress_board=progress_board,
     )
     hyper.run()
