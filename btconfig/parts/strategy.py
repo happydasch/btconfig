@@ -70,7 +70,10 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
         self.optimizer_func = commoncfg.get('optimizer_func', self._optimizer_func)
-        self.optimizer_jobs = 1 if commoncfg.get('create_plot', False) else -1
+        if commoncfg.get('create_plot', False):
+            self.optimizer_jobs = 1
+        else:
+            self.optimizer_jobs = commoncfg.get('optimizer_jobs', -1)
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
@@ -137,11 +140,12 @@ class PartStrategy(btconfig.BTConfigPart):
             inst.run()
             if len(inst.result):
                 self.optimize.append(inst.result)
+            res = self.optimizer_func(inst)
         except Exception as e:
             if self.optimizer_exceptions:
                 raise(e)
             self.log(f'Optimizer instance did not finish\n')
-        res = self.optimizer_func(inst)
+            res = 0
         if inst.duration:
             duration = timedelta(seconds=inst.duration)
             self.log(
