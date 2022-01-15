@@ -55,3 +55,12 @@ class PartBacktrader(btconfig.BTConfigPart):
         ccerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer')
         ccerebro.addanalyzer(bt.analyzers.SQN, _name='SQN')
         ccerebro.addanalyzer(TradeList, _name='TradeList')
+        
+        # Add Custom Analyzers
+        all_classes = get_classes(self._instance.PATH_ANALYZER)
+        for analyzer_name, params in analyzercfg.items():
+            if analyzer_name not in ['sharpe_ratio', 'time_return', 'DrawDown', 'TradeAnalyzer', 'TradeList']:
+                if analyzer_name not in all_classes:
+                    raise Exception(f'Analyzer {analyzer_name} not found configured PATH_ANALYZER directory paths')
+                params = dict({'_name': analyzer_name}, **params)
+                ccerebro.addanalyzer(all_classes[analyzer_name], **params)
