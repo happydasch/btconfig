@@ -262,6 +262,7 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from urllib.parse import urlencode
 from .helper import get_classes, merge_dicts, get_data_params, parse_dt
+from threading import Lock
 
 
 # dev info
@@ -312,6 +313,8 @@ instances = []
 
 
 class BTConfig:
+
+    parts_thread_lock = Lock()
 
     def __init__(self, mode: int = None, configfile: str = None,
                  add_local_paths: bool = True) -> None:
@@ -500,12 +503,13 @@ class BTConfig:
         '''
         Runs backtrader
         '''
-        # load different parts of btconfig
-        self._loadParts()
-        # prepare and setup everything also run strategy
-        self._prepare(mode, configfile)
-        self.log('Preparing execution\n')
-        self._setup()
+        with BTConfig.parts_thread_lock:
+            # load different parts of btconfig
+            self._loadParts()
+            # prepare and setup everything also run strategy
+            self._prepare(mode, configfile)
+            self.log('Preparing execution\n')
+            self._setup()
         self.log('All parts set up and configured, running strategy\n')
         self._run()
         duration = timedelta(seconds=self.duration)
