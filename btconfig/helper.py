@@ -309,11 +309,11 @@ def get_data_dates(backfill_days, fromdate, todate):
     '''
     Returns fromdate and todate datetime objects
     '''
-    if backfill_days and backfill_days > 0:
-        # date for backfill start
-        fromdate = datetime.now() - timedelta(days=backfill_days)
-    elif fromdate:
+    if fromdate:
         fromdate = parser.parse(fromdate)
         if todate:
             todate = parser.parse(todate)
+    elif backfill_days and backfill_days > 0:
+        # date for backfill start
+        fromdate = datetime.now() - timedelta(days=backfill_days)
     return fromdate, todate
