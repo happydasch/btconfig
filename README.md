@@ -40,7 +40,7 @@ with optimization results browseable in a browser
 * Configuration of backtrader components using config files
 * Data downloader for Oanda, Interactive Brokers, Binance, Yahoo included
 * Additional Dataloader: CoinMetrics, CoinAPI
-* API Clients for: CoinAPI, CoinMetrics, CoinGecko, CoinMarketCap
+* API Clients for: CoinAPI, CoinMetrics, CoinGecko, CoinMarketCap, CoinGlass (WIP)
 * Custom feeds with time correction (useful for resample and replay)
 * Custom feeds with data rounding
 * Live Plotting, Optimization Browser, Backtest Results using btplotting
