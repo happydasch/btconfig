@@ -682,12 +682,7 @@ class BTConfigDataloader:
         Loads a custom data source
         '''
         self._setFile()
-        try:
-            # if update of file fails, still use
-            # the existing data file
-            self._updateFile(self._loadData())
-        except Exception:
-            pass
+        self._updateFile(self._loadData())
         return self._createFeed()
 
 
@@ -805,6 +800,7 @@ def run_optimize(configfile: str = None) -> BTConfig:
         BTConfig
     '''
     return run(MODE_OPTIMIZE, configfile)
+
 
 def run_optimizegenetic(configfile: str = None) -> BTConfig:
     '''

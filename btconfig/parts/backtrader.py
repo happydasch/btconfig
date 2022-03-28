@@ -4,6 +4,7 @@ import logging
 import btconfig
 import backtrader as bt
 
+from btconfig.helper import get_classes
 from btconfig.observers import BuySellMarker
 from btconfig.analyzers import TradeList
 
@@ -55,7 +56,7 @@ class PartBacktrader(btconfig.BTConfigPart):
         ccerebro.addanalyzer(bt.analyzers.TradeAnalyzer, _name='TradeAnalyzer')
         ccerebro.addanalyzer(bt.analyzers.SQN, _name='SQN')
         ccerebro.addanalyzer(TradeList, _name='TradeList')
-        
+
         # Add Custom Analyzers
         all_classes = get_classes(self._instance.PATH_ANALYZER)
         for analyzer_name, params in analyzercfg.items():
