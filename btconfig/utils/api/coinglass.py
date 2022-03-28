@@ -24,4 +24,4 @@ class CoinGlassClient(BTConfigApiClient):
             'type': type
         }
         rates = self._request(path, exceptions=True, json=True, **kwargs)
-        return rates
+        return rates['data']

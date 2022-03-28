@@ -134,7 +134,7 @@ class CoinGeckoClient(BTConfigApiClient):
 def create_metrics_df(data, metrics_cols):
     if data is None:
         return
-    tmp = {}
+    tmp = None
     df = None
     for x in metrics_cols.keys():
         tmp = pd.DataFrame(data[x])
