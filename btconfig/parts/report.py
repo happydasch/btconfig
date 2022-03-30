@@ -104,14 +104,15 @@ def create_report(result, startcash) -> str:
     txt.append(tabulate(kpi_trades, tablefmt='fancy_grid'))
     txt.append('')
 
-    kpi_perf = [
-        ['sqn_score', sqn],
-        ['sqn_human', sqn_rating(sqn)]
-    ]
-    if sharpe:
-        kpi_perf.append(['sharpe_ratio (SR)', sharpe])
-    txt.append('Performance')
-    txt.append(tabulate(kpi_perf, tablefmt='fancy_grid'))
-    txt = '\n'.join(txt)
+    if sqn is not None:
+        kpi_perf = [
+            ['sqn_score', sqn],
+            ['sqn_human', sqn_rating(sqn)]
+        ]
+        if sharpe is not None:
+            kpi_perf.append(['sharpe_ratio (SR)', sharpe])
+        txt.append('Performance')
+        txt.append(tabulate(kpi_perf, tablefmt='fancy_grid'))
 
+    txt = '\n'.join(txt)
     return txt
