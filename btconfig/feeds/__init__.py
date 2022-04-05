@@ -5,3 +5,4 @@ from .binance import *  # noqa: *
 from .coinapi import *  # noqa: *
 from .coinmetrics import *  # noqa: *
 from .yahoo import *  # noqa: *
+from .ftx import *  # noqa: *
