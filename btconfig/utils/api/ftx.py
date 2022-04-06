@@ -145,7 +145,6 @@ def create_funding_rates_df(data):
         return
     res = pd.DataFrame(data)
     res['time'] = pd.to_datetime(res['time'])
-    res.sort
     res.rename(columns={'time': 'datetime', 'rate': 'close'}, inplace=True)
     res['datetime'] = res['datetime'].dt.tz_localize(None)
     return res[['datetime', 'close', 'future']].sort_values(by='datetime')
