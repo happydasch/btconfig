@@ -110,15 +110,15 @@ class IBDataloaderApp:
     REQIDBASE = 0x01000000
 
     def __init__(self, host='127.0.0.1', port=7496, clientId=35,
-                 e=IBDownloadEngine_Eclient, debug=False, pause=None):
+                 e=IBDownloadEngine_Eclient, pause=None, debug=False):
         '''
         Initializes download app
         '''
         self.engine = e(self, host, port, clientId)
         self.data = IBData()
         self.store = IBStore()
-        self.debug = debug
         self.pause = pause
+        self.debug = debug
         self._tickerId = itertools.count(self.REQIDBASE)  # unique tickerIds
         self._prepare()
 

@@ -14,10 +14,10 @@ class CoinMarketCapClient(BTConfigApiClient):
 
     def getCryptoList(self):
         path = 'cryptocurrency/map'
-        response = self._request(path, exceptions=True, json=True)
+        response = self._request(path, json=True)
         return response['data']
 
     def getExchangeList(self):
         path = 'exchange/map'
-        response = self._request(path, exceptions=True, json=True)
+        response = self._request(path, json=True)
         return response['data']

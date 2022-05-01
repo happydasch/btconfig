@@ -86,48 +86,42 @@ class CoinMetricsClient(BTConfigApiClient):
         # Available assets
         path = 'catalog/assets'
         kwargs = {'assets': assets}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getPairs(self, pairs=''):
         # Available pairs
         path = 'catalog/pairs'
         kwargs = {'pairs': pairs}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getMetrics(self, metrics=''):
         # Available metrics
         path = 'catalog/metrics'
         kwargs = {'metrics': metrics}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getExchanges(self, exchanges=''):
         # Available exchanges
         path = 'catalog/exchanges'
         kwargs = {'exchanges': exchanges}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getMarkets(self, markets=''):
         # Available markets
         path = 'catalog/markets'
         kwargs = {'markets': markets}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getIndexes(self, indexes=''):
         # Available indexes
         path = 'catalog/indexes'
         kwargs = {'indexes': indexes}
-        res = self._request(
-            path, exceptions=True, json=True, **kwargs)
+        res = self._request(path, json=True, **kwargs)
         return res['data']
 
     def getMarketCapitalization(self, assets):
@@ -157,7 +151,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         metrics: ReferenceRateLondon1100am
         '''
         path = 'libor'
-        return self._request(path, exceptions=True, json=True)['data']
+        return self._request(path, json=True)['data']
 
     def getDollar(self):  # U.S. Dollar Index
         '''
@@ -165,7 +159,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         metrics: ReferenceRateNewYork1200pm
         '''
         path = 'dollar'
-        return self._request(path, exceptions=True, json=True)['data']
+        return self._request(path, json=True)['data']
 
     def getGold(self):  # Gold
         '''
@@ -173,7 +167,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         metrics: ReferenceRateLondon1030am
         '''
         path = 'gold'
-        return self._request(path, exceptions=True, json=True)['data']
+        return self._request(path, json=True)['data']
 
     def getSP500(self):  # S&P 500
         '''
@@ -181,7 +175,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         metrics: ReferenceRateNewYork0400pm
         '''
         path = 'sp500'
-        return self._request(path, exceptions=True, json=True)['data']
+        return self._request(path, json=True)['data']
 
     def getVix(self):  # CBOE Volatility Index
         '''
@@ -189,7 +183,7 @@ class CoinMetricsDataClient(BTConfigApiClient):
         metrics: ReferenceRateChicago0315pm
         '''
         path = 'vix'
-        return self._request(path, exceptions=True, json=True)['data']
+        return self._request(path, json=True)['data']
 
 
 def create_data_df(data):

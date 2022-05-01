@@ -92,7 +92,7 @@ class CoinApiClient(BTConfigApiClient):
             }
             if time_end:
                 kwargs['time_end'] = time_end
-            response = self._request(path, exceptions=True, **kwargs)
+            response = self._request(path, **kwargs)
             if response.status_code == 200:
                 tmp = response.json()
                 if not len(tmp):
@@ -106,17 +106,17 @@ class CoinApiClient(BTConfigApiClient):
 
     def getExchanges(self):
         path = 'exchanges'
-        exchanges = self._request(path, exceptions=True, json=True)
+        exchanges = self._request(path, json=True)
         return exchanges
 
     def getAssets(self):
         path = 'assets'
-        assets = self._request(path, exceptions=True, json=True)
+        assets = self._request(path, json=True)
         return assets
 
     def getSymbols(self):
         path = 'symbols'
-        symbols = self._request(path, exceptions=True, json=True)
+        symbols = self._request(path, json=True)
         return symbols
 
 

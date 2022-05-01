@@ -37,6 +37,12 @@ class FTXClient(BTConfigApiClient):
         # see https://blog.ftx.com/blog/api-authentication/
         return super(FTXClient, self)._requestUrl(url)
 
+    def getMarkets(self):
+        # https://docs.ftx.com/#get-markets
+        path = 'markets'
+        response = self._request(path, json=True)
+        return response['result']
+
     def getMarketCandles(
             self, symbol, start_time=None, end_time=None, resolution=3600):
         # https://docs.ftx.com/#get-historical-prices
@@ -45,14 +51,13 @@ class FTXClient(BTConfigApiClient):
         if start_time:
             kwargs['start_time'] = int(start_time)
             if not end_time:
-                end_time = int(datetime.now().timestamp())
+                end_time = int(datetime.utcnow().timestamp())
         if end_time:
             kwargs['end_time'] = int(end_time)
         res = []
 
         while True:
-            url = self._getUrl(path, **kwargs)
-            response = self._requestUrl(url)
+            response = self._request(path, **kwargs)
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()
@@ -93,8 +98,7 @@ class FTXClient(BTConfigApiClient):
             kwargs['start_time'] = int(start_time)
         res = []
         while True:
-            url = self._getUrl(path, **kwargs)
-            response = self._requestUrl(url)
+            response = self._request(path, **kwargs)
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()

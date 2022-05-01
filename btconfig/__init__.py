@@ -705,7 +705,7 @@ class BTConfigApiClient:
         url = self.base_url + path + params
         return url
 
-    def _request(self, path, exceptions=False, json=False, **kwargs):
+    def _request(self, path, exceptions=True, json=False, **kwargs):
         '''
         Runs a request to the given api path
         '''

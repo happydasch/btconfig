@@ -29,8 +29,13 @@ class FTXDataloader(btconfig.BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
+            pause = self._cfg.get('pause', None)
             debug = self._cfg.get('debug', False)
-            loader = FTXDataloaderApp(debug=debug)
+            api_key = self._cfg.get('api_key', '')
+            api_secret = self._cfg.get('api_secret', '')
+            loader = FTXDataloaderApp(
+                api_key=api_key, api_secret=api_secret,
+                pause=pause, debug=debug)
             data = loader.getMarketCandles(
                 dataname, timeframe, compression, fromdate, todate)
             return data
@@ -54,8 +59,10 @@ class FTXFundingRatesDataloader(btconfig.BTConfigDataloader):
         if not os.path.isfile(self._filename) or not todate:
             api_key = self._cfg.get('api_key', '')
             api_secret = self._cfg.get('api_secret', '')
+            pause = self._cfg.get('pause', None)
             debug = self._cfg.get('debug', False)
             loader = FTXDataloaderApp(
-                api_key=api_key, api_secret=api_secret, debug=debug)
+                api_key=api_key, api_secret=api_secret,
+                pause=pause, debug=debug)
             data = loader.getFundingRates(dataname, fromdate, todate)
             return data

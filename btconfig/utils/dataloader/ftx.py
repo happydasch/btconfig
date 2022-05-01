@@ -4,6 +4,7 @@ from btconfig.utils.api.ftx import (
     FTXClient, create_data_df, create_funding_rates_df)
 
 import backtrader as bt
+import pandas as pd
 
 
 class FTXDataloaderApp:
@@ -12,6 +13,14 @@ class FTXDataloaderApp:
         self.api_key = api_key
         self.api_secret = api_secret
         self.client = FTXClient(**kwargs)
+
+    def getMarkets(self):
+        '''
+        :return pd.DataFrame | None:
+        '''
+        data = self.client.getMarkets()
+        data_df = pd.DataFrame(data)
+        return data_df
 
     def getMarketCandles(self, symbol, timeframe, compression,
                          fromdate=None, todate=None):

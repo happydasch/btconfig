@@ -26,7 +26,7 @@ class CoinGeckoClient(BTConfigApiClient):
 
     def getCoinsList(self):
         path = 'coins/list'
-        coins = self._request(path, exceptions=True, json=True)
+        coins = self._request(path, json=True)
         return coins
 
     def getCoinsMarkets(self, vs_currency='usd', coin_ids=''):
@@ -39,8 +39,7 @@ class CoinGeckoClient(BTConfigApiClient):
         }
         coins = []
         while True:
-            tmp = self._request(
-                path, exceptions=True, json=True, **kwargs)
+            tmp = self._request(path, json=True, **kwargs)
             if not len(tmp):
                 break
             coins.extend(tmp)
@@ -55,8 +54,7 @@ class CoinGeckoClient(BTConfigApiClient):
         }
         tickers = []
         while True:
-            tmp = self._request(
-                path, exceptions=True, json=True, **kwargs)
+            tmp = self._request(path, json=True, **kwargs)
             if not len(tmp):
                 break
             if 'tickers' not in tmp or not len(tmp['tickers']):
@@ -71,7 +69,7 @@ class CoinGeckoClient(BTConfigApiClient):
             'date': date,
             'localization': 'false' if not localization else 'true'
         }
-        history = self._request(path, exceptions=True, json=True, **kwargs)
+        history = self._request(path, json=True, **kwargs)
         return history
 
     def getCoinsMarketChart(self, coin_id, vs_currency, days):
@@ -80,7 +78,7 @@ class CoinGeckoClient(BTConfigApiClient):
             'vs_currency': vs_currency,
             'days': days
         }
-        mchart = self._request(path, exceptions=True, json=True, **kwargs)
+        mchart = self._request(path, json=True, **kwargs)
         return mchart
 
     def getCoinsMarketChartRange(self, coin_id, vs_currency, date_from, date_to):
@@ -91,17 +89,17 @@ class CoinGeckoClient(BTConfigApiClient):
             'from': date_from,
             'to': date_to
         }
-        mchart = self._request(path, exceptions=True, json=True, **kwargs)
+        mchart = self._request(path, json=True, **kwargs)
         return mchart
 
     def getExchanges(self):
         path = 'exchanges'
-        exchanges = self._request(path, exceptions=True, json=True)
+        exchanges = self._request(path, json=True)
         return exchanges
 
     def getExchangesList(self):
         path = 'exchanges/list'
-        exchanges = self._request(path, exceptions=True, json=True)
+        exchanges = self._request(path, json=True)
         return exchanges
 
     def getExchangeTickers(self, exchange_id, coin_id=''):
@@ -112,8 +110,7 @@ class CoinGeckoClient(BTConfigApiClient):
         }
         tickers = []
         while True:
-            tmp = self._request(
-                path, exceptions=True, json=True, **kwargs)
+            tmp = self._request(path, json=True, **kwargs)
             if 'tickers' not in tmp or not len(tmp['tickers']):
                 break
             tickers.extend(tmp['tickers'])
@@ -122,12 +119,12 @@ class CoinGeckoClient(BTConfigApiClient):
 
     def getIndexes(self):
         path = 'indexes'
-        indexes = self._request(path, exceptions=True, json=True)
+        indexes = self._request(path, json=True)
         return indexes
 
     def getGlobal(self):
         path = 'global'
-        glob = self._request(path, exceptions=True, json=True)
+        glob = self._request(path, json=True)
         return glob
 
 
