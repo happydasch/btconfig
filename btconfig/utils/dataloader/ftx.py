@@ -65,7 +65,7 @@ class FTXDataloaderApp:
         fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
-            todate_ts = todate.timesamp()
+            todate_ts = todate.timestamp()
         data = self.client.getAllFundingRates(fromdate=fromdate_ts, todate=todate_ts)
         data_df = create_funding_rates_df(data)
         return data_df
@@ -83,7 +83,7 @@ class FTXDataloaderApp:
             fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
-            todate_ts = todate.timesamp()
+            todate_ts = todate.timestamp()
         data = self.client.getFundingRates(future, fromdate_ts, todate_ts)
         data_df = create_funding_rates_df(data)
         return data_df
