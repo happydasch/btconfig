@@ -16,8 +16,12 @@ class ProtoStrategy(bt.Strategy):
     Prototype strategy
 
     * Logging
-    set param use_logging=true, logs will be stored in logs/
-    logging needs to be set up
+        set param use_logging=true, logs will be stored in logs/
+        logging needs to be set up
+
+    * Datafeed status tracking
+        self.datastatus == 0 -> Delayed data
+        self.datastatus > 0 -> Live data
     '''
 
     params = dict(
@@ -31,13 +35,17 @@ class ProtoStrategy(bt.Strategy):
     )
 
     def __init__(self):
-        ''' Initialization '''
+        '''
+        Initialization
+        '''
         # control vars
         self.datastatus = 1  # data status (live or delayed)
         super(ProtoStrategy, self).__init__()
 
     def log(self, txt, dt=None, level=logging.INFO):
-        ''' Logging function for strategy '''
+        '''
+        Logging function for strategy
+        '''
         if len(self.data):
             dt = dt or self.data.datetime.datetime(0)
             txt = f'{dt.isoformat()}: {txt}'
@@ -46,12 +54,16 @@ class ProtoStrategy(bt.Strategy):
         self.cerebro.btconfig.log(txt, level)
 
     def notify_store(self, msg, *args, **kwargs):
-        ''' Store notification '''
+        '''
+        Store notification
+        '''
         txt = ['*' * 5, 'STORE NOTIF:', str(msg)]
         self.log(', '.join(txt))
 
     def notify_data(self, data, status, *args, **kwargs):
-        ''' Data notification '''
+        '''
+        Data notification
+        '''
         txt = ['*' * 5, 'DATA NOTIF:', data._getstatusname(status), *args]
         self.log(', '.join(txt))
         if status == data.LIVE:
@@ -60,7 +72,9 @@ class ProtoStrategy(bt.Strategy):
             self.datastatus = 0
 
     def log_candle(self, *args, **kwargs):
-        ''' Log current candle '''
+        '''
+        Log current candle
+        '''
         if not self.p.log_candles:
             return
         data = kwargs.get('data', self.data)
@@ -98,14 +112,18 @@ class ProtoStrategy(bt.Strategy):
                  level=level)
 
     def log_signal(self, *args, level=logging.INFO):
-        ''' Log given signals '''
+        '''
+        Log given signals
+        '''
         if not self.p.log_signals:
             return
         signal = ', '.join([str(x) for x in args])
         self.log(f'[SIGNAL] {signal}')
 
     def log_order(self, order, level=logging.INFO):
-        ''' Log given order '''
+        '''
+        Log given order
+        '''
         if not self.p.log_orders:
             return
         txt = []
@@ -124,7 +142,9 @@ class ProtoStrategy(bt.Strategy):
         self.log(f'[ORDER] {info}')
 
     def log_trade(self, trade, level=logging.INFO):
-        ''' Log given trade '''
+        '''
+        Log given trade
+        '''
         if not self.p.log_trades:
             return
         txt = []
@@ -156,13 +176,12 @@ class ForexProtoStrategy(ProtoStrategy):
     Prototype strategy for forex
 
     This class provides a unifed access to forex specific settings.
+
     * Convert pips to value
         value = self.value_from_pips(pips)
+
     * Convert value to pips
         pips = self.pips_from_value(value)
-    * Datafeed status tracking
-        self.datastatus == 0 -> Delayed data
-        self.datastatus > 0 -> Live data
 
     Parameter:
     Set the strategy paramters according to the instrument in use.
@@ -219,6 +238,7 @@ class ForexProtoStrategy(ProtoStrategy):
             minimumTrailingStopDistance=self.p.min_trail_stop_dist
         )
         dcd = None
+        # look for possible contractdetails definition (created by oanda)
         if hasattr(self.datas[0], 'contractdetails'):
             dcd = self.datas[0].contractdetails
         if isinstance(dcd, dict):
@@ -227,6 +247,7 @@ class ForexProtoStrategy(ProtoStrategy):
             for d in self.datas:
                 if d._name != self.datas[0]._name:
                     d.contractdetails = cd
+        # look for possible contractdetails definition (created by ib)
         elif isinstance(dcd, ContractDetails):
             # ib contract details
             self.contract = self.datas[0].contract
@@ -246,14 +267,18 @@ class ForexProtoStrategy(ProtoStrategy):
         super(ForexProtoStrategy, self).__init__()
 
     def pips_from_value(self, value, pip_precision=0, pip_location=None):
-        ''' Returns pips from a value '''
+        '''
+        Returns pips from a price value
+        '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
                 'pipLocation', 1)
         return get_pips_from_value(value, pip_location, pip_precision)
 
     def value_from_pips(self, pips, pip_location=None, precision=None):
-        ''' Returns price diff from pips '''
+        '''
+        Returns price difference from pips
+        '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
                 'pipLocation', 1)
@@ -263,7 +288,9 @@ class ForexProtoStrategy(ProtoStrategy):
         return get_value_from_pips(pips, pip_location, precision)
 
     def price_value(self, price, precision=None):
-        ''' Returns a rounded price value '''
+        '''
+        Returns a rounded price value
+        '''
         if precision is None:
             precision = self.contractdetails.get(
                 'displayPrecision', 1)
@@ -271,7 +298,9 @@ class ForexProtoStrategy(ProtoStrategy):
 
     def round_to_pip(self, value, round_up=True, round_to_pip=0.5,
                      ensure_dist=False, pip_location=None, precision=None):
-        ''' Rounding to pip '''
+        '''
+        Rounding to pip
+        '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
                 'pipLocation', 1)
