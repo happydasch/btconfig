@@ -76,7 +76,7 @@ class PartLogging(btconfig.BTConfigPart):
             filename = os.path.join(
                 path, 'log_{}_{}.txt'.format(
                     strategy, exectime))
-            file = logging.FileHandler(filename=filename)
+            file = logging.FileHandler(filename=filename, encoding="UTF-8")
             file.setLevel(level)
             logger.addHandler(file)
         # add telegram handler
