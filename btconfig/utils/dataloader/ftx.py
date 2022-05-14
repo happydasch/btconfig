@@ -10,7 +10,7 @@ from btconfig.utils.api.ftx import (
 import backtrader as bt
 import pandas as pd
 
-#fmt: off
+
 class FTXDataloaderApp:
     def __init__(self, api_key="", api_secret="", **kwargs):
         self.api_key = api_key
