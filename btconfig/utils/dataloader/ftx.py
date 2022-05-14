@@ -12,7 +12,7 @@ import pandas as pd
 
 
 class FTXDataloaderApp:
-    def __init__(self, api_key="", api_secret="", **kwargs):
+    def __init__(self, api_key='', api_secret='', **kwargs):
         self.api_key = api_key
         self.api_secret = api_secret
         self.client = FTXClient(**kwargs)
@@ -42,7 +42,7 @@ class FTXDataloaderApp:
                 timeframe == bt.TimeFrame.Days and compression > 30
             ):
                 raise Exception(
-                    f"Unsupported ({timeframe}-{compression})" + " granularity provided"
+                    f'Unsupported ({timeframe}-{compression}) granularity provided'
                 )
         if timeframe != bt.TimeFrame.Days:
             resolution = FTXClient.RESOLUTIONS[(timeframe, compression)]
