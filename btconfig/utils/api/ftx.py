@@ -6,7 +6,7 @@ from datetime import datetime
 import backtrader as bt
 import pandas as pd
 
-# fmt: off
+
 class FTXClient(BTConfigApiClient):
     '''
     FTX Client
