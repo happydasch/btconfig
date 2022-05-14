@@ -4,13 +4,13 @@ from btconfig.utils.api.ftx import (
     FTXClient,
     create_data_df,
     create_funding_rates_df,
-    listFuturesdf,
+    list_futures_df,
 )
 
 import backtrader as bt
 import pandas as pd
 
-
+#fmt: off
 class FTXDataloaderApp:
     def __init__(self, api_key="", api_secret="", **kwargs):
         self.api_key = api_key
@@ -18,9 +18,9 @@ class FTXDataloaderApp:
         self.client = FTXClient(**kwargs)
 
     def getMarkets(self):
-        """
+        '''
         :return pd.DataFrame | None:
-        """
+        '''
         data = self.client.getMarkets()
         data_df = pd.DataFrame(data)
         return data_df
@@ -28,7 +28,7 @@ class FTXDataloaderApp:
     def getMarketCandles(
         self, symbol, timeframe, compression, fromdate=None, todate=None
     ):
-        """
+        '''
         :param symbol:
         :param timeframe:
         :param compression:
@@ -36,7 +36,7 @@ class FTXDataloaderApp:
         :param todate:
 
         :return pd.DataFrame | None:
-        """
+        '''
         if (timeframe, compression) not in FTXClient.RESOLUTIONS:
             if timeframe != bt.TimeFrame.Days or (
                 timeframe == bt.TimeFrame.Days and compression > 30
@@ -63,9 +63,9 @@ class FTXDataloaderApp:
         return data_df
 
     def getAllFundingRates(self, fromdate=None, todate=None):
-        """
+        '''
         :return pd.DataFrame | None:
-        """
+        '''
         fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
@@ -75,13 +75,13 @@ class FTXDataloaderApp:
         return data_df
 
     def getFundingRates(self, future=None, fromdate=None, todate=None):
-        """
+        '''
         :param future:
         :param fromdate:
         :param todate:
 
         :return pd.DataFrame | None:
-        """
+        '''
         fromdate_ts = None
         if fromdate:
             fromdate_ts = fromdate.timestamp()
@@ -93,11 +93,12 @@ class FTXDataloaderApp:
         return data_df
 
     def listFuturesInfo(self, type=None) -> pd.DataFrame:
-        """
+        '''
         Returns a df of all the available futures info
         types: perpetual, future, prediction, move
-        """
+        '''
+
         data = self.client.listFuturesInfo()
-        df = listFuturesdf(data, type)
+        df = list_futures_df(data, type)
 
         return df

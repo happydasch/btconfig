@@ -6,13 +6,13 @@ from datetime import datetime
 import backtrader as bt
 import pandas as pd
 
-
+# fmt: off
 class FTXClient(BTConfigApiClient):
-    """
+    '''
     FTX Client
 
     https://docs.ftx.com/#overview
-    """
+    '''
 
     RESOLUTIONS = {
         (bt.TimeFrame.Seconds, 15): 15,
@@ -117,17 +117,17 @@ class FTXClient(BTConfigApiClient):
         return res
 
     def listFuturesInfo(self):
-        """
+        '''
         https://docs.ftx.com/#futures
         retrieve info for all avaialable futures
-        """
+        '''
         path = "futures"
         response = self._request(path, json=True)
         return response["result"]
 
 
 def create_data_df(data):
-    """
+    '''
     Market Data
 
     Creates and returns a DataFrame created from data (returned from api)
@@ -139,7 +139,7 @@ def create_data_df(data):
         {'startTime': '2022-03-26T23:00:00+00:00', 'time': 1648335600000.0, 'open': 10.516, 'high': 10.654, 'low': 10.516, 'close': 10.634, 'volume': 884336.7059},
         ...
     ]
-    """
+    '''
     if data is None:
         return
     res = pd.DataFrame(data)
@@ -151,7 +151,7 @@ def create_data_df(data):
 
 
 def create_funding_rates_df(data):
-    """
+    '''
     Funding Rates
 
     Creates and returns a DataFrame created from data (returned from api)
@@ -163,7 +163,7 @@ def create_funding_rates_df(data):
         {'future': 'UNI-PERP', 'rate': 3e-06, 'time': '2022-04-05T12:00:00+00:00'},
         ...
     ]
-    """
+    '''
     if data is None:
         return
     res = pd.DataFrame(data)
@@ -173,11 +173,11 @@ def create_funding_rates_df(data):
     return res[["datetime", "close", "future"]].sort_values(by="datetime")
 
 
-def listFuturesdf(data, type=None) -> pd.DataFrame:
-    """
+def list_futures_df(data, type=None) -> pd.DataFrame:
+    '''
     Returns a df of all the available futures info
     types: perpetual, future, prediction, move
-    """
+    '''
     if data is None:
         return
 
