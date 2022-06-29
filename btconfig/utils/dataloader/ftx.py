@@ -59,8 +59,9 @@ class FTXDataloaderApp:
         data = self.client.getMarketCandles(
             symbol, start_time=fromdate_ts, end_time=todate_ts, resolution=resolution
         )
-        data_df = create_data_df(data)
-        return data_df
+        if len(data):
+            return create_data_df(data)
+        return None
 
     def getAllFundingRates(self, fromdate=None, todate=None):
         '''
