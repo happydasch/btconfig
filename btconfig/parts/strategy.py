@@ -85,13 +85,13 @@ class PartStrategy(btconfig.BTConfigPart):
 
     def finish(self, result):
         if not len(result):
-                return
+            return
         if self._instance.mode not in [
                 btconfig.MODE_OPTIMIZE, btconfig.MODE_OPTIMIZEGENETIC]:
             return
         if self._instance.mode == btconfig.MODE_OPTIMIZEGENETIC:
             self.log(f'Optimizer {self.optimizer_result.__class__.__name__}'
-                     f'\Results:\n')
+                     '\nResults:\n')
             for x in self.optimizer_result.results_list:
                 results = tabulate(x.items(), tablefmt='plain')
                 self.log(results)
@@ -130,7 +130,8 @@ class PartStrategy(btconfig.BTConfigPart):
         # config for instance
         cfg = self._instance._getConfigForMode(btconfig.MODE_BACKTEST)
         commoncfg = cfg['common']
-        for i in ['create_plot', 'create_log', 'create_report', 'create_tearsheet']:
+        for i in ['create_plot', 'create_log', 'create_report',
+                  'create_tearsheet']:
             commoncfg[i] = False
         cfg['strategy'] = {self.stratname: instargs}
         inst.setConfig(cfg)
@@ -144,12 +145,13 @@ class PartStrategy(btconfig.BTConfigPart):
         except Exception as e:
             if self.optimizer_exceptions:
                 raise(e)
-            self.log(f'Optimizer instance did not finish\n')
+            self.log('Optimizer instance did not finish\n')
             res = 0
         if inst.duration:
             duration = timedelta(seconds=inst.duration)
             self.log(
-                f'Optimizer instance finished with: {res} (Duration: {duration})\n',
+                f'Optimizer instance finished with: {res}'
+                f' (Duration: {duration})\n',
                 logging.INFO)
         return res
 
