@@ -272,7 +272,7 @@ class ForexProtoStrategy(ProtoStrategy):
         '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
-                'pipLocation', 1)
+                'pipLocation', 0)
         return get_pips_from_value(value, pip_location, pip_precision)
 
     def value_from_pips(self, pips, pip_location=None, precision=None):
@@ -281,7 +281,7 @@ class ForexProtoStrategy(ProtoStrategy):
         '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
-                'pipLocation', 1)
+                'pipLocation', 0)
         if precision is None:
             precision = self.contractdetails.get(
                 'displayPrecision', 1)
@@ -303,7 +303,7 @@ class ForexProtoStrategy(ProtoStrategy):
         '''
         if pip_location is None:
             pip_location = self.contractdetails.get(
-                'pipLocation', 1)
+                'pipLocation', 0)
         if precision is None:
             precision = self.contractdetails.get(
                 'displayPrecision', 1)
