@@ -106,16 +106,16 @@ class ProtoStrategy(bt.Strategy):
         offset_str = f'{offset}' if offset < 0 else ''
 
         txt = []
-        txt.append(f'{diff_oc:+.1f}({diff_hl:+.1f})')
         if frompre:
             txt.append('FILLING')
         else:
             txt.append(f'{"LIVE" if self.datastatus > 0 else "DELAYED"}')
+        txt.append(f'{diff_oc:+.1f}({diff_hl:.1f})')
         txt.append('%s %04d%s' % (data._name, len(data), offset_str))
-        txt.append(f'O {self.price_value(data.open[offset], precision):.{precision}f}')
-        txt.append(f'H {self.price_value(data.high[offset], precision):.{precision}f}')
-        txt.append(f'L {self.price_value(data.low[offset], precision):.{precision}f}')
-        txt.append(f'C {self.price_value(data.close[offset], precision):.{precision}f}')
+        txt.append(f'O: {self.price_value(data.open[offset], precision):.{precision}f}')
+        txt.append(f'H: {self.price_value(data.high[offset], precision):.{precision}f}')
+        txt.append(f'L: {self.price_value(data.low[offset], precision):.{precision}f}')
+        txt.append(f'C: {self.price_value(data.close[offset], precision):.{precision}f}')
         for i in args:
             txt.append(i)
         candle = ', '.join(txt)
