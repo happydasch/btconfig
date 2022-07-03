@@ -86,7 +86,8 @@ class ProtoStrategy(bt.Strategy):
         contractdetails = {}
         if hasattr(data, 'contractdetails'):
             contractdetails = data.contractdetails
-        precision = contractdetails.get('displayPrecision', 5)
+        pip_location = contractdetails.get('pipLocation', 0)
+        precision = contractdetails.get('displayPrecision', 1)
         diff_oc = 0.0
         diff_hl = 0.0
         if len(data) > abs(offset):
@@ -95,23 +96,26 @@ class ProtoStrategy(bt.Strategy):
             elif data.close[offset] < data.open[offset]:
                 diff_oc = -(data.close[offset - 1] - data.close[offset])
             diff_hl = data.high[offset] - data.low[offset]
-        diff_oc = round(diff_oc, precision)
-        diff_hl = round(diff_hl, precision)
+        diff_oc = self.pips_from_value(
+            value=round(diff_oc, precision),
+            pip_location=pip_location, pip_precision=1)
+        diff_hl = self.pips_from_value(
+            value=round(diff_hl, precision),
+            pip_location=pip_location, pip_precision=1)
 
-        prepend = '+' if diff_oc > 0 else ''
         offset_str = f'{offset}' if offset < 0 else ''
 
         txt = []
-        txt.append('{}{}({})'.format(prepend, diff_oc, diff_hl))
+        txt.append(f'{diff_oc:+.1f}({diff_hl:+.1f})')
         if frompre:
             txt.append('FILLING')
         else:
             txt.append(f'{"LIVE" if self.datastatus > 0 else "DELAYED"}')
         txt.append('%s %04d%s' % (data._name, len(data), offset_str))
-        txt.append(f'O {self.price_value(data.open[offset], precision)}')
-        txt.append(f'H {self.price_value(data.high[offset], precision)}')
-        txt.append(f'L {self.price_value(data.low[offset], precision)}')
-        txt.append(f'C {self.price_value(data.close[offset], precision)}')
+        txt.append(f'O {self.price_value(data.open[offset], precision):.{precision}f}')
+        txt.append(f'H {self.price_value(data.high[offset], precision):.{precision}f}')
+        txt.append(f'L {self.price_value(data.low[offset], precision):.{precision}f}')
+        txt.append(f'C {self.price_value(data.close[offset], precision):.{precision}f}')
         for i in args:
             txt.append(i)
         candle = ', '.join(txt)
@@ -218,7 +222,7 @@ class ForexProtoStrategy(ProtoStrategy):
         # pip location
         pip_location=0,
         # display precision
-        display_precision=5,
+        display_precision=1,
         # minimum trailing stop distance
         min_trail_stop_dist=0,
         # what markets to use
