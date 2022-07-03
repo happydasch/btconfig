@@ -267,7 +267,7 @@ def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
     return dt
 
 
-def get_data_params(cfg: dict, tz: str) -> dict:
+def get_data_params(cfg: dict, tz: str, dtnow=None) -> dict:
     '''
     Returns params to use for data sources
     '''
@@ -286,7 +286,8 @@ def get_data_params(cfg: dict, tz: str) -> dict:
     fromdate, todate = get_data_dates(
         cfg.get('backfill_days', 0),
         cfg.get('fromdate'),
-        cfg.get('todate'))
+        cfg.get('todate'),
+        dtnow)
     dargs['fromdate'] = fromdate
     dargs['todate'] = todate
     # append args from params
@@ -305,15 +306,17 @@ def get_data_session(session):
     return res
 
 
-def get_data_dates(backfill_days, fromdate, todate):
+def get_data_dates(backfill_days, fromdate, todate, dtnow=None):
     '''
     Returns fromdate and todate datetime objects
     '''
+    if dtnow is None:
+        dtnow = datetime.now()
     if fromdate:
         fromdate = parser.parse(fromdate)
         if todate:
             todate = parser.parse(todate)
     elif backfill_days and backfill_days > 0:
         # date for backfill start
-        fromdate = datetime.now() - timedelta(days=backfill_days)
+        fromdate = dtnow - timedelta(days=backfill_days)
     return fromdate, todate

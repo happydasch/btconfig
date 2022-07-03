@@ -120,7 +120,9 @@ class PartDatas(btconfig.BTConfigPart):
         --------
         bt.AbstractDataBase
         '''
-        dargs = get_data_params(cfg, tz)
+        commoncfg = self._instance.config.get('common', {})
+        dtnow = commoncfg.get('time', None)
+        dargs = get_data_params(cfg, tz, dtnow)
         classname = cfg.get('classname')
         if classname and classname not in self.all_classes:
             raise Exception(f'Data {classname} not found')

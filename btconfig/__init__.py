@@ -659,7 +659,9 @@ class BTConfigDataloader:
             self._filedate = data.iloc[-1]['datetime']
 
     def _createFeed(self):
-        params = get_data_params(self._cfg, self._tz)
+        commoncfg = self._instance.config.get('common', {})
+        dtnow = commoncfg.get('time', None)
+        params = get_data_params(self._cfg, self._tz, dtnow)
         params['dataname'] = self._filename
         params['headers'] = True
         params['dtformat'] = parse_dt
