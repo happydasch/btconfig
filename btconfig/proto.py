@@ -83,27 +83,35 @@ class ProtoStrategy(bt.Strategy):
         frompre = kwargs.get('frompre', False)
         if not len(data):
             return
-        diff = 0.0
+        contractdetails = {}
+        if hasattr(data, 'contractdetails'):
+            contractdetails = data.contractdetails
+        precision = contractdetails.get('displayPrecision', 5)
+        diff_oc = 0.0
+        diff_hl = 0.0
         if len(data) > abs(offset):
             if data.close[offset] > data.open[offset]:
-                diff = data.close[offset] - data.close[offset - 1]
+                diff_oc = data.close[offset] - data.close[offset - 1]
             elif data.close[offset] < data.open[offset]:
-                diff = -(data.close[offset - 1] - data.close[offset])
+                diff_oc = -(data.close[offset - 1] - data.close[offset])
+            diff_hl = data.high[offset] - data.low[offset]
+        diff_oc = round(diff_oc, precision)
+        diff_hl = round(diff_hl, precision)
 
-        prepend = '+' if diff > 0 else ''
+        prepend = '+' if diff_oc > 0 else ''
         offset_str = f'{offset}' if offset < 0 else ''
 
         txt = []
-        txt.append('{}{:5f}'.format(prepend, diff))
+        txt.append('{}{}({})'.format(prepend, diff_oc, diff_hl))
         if frompre:
             txt.append('FILLING')
         else:
             txt.append(f'{"LIVE" if self.datastatus > 0 else "DELAYED"}')
         txt.append('%s %04d%s' % (data._name, len(data), offset_str))
-        txt.append(f'O {self.price_value(data.open[offset])}')
-        txt.append(f'H {self.price_value(data.high[offset])}')
-        txt.append(f'L {self.price_value(data.low[offset])}')
-        txt.append(f'C {self.price_value(data.close[offset])}')
+        txt.append(f'O {self.price_value(data.open[offset], precision)}')
+        txt.append(f'H {self.price_value(data.high[offset], precision)}')
+        txt.append(f'L {self.price_value(data.low[offset], precision)}')
+        txt.append(f'C {self.price_value(data.close[offset], precision)}')
         for i in args:
             txt.append(i)
         candle = ', '.join(txt)
@@ -246,22 +254,22 @@ class ForexProtoStrategy(ProtoStrategy):
             cd.update(dcd)
             for d in self.datas:
                 if d._name != self.datas[0]._name:
-                    d.contractdetails = cd
+                    d.contractdetails = cd.copy()
         # look for possible contractdetails definition (created by ib)
         elif isinstance(dcd, ContractDetails):
             # ib contract details
-            self.contract = self.datas[0].contract
-            self.tradecontract = self.datas[0].tradecontract
-            self.tradecontractdetails = self.datas[0].tradecontractdetails
+            self.contract = self.datas[0].contract.copy()
+            self.tradecontract = self.datas[0].tradecontract.copy()
+            self.tradecontractdetails = self.datas[0].tradecontractdetails.copy()
             for d in self.datas:
                 if d._name != self.datas[0]._name:
-                    d.contract = self.datas[0].contract
-                    d.contractdetails = self.datas[0].contractdetails
-                    d.tradecontract = self.datas[0].tradecontract
-                    d.tradecontractdetails = self.datas[0].tradecontractdetails
+                    d.contract = self.datas[0].contract.copy()
+                    d.contractdetails = self.datas[0].contractdetails.copy()
+                    d.tradecontract = self.datas[0].tradecontract.copy()
+                    d.tradecontractdetails = self.datas[0].tradecontractdetails.copy()
         else:
             for d in self.datas:
-                d.contractdetails = cd
+                d.contractdetails = cd.copy()
         self.contractdetails = cd
 
         super(ForexProtoStrategy, self).__init__()
