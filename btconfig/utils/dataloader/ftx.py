@@ -67,7 +67,9 @@ class FTXDataloaderApp:
         '''
         :return pd.DataFrame | None:
         '''
-        fromdate_ts = fromdate.timestamp()
+        fromdate_ts = None
+        if fromdate:
+            fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
             todate_ts = todate.timestamp()
