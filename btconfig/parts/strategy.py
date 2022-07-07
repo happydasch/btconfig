@@ -1,5 +1,7 @@
 from __future__ import division, absolute_import, print_function
 
+import os
+import subprocess
 import logging
 import btconfig
 
@@ -8,8 +10,24 @@ from tabulate import tabulate
 from btconfig.proto import ProtoStrategy, ForexProtoStrategy
 from btconfig.helper import get_classes, create_opt_params
 
+import hyperactive
 from hyperactive import Hyperactive
 from hyperactive.dashboards import ProgressBoard
+
+
+class ProcessProgressBoard(ProgressBoard):
+
+    process = None
+
+    def create_lock(self, progress_id):
+        pass
+
+    def open_dashboard(self):
+        abspath = os.path.dirname(
+            hyperactive.dashboards.progress_board.__file__)
+        paths = " ".join(self.progress_ids)
+        self.process = subprocess.Popen(
+            ["streamlit", "run", os.path.join(abspath, 'run_streamlit.py'), paths])
 
 
 class PartStrategy(btconfig.BTConfigPart):
@@ -159,14 +177,14 @@ class PartStrategy(btconfig.BTConfigPart):
 def run_optimizer(class_name, runstrat, search_space, iterations=200, jobs=1):
     module = __import__('hyperactive.optimizers')
     class_ = getattr(module, class_name)
-    opt = class_()
-    progress_board = ProgressBoard()
+    progress_board = ProcessProgressBoard()
     hyper = Hyperactive()
+    opt = class_()
     hyper.add_search(
         runstrat, search_space,
         n_iter=iterations, n_jobs=jobs,
         progress_board=progress_board,
-    )
+        optimizer=opt)
     hyper.run()
     # only gradient free optimizers
     #module = __import__('gradient_free_optimizers')
