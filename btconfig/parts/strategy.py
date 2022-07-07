@@ -90,8 +90,10 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_func = commoncfg.get('optimizer_func', self._optimizer_func)
         if commoncfg.get('create_plot', False):
             self.optimizer_jobs = 1
+            self.show_progress_board = False
         else:
             self.optimizer_jobs = commoncfg.get('optimizer_jobs', -1)
+            self.show_progress_board = True
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
@@ -133,7 +135,8 @@ class PartStrategy(btconfig.BTConfigPart):
             self.run_instance,
             self.args,
             self.optimizer_iterations,
-            self.optimizer_jobs)
+            self.optimizer_jobs,
+            self.show_progress_board)
         return self.optimize
 
     def run_instance(self, p):
@@ -174,10 +177,14 @@ class PartStrategy(btconfig.BTConfigPart):
         return res
 
 
-def run_optimizer(class_name, runstrat, search_space, iterations=200, jobs=1):
+def run_optimizer(class_name, runstrat, search_space,
+                  iterations=200, jobs=1,
+                  show_progress_board=False):
     module = __import__('hyperactive.optimizers')
     class_ = getattr(module, class_name)
-    progress_board = ProcessProgressBoard()
+    progress_board = None
+    if show_progress_board:
+        progress_board = ProcessProgressBoard()
     hyper = Hyperactive()
     opt = class_()
     hyper.add_search(
