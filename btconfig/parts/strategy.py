@@ -13,11 +13,15 @@ from btconfig.helper import get_classes, create_opt_params
 import hyperactive
 from hyperactive import Hyperactive
 from hyperactive.dashboards import ProgressBoard
+from hyperactive.dashboards.progress_board.progress_io import ProgressIO
 
 
 class ProcessProgressBoard(ProgressBoard):
 
-    process = None
+    def __init__(self, filter_file=None):
+        super().__init__(filter_file)
+        self._io_ = ProgressIO(verbosity=False, warnings=False)
+        self.process = None
 
     def create_lock(self, progress_id):
         pass
@@ -26,8 +30,12 @@ class ProcessProgressBoard(ProgressBoard):
         abspath = os.path.dirname(
             hyperactive.dashboards.progress_board.__file__)
         paths = " ".join(self.progress_ids)
-        self.process = subprocess.Popen(
-            ["streamlit", "run", os.path.join(abspath, 'run_streamlit.py'), paths])
+        if self.process is None:
+            self.process = subprocess.Popen(
+                ["streamlit", "run",
+                 os.path.join(abspath, 'run_streamlit.py'), paths])
+        else:
+            print("Streamlit is already running")
 
 
 class PartStrategy(btconfig.BTConfigPart):
@@ -88,12 +96,8 @@ class PartStrategy(btconfig.BTConfigPart):
         self.optimizer_iterations = commoncfg.get('optimizer_iterations', 1000)
         self.optimizer_exceptions = commoncfg.get('optimizer_exceptions', True)
         self.optimizer_func = commoncfg.get('optimizer_func', self._optimizer_func)
-        if commoncfg.get('create_plot', False):
-            self.optimizer_jobs = 1
-            self.show_progress_board = False
-        else:
-            self.optimizer_jobs = commoncfg.get('optimizer_jobs', -1)
-            self.show_progress_board = True
+        self.optimizer_jobs = commoncfg.get('optimizer_jobs', -1)
+        self.show_progress_board = not commoncfg.get('create_plot', False)
         self.log(f'Strategy {stratname} created\n', logging.INFO)
 
     def run(self):
