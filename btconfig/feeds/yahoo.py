@@ -15,6 +15,8 @@ class YahooDataloader(btconfig.BTConfigDataloader):
 
     def prepare(self):
         self._cls = CSVAdjustTime
+        debug = self._cfg.get('debug', False)
+        self.loader = YahooDataloaderApp(debug=debug)
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -27,8 +29,6 @@ class YahooDataloader(btconfig.BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            debug = self._cfg.get('debug', False)
-            loader = YahooDataloaderApp(debug=debug)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate)
             return data

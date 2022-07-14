@@ -34,11 +34,20 @@ class IBDataloader(btconfig.BTConfigDataloader):
         what = self._cfg['params'].get('what', 'MIDPOINT')
         self._additional.append(what)
         self._cls = CSVAdjustTime
-
-    def _loadData(self):
         store = self._cfg.get('store')
         if not store:
             raise Exception('Store not defined')
+        storecfg = self._instance.config['stores'].get(store, {})
+        pause = self._cfg.get('pause', None)
+        debug = self._cfg.get('debug', False)
+        self.loader = IBDataloaderApp(
+            storecfg['params']['host'],
+            storecfg['params']['port'],
+            storecfg['params']['clientId'],
+            pause=pause,
+            debug=debug)
+
+    def _loadData(self):
         dataname = self._cfg['dataname']
         timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
         compression = self._cfg['granularity'][1]
@@ -51,16 +60,7 @@ class IBDataloader(btconfig.BTConfigDataloader):
         what = self._cfg['params'].get('what', 'MIDPOINT')
         useRTH = self._cfg['params'].get('useRTH', False)
         if not os.path.isfile(self._filename) or not todate:
-            storecfg = self._instance.config['stores'].get(store, {})
-            pause = self._cfg.get('pause', None)
-            debug = self._cfg.get('debug', False)
-            loader = IBDataloaderApp(
-                storecfg['params']['host'],
-                storecfg['params']['port'],
-                storecfg['params']['clientId'],
-                pause=pause,
-                debug=debug)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 what, useRTH)
             return data

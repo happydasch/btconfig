@@ -24,6 +24,11 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
             ctype = 'MID'
         self._additional.append(ctype)
         self._cls = CSVAdjustTimeBidAsk
+        debug = self._cfg.get('debug', False)
+        self.loader = OandaV20DataloaderApp(
+            self._instance.config['stores'][store]['params']['token'],
+            self._instance.config['stores'][store]['params']['practice'],
+            debug=debug)
 
     def _loadData(self):
         store = self._cfg.get('store')
@@ -41,12 +46,7 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
         bidask = self._cfg['params'].get('bidask', True)
         useask = self._cfg['params'].get('useask', False)
         if not os.path.isfile(self._filename) or not todate:
-            debug = self._cfg.get('debug', False)
-            loader = OandaV20DataloaderApp(
-                self._instance.config['stores'][store]['params']['token'],
-                self._instance.config['stores'][store]['params']['practice'],
-                debug=debug)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 bidask, useask)
             return data

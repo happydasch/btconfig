@@ -14,7 +14,10 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
     PREFIX = 'BINANCE'
 
     def prepare(self):
+        api_key = self._cfg.get('api_key', '')
+        api_secret = self._cfg.get('api_secret', '')
         self._cls = CSVAdjustTime
+        self.loader = BinanceDataloaderApp(api_key, api_secret)
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -27,9 +30,6 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            api_key = self._cfg.get('api_key', '')
-            api_secret = self._cfg.get('api_secret', '')
-            loader = BinanceDataloaderApp(api_key, api_secret)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate)
             return data

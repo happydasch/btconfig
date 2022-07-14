@@ -17,6 +17,7 @@ class CoinMetricsDataloader(BTConfigDataloader):
 
     def prepare(self):
         self._cls = CSVAdjustTime
+        self.client = CoinMetricsDataloaderApp(debug=debug)
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -30,8 +31,7 @@ class CoinMetricsDataloader(BTConfigDataloader):
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             debug = self._cfg.get('debug', False)
-            client = CoinMetricsDataloaderApp(debug=debug)
-            return client.request(
+            return self.client.request(
                 dataname, timeframe, compression, fromdate, todate)
 
 
@@ -43,6 +43,7 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
         use_base_asset = self._cfg.get('use_base_asset', True)
         self._additional.append('BASE' if use_base_asset else 'QUOTE')
         self._cls = CSVAdjustTimeMVRVData
+        self.loader = CoinMetricsDataloaderApp(debug=debug)
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -57,8 +58,7 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
             debug = self._cfg.get('debug', False)
-            loader = CoinMetricsDataloaderApp(debug=debug)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 add_mvrv=True, use_base_asset=use_base_asset)
             return data
@@ -73,6 +73,7 @@ class CoinMetricsDataDataloader(BTConfigDataloader):
         self.dropna = self._cfg.get('dropna', False)
         if self.dropna:
             self._additional.append('CLEAN')
+        self.client = CoinMetricsDataDataloaderApp()
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -85,8 +86,7 @@ class CoinMetricsDataDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            client = CoinMetricsDataDataloaderApp()
-            data = client.request(
+            data = self.client.request(
                 dataname, timeframe, compression, fromdate, todate)
             if self.dropna:
                 return data.dropna()

@@ -15,6 +15,10 @@ class CoinAPIDataloader(BTConfigDataloader):
 
     def prepare(self):
         self._cls = CSVAdjustTime
+        api_key = self._cfg.get('api_key', '')
+        debug = self._cfg.get('debug', False)
+        self.loader = CoinAPIDataloaderApp(
+            api_key, debug=debug)
 
     def _loadData(self):
         dataname = self._cfg['dataname']
@@ -27,10 +31,6 @@ class CoinAPIDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            api_key = self._cfg.get('api_key', '')
-            debug = self._cfg.get('debug', False)
-            loader = CoinAPIDataloaderApp(
-                api_key, debug=debug)
-            data = loader.request(
+            data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate)
             return data
