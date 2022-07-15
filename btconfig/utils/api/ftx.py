@@ -170,7 +170,8 @@ def create_funding_rates_df(data):
     res['time'] = pd.to_datetime(res['time'])
     res.rename(columns={'time': 'datetime', 'rate': 'close'}, inplace=True)
     res['datetime'] = res['datetime'].dt.tz_localize(None)
-    return res[['datetime', 'close', 'future']].sort_values(by='datetime')
+    return res[['datetime', 'close', 'future']].sort_values(
+        by='datetime', ignore_index=True)
 
 
 def list_futures_df(data, type=None) -> pd.DataFrame:
