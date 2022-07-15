@@ -64,7 +64,11 @@ class ProtoStrategy(bt.Strategy):
         '''
         Data notification
         '''
-        txt = ['*' * 5, 'DATA NOTIF:', data._getstatusname(status), *args]
+        txt = ['*' * 5,
+               'DATA NOTIF:',
+               data._name,
+               data._getstatusname(status),
+               *args]
         self.log(', '.join(txt))
         if status == data.LIVE:
             self.datastatus = 1
