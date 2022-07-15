@@ -140,7 +140,7 @@ def create_data_df(data):
         ...
     ]
     '''
-    if data is None:
+    if not data:
         return
     res = pd.DataFrame(data)
     res['time'] = pd.to_datetime(res['time'], unit='ms')
@@ -164,7 +164,7 @@ def create_funding_rates_df(data):
         ...
     ]
     '''
-    if data is None:
+    if not data:
         return
     res = pd.DataFrame(data)
     res['time'] = pd.to_datetime(res['time'])
@@ -178,7 +178,7 @@ def list_futures_df(data, type=None) -> pd.DataFrame:
     Returns a df of all the available futures info
     types: perpetual, future, prediction, move
     '''
-    if data is None:
+    if not data:
         return
 
     df = pd.DataFrame.from_dict(data)

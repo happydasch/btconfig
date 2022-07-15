@@ -1,5 +1,7 @@
 from __future__ import division, absolute_import, print_function
 
+from datetime import timezone
+
 from btconfig.utils.api.ftx import (
     FTXClient,
     create_data_df,
@@ -52,9 +54,13 @@ class FTXDataloaderApp:
             resolution = FTXClient.RESOLUTIONS[(bt.TimeFrame.Days, 1)] * compression
         fromdate_ts = None
         if fromdate:
+            if fromdate.tzinfo is None:
+                fromdate = fromdate.replace(tzinfo=timezone.utc)
             fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
+            if todate.tzinfo is None:
+                todate = todate.replace(tzinfo=timezone.utc)
             todate_ts = todate.timestamp()
         data = self.client.getMarketCandles(
             symbol, start_time=fromdate_ts, end_time=todate_ts, resolution=resolution
@@ -69,9 +75,13 @@ class FTXDataloaderApp:
         '''
         fromdate_ts = None
         if fromdate:
+            if fromdate.tzinfo is None:
+                fromdate = fromdate.replace(tzinfo=timezone.utc)
             fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
+            if todate.tzinfo is None:
+                todate = todate.replace(tzinfo=timezone.utc)
             todate_ts = todate.timestamp()
         data = self.client.getAllFundingRates(
             start_time=fromdate_ts, end_time=todate_ts)
@@ -88,9 +98,13 @@ class FTXDataloaderApp:
         '''
         fromdate_ts = None
         if fromdate:
+            if fromdate.tzinfo is None:
+                fromdate = fromdate.replace(tzinfo=timezone.utc)
             fromdate_ts = fromdate.timestamp()
         todate_ts = None
         if todate:
+            if todate.tzinfo is None:
+                todate = todate.replace(tzinfo=timezone.utc)
             todate_ts = todate.timestamp()
         data = self.client.getFundingRates(future, fromdate_ts, todate_ts)
         data_df = create_funding_rates_df(data)
