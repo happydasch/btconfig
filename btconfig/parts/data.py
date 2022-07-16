@@ -139,7 +139,7 @@ class PartDatas(btconfig.BTConfigPart):
                     logging.DEBUG)
                 loader = self.all_classes[classname](
                     self._instance, data_id, cfg, tz)
-                d = loader.load()
+                d = loader.createDataFeed()
             else:
                 self.log('Creating Data {} ({})\n{}'.format(
                         classname, data_id,

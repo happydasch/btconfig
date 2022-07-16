@@ -15,7 +15,7 @@ class FTXDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'FTX'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTime
         pause = self._cfg.get('pause', None)
         debug = self._cfg.get('debug', False)
@@ -45,7 +45,7 @@ class FTXFundingRatesDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'FTX_FR'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTimeCloseOnly
         api_key = self._cfg.get('api_key', '')
         api_secret = self._cfg.get('api_secret', '')

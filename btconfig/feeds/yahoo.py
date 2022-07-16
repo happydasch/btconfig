@@ -13,7 +13,7 @@ class YahooDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'YAHOO'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTime
         debug = self._cfg.get('debug', False)
         self.loader = YahooDataloaderApp(debug=debug)

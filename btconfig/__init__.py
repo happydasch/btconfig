@@ -598,13 +598,8 @@ class BTConfigDataloader:
         self._filename = None
         self._filelen = 0
         self._filedate = None
-        self.prepare()
-
-    def _loadData(self):
-        '''
-        Load data method
-        '''
-        pass
+        self._setFile()
+        self._prepare()
 
     def _setFile(self):
         '''
@@ -668,12 +663,18 @@ class BTConfigDataloader:
         data = self._cls(**params)
         return data
 
-    def prepare(self):
+    def _prepare(self):
         '''
         Prepare method
 
         This method can be overwritten to prepare
         needed functionality.
+        '''
+        pass
+
+    def _loadData(self):
+        '''
+        Load data method
         '''
         pass
 
@@ -683,11 +684,24 @@ class BTConfigDataloader:
         '''
         self._instance.log(txt, level)
 
-    def load(self):
+    def getData(self, fromdate=None, todate=None) -> pd.DataFrame:
         '''
-        Loads a custom data source
+        Returns the data
         '''
-        self._setFile()
+        data = self._updateFile(self._loadData())
+        if fromdate or todate:
+            data.set_index('datetime', inplace=True)
+            if fromdate:
+                data = data[fromdate:]
+            if todate:
+                data = data[:todate]
+            data.reset_index(inplace=True)
+        return data
+
+    def createDataFeed(self):
+        '''
+        Returns the data feed
+        '''
         self._updateFile(self._loadData())
         return self._createFeed()
 

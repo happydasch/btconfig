@@ -13,7 +13,7 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'OANDA'
 
-    def prepare(self):
+    def _prepare(self):
         bidask = self._cfg['params'].get('bidask', True)
         useask = self._cfg['params'].get('useask', False)
         if bidask and useask:

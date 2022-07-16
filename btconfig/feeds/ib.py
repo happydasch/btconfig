@@ -30,7 +30,7 @@ class IBDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'IB'
 
-    def prepare(self):
+    def _prepare(self):
         what = self._cfg['params'].get('what', 'MIDPOINT')
         self._additional.append(what)
         self._cls = CSVAdjustTime

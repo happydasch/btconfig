@@ -15,7 +15,7 @@ class CoinMetricsDataloader(BTConfigDataloader):
 
     PREFIX = 'COINMETRICS'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTime
         self.client = CoinMetricsDataloaderApp(debug=debug)
 
@@ -39,7 +39,7 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
 
     PREFIX = 'COINMETRICS_MVRV'
 
-    def prepare(self):
+    def _prepare(self):
         use_base_asset = self._cfg.get('use_base_asset', True)
         self._additional.append('BASE' if use_base_asset else 'QUOTE')
         self._cls = CSVAdjustTimeMVRVData
@@ -68,7 +68,7 @@ class CoinMetricsDataDataloader(BTConfigDataloader):
 
     PREFIX = 'COINMETRICS'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTimeCloseOnly
         self.dropna = self._cfg.get('dropna', False)
         if self.dropna:

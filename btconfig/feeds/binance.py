@@ -13,7 +13,7 @@ class BinanceDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'BINANCE'
 
-    def prepare(self):
+    def _prepare(self):
         api_key = self._cfg.get('api_key', '')
         api_secret = self._cfg.get('api_secret', '')
         self._cls = CSVAdjustTime

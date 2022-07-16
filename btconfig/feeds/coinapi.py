@@ -13,7 +13,7 @@ class CoinAPIDataloader(BTConfigDataloader):
 
     PREFIX = 'COINAPI'
 
-    def prepare(self):
+    def _prepare(self):
         self._cls = CSVAdjustTime
         api_key = self._cfg.get('api_key', '')
         debug = self._cfg.get('debug', False)
