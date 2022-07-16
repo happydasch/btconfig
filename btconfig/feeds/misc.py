@@ -38,7 +38,7 @@ class PandasAdjustTime(bt.feeds.PandasData):
                 # rounding issues, 10 microseconds is minimum)
                 new_date = get_starttime(
                     self._timeframe, self._compression, dt,
-                    self.p.sessionstart, -1)
+                    self.p.sessionstart, 1)
                 new_date -= timedelta(microseconds=100)
                 self.datetime[0] = date2num(new_date)
             else:
@@ -76,7 +76,7 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
             # rounding issues, 10 microseconds is minimum)
             new_date = get_starttime(
                 self._timeframe, self._compression, dt,
-                self.p.sessionstart, -1)
+                self.p.sessionstart, 1)
             new_date -= timedelta(microseconds=100)
             self.datetime[0] = date2num(new_date)
         else:

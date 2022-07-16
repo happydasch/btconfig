@@ -21,7 +21,7 @@ class IBDataAdjustTime(bt.feeds.IBData):
                 self._compression,
                 self.datetime.datetime(0, tz=timezone.utc),
                 self.p.sessionstart,
-                -1) - timedelta(microseconds=100)
+                1) - timedelta(microseconds=100)
             self.lines.datetime[0] = date2num(new_date)
         return res
 

@@ -207,7 +207,7 @@ def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
             second=(dt.second // compression) * compression,
             microsecond=0)
         if offset:
-            dt = dt - timedelta(seconds=compression * offset)
+            dt = dt + timedelta(seconds=compression * offset)
     elif timeframe == bt.TimeFrame.Minutes:
         if compression >= 60:
             hours = 0
@@ -226,12 +226,12 @@ def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
                 second=0,
                 microsecond=0)
         if offset:
-            dt = dt - timedelta(minutes=compression * offset)
+            dt = dt + timedelta(minutes=compression * offset)
     elif timeframe == bt.TimeFrame.Days:
         if dt.hour < sessionstart.hour:
             dt = dt - timedelta(days=1)
         if offset:
-            dt = dt - timedelta(days=offset)
+            dt = dt + timedelta(days=offset)
         dt = dt.replace(
             hour=sessionstart.hour,
             minute=sessionstart.minute,
@@ -242,7 +242,7 @@ def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
             # sunday is start of week at 5pm new york
             dt = dt - timedelta(days=dt.weekday() + 1)
         if offset:
-            dt = dt - timedelta(days=offset * 7)
+            dt = dt + timedelta(days=offset * 7)
         dt = dt.replace(
             hour=sessionstart.hour,
             minute=sessionstart.minute,
@@ -250,7 +250,7 @@ def get_starttime(timeframe, compression, dt, sessionstart=None, offset=0):
             microsecond=sessionstart.microsecond)
     elif timeframe == bt.TimeFrame.Months:
         if offset:
-            dt = dt - timedelta(days=(min(28 + dt.day, 31)))
+            dt = dt + timedelta(days=(min(28 + dt.day, 31)))
         # last day of month
         last_day_of_month = dt.replace(day=28) + timedelta(days=4)
         last_day_of_month = last_day_of_month - timedelta(
