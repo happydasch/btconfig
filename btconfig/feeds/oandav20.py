@@ -25,15 +25,15 @@ class OandaV20Dataloader(btconfig.BTConfigDataloader):
         self._additional.append(ctype)
         self._cls = CSVAdjustTimeBidAsk
         debug = self._cfg.get('debug', False)
+        store = self._cfg.get('store')
+        if not store:
+            raise Exception('Store not defined')
         self.loader = OandaV20DataloaderApp(
             self._instance.config['stores'][store]['params']['token'],
             self._instance.config['stores'][store]['params']['practice'],
             debug=debug)
 
     def _loadData(self):
-        store = self._cfg.get('store')
-        if not store:
-            raise Exception('Store not defined')
         dataname = self._cfg['dataname']
         timeframe = bt.TimeFrame.TFrame(self._cfg['granularity'][0])
         compression = self._cfg['granularity'][1]

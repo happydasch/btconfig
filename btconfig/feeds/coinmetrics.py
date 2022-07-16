@@ -17,6 +17,7 @@ class CoinMetricsDataloader(BTConfigDataloader):
 
     def _prepare(self):
         self._cls = CSVAdjustTime
+        debug = self._cfg.get('debug', False)
         self.client = CoinMetricsDataloaderApp(debug=debug)
 
     def _loadData(self):
@@ -30,7 +31,6 @@ class CoinMetricsDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            debug = self._cfg.get('debug', False)
             return self.client.request(
                 dataname, timeframe, compression, fromdate, todate)
 
@@ -43,6 +43,7 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
         use_base_asset = self._cfg.get('use_base_asset', True)
         self._additional.append('BASE' if use_base_asset else 'QUOTE')
         self._cls = CSVAdjustTimeMVRVData
+        debug = self._cfg.get('debug', False)
         self.loader = CoinMetricsDataloaderApp(debug=debug)
 
     def _loadData(self):
@@ -57,7 +58,6 @@ class CoinMetricsMVRVDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            debug = self._cfg.get('debug', False)
             data = self.loader.request(
                 dataname, timeframe, compression, fromdate, todate,
                 add_mvrv=True, use_base_asset=use_base_asset)
