@@ -118,12 +118,20 @@ class TelegramHandler(logging.Handler):
     def emit(self, record):
         msg = record.msg
         if len(self.whitelist):
+            found = False
             for x in self.whitelist:
-                if x not in msg:
-                    return
+                if x in msg:
+                    found = True
+                    break
+            if not found:
+                return
         if len(self.blacklist):
+            found = False
             for x in self.blacklist:
                 if x in msg:
-                    return
+                    found = True
+                    break
+            if found:
+                return
         for c in self.chat_id:
             self.client.send_message(c, msg)
