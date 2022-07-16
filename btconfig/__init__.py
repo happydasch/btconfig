@@ -544,9 +544,9 @@ class BTConfigPart:
         Initialization
         '''
         self._instance = instance
-        self.prepare()
+        self._prepare()
 
-    def prepare(self):
+    def _prepare(self):
         '''
         Prepare method
         '''

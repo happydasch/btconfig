@@ -20,7 +20,7 @@ class PartPlot(btconfig.BTConfigPart):
 
     PRIORITY = 90
 
-    def prepare(self):
+    def _prepare(self):
         self.btplotting = None
         self.plotfigs = None
 
