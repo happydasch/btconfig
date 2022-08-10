@@ -50,7 +50,7 @@ class FTXClient(BTConfigApiClient):
         if start_time:
             kwargs['start_time'] = int(start_time)
             if not end_time:
-                end_time = int(datetime.utcnow().timestamp())
+                end_time = datetime.utcnow().timestamp()
         if end_time:
             kwargs['end_time'] = int(end_time)
         res = []
