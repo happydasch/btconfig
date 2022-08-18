@@ -113,7 +113,8 @@ class ProtoStrategy(bt.Strategy):
         if frompre:
             txt.append('FILLING')
         else:
-            if not data.islive() or data._laststatus == data.LIVE:
+            src_data = data if data._owner is None else data._owner
+            if not src_data.islive() or src_data._laststatus == data.LIVE:
                 txt.append('LIVE')
             else:
                 txt.append('DELAYED')
