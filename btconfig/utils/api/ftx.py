@@ -49,8 +49,6 @@ class FTXClient(BTConfigApiClient):
         kwargs = {'resolution': resolution}
         if start_time:
             kwargs['start_time'] = int(start_time)
-            if not end_time:
-                end_time = datetime.utcnow().timestamp()
         if end_time:
             kwargs['end_time'] = int(end_time)
         res = []
@@ -88,10 +86,10 @@ class FTXClient(BTConfigApiClient):
         kwargs = {}
         if future:
             kwargs['future'] = future
-        if end_time:
-            kwargs['end_time'] = int(end_time)
         if start_time:
             kwargs['start_time'] = int(start_time)
+        if end_time:
+            kwargs['end_time'] = int(end_time)
         res = []
         while True:
             response = self._request(path, **kwargs)
