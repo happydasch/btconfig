@@ -1,7 +1,5 @@
 from __future__ import division, absolute_import, print_function
 
-from datetime import timezone
-
 from btconfig.utils.api.ftx import (
     FTXClient,
     create_data_df,
@@ -44,14 +42,15 @@ class FTXDataloaderApp:
                 timeframe == bt.TimeFrame.Days and compression > 30
             ):
                 raise Exception(
-                    f'Unsupported ({timeframe}-{compression}) granularity provided'
-                )
+                    f'Unsupported ({timeframe}-{compression})'
+                    ' granularity provided')
         if timeframe != bt.TimeFrame.Days:
             resolution = FTXClient.RESOLUTIONS[(timeframe, compression)]
         else:
             # for days, the resolution needs to be calculated manually:
             # 86400 * compression
-            resolution = FTXClient.RESOLUTIONS[(bt.TimeFrame.Days, 1)] * compression
+            resolution = (
+                FTXClient.RESOLUTIONS[(bt.TimeFrame.Days, 1)] * compression)
         fromdate_ts = None
         if fromdate:
             fromdate_ts = fromdate.timestamp()
@@ -59,8 +58,10 @@ class FTXDataloaderApp:
         if todate:
             todate_ts = todate.timestamp()
         data = self.client.getMarketCandles(
-            symbol, start_time=fromdate_ts, end_time=todate_ts, resolution=resolution
-        )
+            symbol,
+            start_time=fromdate_ts,
+            end_time=todate_ts,
+            resolution=resolution)
         if len(data):
             return create_data_df(data)
         return None

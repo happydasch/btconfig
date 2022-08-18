@@ -1,10 +1,13 @@
 from __future__ import division, absolute_import, print_function
 
-from btconfig import BTConfigApiClient
-from datetime import datetime
-
-import backtrader as bt
+import hmac
 import pandas as pd
+import backtrader as bt
+
+from datetime import datetime
+from requests import Request
+
+from btconfig import BTConfigApiClient
 
 
 class FTXClient(BTConfigApiClient):
@@ -32,10 +35,44 @@ class FTXClient(BTConfigApiClient):
             base_url='https://ftx.com/api/', headers={}, **kwargs
         )
 
-    def _requestUrl(self, url):
-        # FIXME auth details can be added here
-        # see https://blog.ftx.com/blog/api-authentication/
-        return super(FTXClient, self)._requestUrl(url)
+    def _request(self, path, exceptions=True, json=False,
+                 authenticate=False, **kwargs):
+        '''
+        Runs a request to the given api path
+        '''
+        url = self._getUrl(path, **kwargs)
+        response = self._requestUrl(url, authenticate=authenticate)
+        if response.status_code == 200:
+            if json:
+                return response.json()
+        else:
+            if exceptions:
+                raise Exception(f'{url}: {response.text}')
+            if json:
+                return []
+        return response
+
+    def _requestUrl(self, url, authenticate=False):
+        if not authenticate:
+            response = super(FTXClient, self)._requestUrl(url)
+        else:
+            ts = int(datetime.utcnow().timestamp() * 1000)
+            request = Request('GET', url)
+            prepared = request.prepare()
+            signature_payload = f'{ts}{prepared.method}{prepared.path_url}'
+            if prepared.body:
+                signature_payload += prepared.body
+            signature_payload = signature_payload.encode()
+            signature = hmac.new(
+                self.api_secret.encode(),
+                signature_payload,
+                'sha256').hexdigest()
+            request.headers = self.headers.copy()
+            request.headers['FTX-KEY'] = self.api_key
+            request.headers['FTX-SIGN'] = signature
+            request.headers['FTX-TS'] = str(ts)
+            response = request.get(url, headers=request.headers)
+        return response
 
     def getMarkets(self):
         # https://docs.ftx.com/#get-markets
@@ -43,7 +80,8 @@ class FTXClient(BTConfigApiClient):
         response = self._request(path, json=True)
         return response['result']
 
-    def getMarketCandles(self, symbol, start_time=None, end_time=None, resolution=3600):
+    def getMarketCandles(self, symbol, start_time=None, end_time=None,
+                         resolution=3600):
         # https://docs.ftx.com/#get-historical-prices
         path = f'markets/{symbol}/candles'
         kwargs = {'resolution': resolution}
@@ -67,11 +105,14 @@ class FTXClient(BTConfigApiClient):
                 # to prevent double entries
                 res = tmp['result'][:-1] + res
             last_dt = int(tmp['result'][0]['time'] / 1000)
-            if kwargs.get('start_time', 0) and kwargs.get('start_time', 0) >= last_dt:
+            if (kwargs.get('start_time', 0)
+                    and kwargs.get('start_time', 0) >= last_dt):
                 break
-            if kwargs.get('end_time', 0) and kwargs.get('end_time', 0) <= last_dt:
+            if (kwargs.get('end_time', 0)
+                    and kwargs.get('end_time', 0) <= last_dt):
                 break
-            if not kwargs.get('start_time') and not kwargs.get('end_time'):
+            if (not kwargs.get('start_time')
+                    and not kwargs.get('end_time')):
                 break
             kwargs['end_time'] = last_dt
         return res
@@ -104,12 +145,16 @@ class FTXClient(BTConfigApiClient):
                 # if already fetched something skip first entry
                 # to prevent double entries
                 res += tmp['result'][1:]
-            last_dt = int(datetime.fromisoformat(tmp['result'][-1]['time']).timestamp())
-            if kwargs.get('start_time', 0) and kwargs.get('start_time', 0) >= last_dt:
+            last_dt = int(datetime.fromisoformat(
+                tmp['result'][-1]['time']).timestamp())
+            if (kwargs.get('start_time', 0)
+                    and kwargs.get('start_time', 0) >= last_dt):
                 break
-            if kwargs.get('end_time', 0) and kwargs.get('end_time', 0) <= last_dt:
+            if (kwargs.get('end_time', 0)
+                    and kwargs.get('end_time', 0) <= last_dt):
                 break
-            if not kwargs.get('start_time') and not kwargs.get('end_time'):
+            if (not kwargs.get('start_time')
+                    and not kwargs.get('end_time')):
                 break
             kwargs['end_time'] = last_dt
         return res
