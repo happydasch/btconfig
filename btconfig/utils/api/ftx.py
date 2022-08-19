@@ -98,11 +98,11 @@ class FTXClient(BTConfigApiClient):
             tmp = response.json()
             if not len(tmp['result']):
                 break
+            # if already fetched something skip first entry
+            # to prevent double entries
             if not len(res):
                 res = tmp['result']
             else:
-                # if already fetched something skip first entry
-                # to prevent double entries
                 res = tmp['result'][:-1] + res
             last_dt = int(tmp['result'][0]['time'] / 1000)
             if (kwargs.get('start_time', 0)
