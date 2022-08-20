@@ -96,25 +96,28 @@ class FTXClient(BTConfigApiClient):
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()
+            first_dt = int(tmp['result'][0]['time'] / 1000)
+            last_dt = int(tmp['result'][-1]['time'] / 1000)
             if not len(tmp['result']):
                 break
-            # if already fetched something skip first entry
-            # to prevent double entries
             if not len(res):
                 res = tmp['result']
             else:
+                if (first_dt == int(res[0]['time'] / 1000)):
+                    break
                 res = tmp['result'][:-1] + res
-            last_dt = int(tmp['result'][0]['time'] / 1000)
-            if (kwargs.get('start_time', 0)
-                    and kwargs.get('start_time', 0) >= last_dt):
+            if not kwargs.get('start_time') and not kwargs.get('end_time'):
                 break
-            if (kwargs.get('end_time', 0)
-                    and kwargs.get('end_time', 0) <= last_dt):
+            if (kwargs.get('start_time')
+                    and kwargs.get('start_time', 0) >= first_dt):
                 break
-            if (not kwargs.get('start_time')
-                    and not kwargs.get('end_time')):
+            if (kwargs.get('end_time')
+                    and kwargs.get('end_time', 0) >= last_dt):
                 break
-            kwargs['end_time'] = last_dt
+            if first_dt > kwargs.get('start_time', first_dt):
+                kwargs['end_time'] = first_dt
+            else:
+                break
         return res
 
     def getAllFundingRates(self, start_time=None, end_time=None):
@@ -137,26 +140,29 @@ class FTXClient(BTConfigApiClient):
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()
+            first_dt = int(datetime.fromisoformat(
+                tmp['result'][-1]['time']).timestamp())
             if not len(tmp['result']):
                 break
             if not len(res):
                 res = tmp['result']
             else:
-                # if already fetched something skip first entry
-                # to prevent double entries
-                res += tmp['result'][1:]
-            last_dt = int(datetime.fromisoformat(
-                tmp['result'][-1]['time']).timestamp())
-            if (kwargs.get('start_time', 0)
-                    and kwargs.get('start_time', 0) >= last_dt):
+                if (first_dt == int(datetime.fromisoformat(
+                        res[-1]['time']).timestamp())):
+                    break
+                for i in tmp['result']:
+                    if i['time'] == res[0]['time']:
+                        continue
+                    res.append(i)
+            if not kwargs.get('start_time') and not kwargs.get('end_time'):
                 break
-            if (kwargs.get('end_time', 0)
-                    and kwargs.get('end_time', 0) <= last_dt):
+            if (kwargs.get('start_time')
+                    and kwargs.get('start_time', 0) >= first_dt):
                 break
-            if (not kwargs.get('start_time')
-                    and not kwargs.get('end_time')):
+            if first_dt > kwargs.get('start_time', first_dt):
+                kwargs['end_time'] = first_dt
+            else:
                 break
-            kwargs['end_time'] = last_dt
         return res
 
     def listFuturesInfo(self):
