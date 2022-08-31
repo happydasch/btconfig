@@ -153,9 +153,10 @@ class ProtoStrategy(bt.Strategy):
             return
         txt = []
         if isinstance(order, (bt.Order, IBOrder)):
+            txt.append(f'Data {order.data._name}')
             txt.append(f'Ref {order.ref}')
-            txt.append(f'Type {order.ordtypename()}')
             txt.append(f'Status {order.getstatusname()}')
+            txt.append(f'Type {order.ordtypename()}')
             txt.append(f'ExecType {order.getordername()}')
             txt.append(f'Size {order.size}')
             txt.append(f'Alive {order.alive()}')
@@ -174,7 +175,8 @@ class ProtoStrategy(bt.Strategy):
             return
         txt = []
         if isinstance(trade, bt.Trade):
-            txt.append(f'{trade.status_names[trade.status]}')
+            txt.append(f'Data {trade.data._name}')
+            txt.append(f'Status {trade.status_names[trade.status]}')
             txt.append(f'Price {trade.price}')
             txt.append(f'Size {trade.size}')
             txt.append(f'Length bars {trade.barlen}')
