@@ -55,7 +55,7 @@ class PartPlot(btconfig.BTConfigPart):
             style=cfg.get('style', 'candle'),
             port=cfg.get('port', 80),
             use_default_tabs=False,
-            tabs=[AnalyzerTab, MetadataTab, ConfigTab, LogTab],
+            tabs=[AnalyzerTab, ConfigTab],
             scheme=self._getBTPlottingScheme(self._getPlotscheme()))
 
     def _createBacktestPlotting(self):
