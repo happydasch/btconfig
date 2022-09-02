@@ -11,13 +11,20 @@ from btconfig.feeds.misc import (
 from btconfig.utils.dataloader import FTXDataloaderApp
 
 
+# src: https://github.com/ccxt/ccxt/blob/master/python/ccxt/ftx.py
+# hard limit of 7 requests per 200ms
+# => 35 requests per 1000ms
+# => 1000ms / 35 = 28.5714 ms between requests
+# => 0.0285714 s
+
+
 class FTXDataloader(btconfig.BTConfigDataloader):
 
     PREFIX = 'FTX'
 
     def _prepare(self):
         self._cls = CSVAdjustTime
-        pause = self._cfg.get('pause', None)
+        pause = self._cfg.get('pause', 0.0285714)
         debug = self._cfg.get('debug', False)
         api_key = self._cfg.get('api_key', '')
         api_secret = self._cfg.get('api_secret', '')
@@ -49,7 +56,7 @@ class FTXFundingRatesDataloader(btconfig.BTConfigDataloader):
         self._cls = CSVAdjustTimeCloseOnly
         api_key = self._cfg.get('api_key', '')
         api_secret = self._cfg.get('api_secret', '')
-        pause = self._cfg.get('pause', None)
+        pause = self._cfg.get('pause', 0.0285714)
         debug = self._cfg.get('debug', False)
         self.loader = FTXDataloaderApp(
             api_key=api_key, api_secret=api_secret,
