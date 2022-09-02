@@ -259,7 +259,6 @@ import backtrader as bt
 
 from copy import deepcopy
 from datetime import datetime, timedelta
-from dateutil import parser
 from urllib.parse import urlencode
 from .helper import get_classes, merge_dicts, get_data_params, parse_dt
 from threading import Lock
