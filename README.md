@@ -47,7 +47,7 @@ with optimization results browseable in a browser
 * Prototype Strategies for Forex Trading with functionality to work with
   pips, market hours, logging etc.
 * Tearsheet support using QuantStats
-* Additional Analysers for Backtesting
+* Additional Analyzers for Backtesting
 * Optimization using the built-in bruteforce method or using genetic algorithms
 
 ## Contribute
