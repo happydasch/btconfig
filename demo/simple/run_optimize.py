@@ -1,4 +1,5 @@
 import btconfig
-from simple_strategy import SimpleStrategy
+btconfig.PATH_STRATEGY.extend(['simple_strategy'])
 
-res = btconfig.run(btconfig.MODE_OPTIMIZE, "config.json")
+if __name__ == '__main__':
+    res = btconfig.run(btconfig.MODE_OPTIMIZE, "config.json")
