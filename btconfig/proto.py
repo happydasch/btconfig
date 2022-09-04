@@ -177,7 +177,8 @@ class ProtoStrategy(bt.Strategy):
             txt.append(f'Data {trade.data._name}')
             txt.append(f'Status {trade.status_names[trade.status]}')
             txt.append(f'Price {trade.price}')
-            txt.append(f'Size {trade.size}')
+            if trade.size > 0:
+                txt.append(f'Size {trade.size}')
             if trade.dtopen > 0:
                 txt.append(f'Opened at {trade.open_datetime()}')
             if trade.isclosed:
