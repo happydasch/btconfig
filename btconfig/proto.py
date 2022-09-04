@@ -4,6 +4,7 @@ import logging
 import pytz
 import backtrader as bt
 
+from btconfig.helper import strfdelta
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)
@@ -177,7 +178,6 @@ class ProtoStrategy(bt.Strategy):
             txt.append(f'Status {trade.status_names[trade.status]}')
             txt.append(f'Price {trade.price}')
             txt.append(f'Size {trade.size}')
-            txt.append(f'Length bars {trade.barlen}')
             if trade.dtopen > 0:
                 txt.append(f'Opened at {trade.open_datetime()}')
             if trade.isclosed:
@@ -185,7 +185,14 @@ class ProtoStrategy(bt.Strategy):
                 pnlcomm = trade.pnlcomm
                 comm = trade.commission
                 if trade.dtclose > 0:
+                    duration = trade.close_datetime() - trade.open_datetime()
                     txt.append(f'Closed at {trade.close_datetime()}')
+                    if duration.days > 0:
+                        txt.append(
+                            strfdelta(duration, "Duration %D days %H:%M:%S"))
+                    else:
+                        txt.append(
+                            strfdelta(duration, "Duration %H:%M:%S"))
                 txt.append('PnL {:.2f}'.format(pnl))
                 txt.append('PnLComm {:.2f}'.format(pnlcomm))
                 txt.append('Comm {:.2f}'.format(comm))

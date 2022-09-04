@@ -11,6 +11,19 @@ import backtrader as bt
 from zipimport import zipimporter
 from datetime import datetime, time, timedelta
 from dateutil import parser
+from string import Template
+
+
+class DeltaTemplate(Template):
+    delimiter = "%"
+
+
+def strfdelta(tdelta, fmt):
+    d = {"D": tdelta.days}
+    d["H"], rem = divmod(tdelta.seconds, 3600)
+    d["M"], d["S"] = divmod(rem, 60)
+    t = DeltaTemplate(fmt)
+    return t.substitute(**d)
 
 
 def load_json(filename):
@@ -19,7 +32,7 @@ def load_json(filename):
     return res
 
 
-def seq(start, stop, step = 1) -> list:
+def seq(start, stop, step=1) -> list:
     '''
     Returns a list with a given sequence
 
