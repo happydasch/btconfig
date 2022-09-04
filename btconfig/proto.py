@@ -4,8 +4,6 @@ import logging
 import pytz
 import backtrader as bt
 
-from backtrader.brokers.ibbroker import IBOrder
-from ib.ext.ContractDetails import ContractDetails
 from btconfig.utils.rounding import (
     get_pips_from_value, get_value_from_pips, get_price_value,
     get_round_to_pip)
@@ -152,7 +150,7 @@ class ProtoStrategy(bt.Strategy):
         if not self.p.log_orders:
             return
         txt = []
-        if isinstance(order, (bt.Order, IBOrder)):
+        if isinstance(order, (bt.OrderBase)):
             txt.append(f'Data {order.data._name}')
             txt.append(f'Ref {order.ref}')
             txt.append(f'Status {order.getstatusname()}')
@@ -264,28 +262,16 @@ class ForexProtoStrategy(ProtoStrategy):
             displayPrecision=self.p.display_precision,
             minimumTrailingStopDistance=self.p.min_trail_stop_dist
         )
+        # look for possible contractdetails definition
         dcd = None
-        # look for possible contractdetails definition (created by oanda)
         if hasattr(self.datas[0], 'contractdetails'):
             dcd = self.datas[0].contractdetails
+        # merge dict into contractdetails dict
         if isinstance(dcd, dict):
-            # merge dict into contractdetails dict
             cd.update(dcd)
             for d in self.datas:
                 if d._name != self.datas[0]._name:
                     d.contractdetails = cd.copy()
-        # look for possible contractdetails definition (created by ib)
-        elif isinstance(dcd, ContractDetails):
-            # ib contract details
-            self.contract = self.datas[0].contract.copy()
-            self.tradecontract = self.datas[0].tradecontract.copy()
-            self.tradecontractdetails = self.datas[0].tradecontractdetails.copy()
-            for d in self.datas:
-                if d._name != self.datas[0]._name:
-                    d.contract = self.datas[0].contract.copy()
-                    d.contractdetails = self.datas[0].contractdetails.copy()
-                    d.tradecontract = self.datas[0].tradecontract.copy()
-                    d.tradecontractdetails = self.datas[0].tradecontractdetails.copy()
         else:
             for d in self.datas:
                 d.contractdetails = cd.copy()
