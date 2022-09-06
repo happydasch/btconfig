@@ -84,6 +84,7 @@ class PartLogging(btconfig.BTConfigPart):
             telegramcfg = logcfg.get('telegram', {})
             telegram = TelegramHandler(telegramcfg)
             logger.addHandler(telegram)
+            self._instance.telegram_handler = telegram
         # enable logging in strategy
         if 'ProtoStrategy' in self._instance.config['strategy']:
             config = self._instance.config['strategy']['ProtoStrategy']
@@ -115,7 +116,20 @@ class TelegramHandler(logging.Handler):
         self.client = TelegramClient('logger', self.api_id, self.api_hash)
         self.client.start(bot_token=self.token)
 
+    def send_message(self, msg=None, image=None):
+        for c in self.chat_id:
+            if msg is not None:
+                self.client.send_message(c, msg, file=image)
+            elif image is not None:
+                self.client.send_file(c, image)
+
+    def send_file(self, filename):
+        for c in self.chat_id:
+            self.client.send_file(c, filename)
+
     def emit(self, record):
+        if not len(self.whitelist) and not len(self.blacklist):
+            return
         msg = record.msg
         if len(self.whitelist):
             found = False
@@ -133,5 +147,4 @@ class TelegramHandler(logging.Handler):
                     break
             if found:
                 return
-        for c in self.chat_id:
-            self.client.send_message(c, msg)
+        self.send_message(msg)
