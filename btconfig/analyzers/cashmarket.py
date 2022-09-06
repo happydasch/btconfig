@@ -1,4 +1,3 @@
-import btconfig
 import backtrader as bt
 
 
