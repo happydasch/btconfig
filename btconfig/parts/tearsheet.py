@@ -34,7 +34,7 @@ class PartTearsheet(btconfig.BTConfigPart):
             filename = os.path.abspath(path)
             filename = os.path.join(filename, 'tearsheet_{}_{}_{}.html'.format(
                 i, commoncfg.get('strategy'),
-                commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
+                commoncfg.get('time').strftime(btconfig.FILE_TIMEFORMAT)))
             title = commoncfg.get('strategy')
             create_tearsheet(r, filename, title)
             if os.path.isfile(filename):

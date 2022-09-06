@@ -88,7 +88,7 @@ class PartPlot(btconfig.BTConfigPart):
             output_file = os.path.abspath(path)
             output_file = os.path.join(output_file, 'bt_{}_{}.html'.format(
                 commoncfg.get('strategy'),
-                commoncfg.get('time').strftime('%Y%m%d_%H%M%S')))
+                commoncfg.get('time').strftime(btconfig.FILE_TIMEFORMAT)))
             kwargs['filename'] = output_file
             kwargs['headline'] = f'Backtest {commoncfg.get("strategy")}'
             self.btplotting = BacktraderPlotting(**kwargs)

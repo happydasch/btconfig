@@ -72,7 +72,7 @@ class PartLogging(btconfig.BTConfigPart):
         # add file handler
         if logfile:
             strategy = commoncfg['strategy']
-            exectime = commoncfg['time'].strftime('%Y%m%d_%H%M%S')
+            exectime = commoncfg['time'].strftime(btconfig.FILE_TIMEFORMAT)
             filename = os.path.join(
                 path, 'log_{}_{}.txt'.format(
                     strategy, exectime))
@@ -93,7 +93,7 @@ class PartLogging(btconfig.BTConfigPart):
         init_log_tab(['btconfig'])
         # log execution
         self.log('Backtrader btconfig execution {}\n'.format(
-            commoncfg['time'].strftime('%Y-%m-%d %H:%M:%S')
+            commoncfg['time'].strftime(btconfig.TIMEFORMAT)
         ))
         self.log('Logging started\n', logging.INFO)
 
