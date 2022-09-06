@@ -103,6 +103,7 @@ class TelegramHandler(logging.Handler):
     def __init__(self, cfg, level=logging.NOTSET):
         super(TelegramHandler, self).__init__(level=level)
         self.cfg = cfg
+        self.name = self.cfg.get('name', 'logger')
         self.token = self.cfg.get('token', '')
         self.api_id = self.cfg.get('api_id', '')
         self.api_hash = self.cfg.get('api_hash', '')
@@ -113,13 +114,14 @@ class TelegramHandler(logging.Handler):
         self._createTelegram()
 
     def _createTelegram(self):
-        self.client = TelegramClient('logger', self.api_id, self.api_hash)
+        self.client = TelegramClient(self.name, self.api_id, self.api_hash)
         self.client.start(bot_token=self.token)
 
-    def send_message(self, msg=None, image=None):
+    def send_message(self, msg=None, image=None, parse_mode='md'):
         for c in self.chat_id:
             if msg is not None:
-                self.client.send_message(c, msg, file=image)
+                self.client.send_message(
+                    c, msg, file=image, parse_mode=parse_mode)
             elif image is not None:
                 self.client.send_file(c, image)
 
