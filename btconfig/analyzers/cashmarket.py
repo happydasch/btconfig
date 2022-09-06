@@ -21,7 +21,7 @@ class CashMarket(bt.analyzers.Analyzer):
     def notify_cashvalue(self, cash, value):
         self.vals = (cash, value)
         self.rets[self.strategy.datetime.datetime().strftime(
-            btconfig.FILE_TIMEFORMAT)] = self.vals
+            "%Y-%m-%d")] = self.vals
 
     def get_analysis(self):
         return self.rets
