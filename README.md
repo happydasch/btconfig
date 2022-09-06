@@ -1,6 +1,6 @@
-# BTConfig
+# btconfig
 
-BTConfig is a configureable backtrader execution helper. It is using
+btconfig is a configureable backtrader execution helper. It is using
 JSON-formatted config files.
 
 It supports different execution modes:
@@ -12,7 +12,7 @@ It supports different execution modes:
 
 ## Modes
 
-Btconfig can be executed in different run modes.
+btconfig can be executed in different run modes.
 
 ### Mode: LIVE
 
