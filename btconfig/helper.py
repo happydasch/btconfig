@@ -15,13 +15,15 @@ from string import Template
 
 
 class DeltaTemplate(Template):
-    delimiter = "%"
+    delimiter = '%'
 
 
 def strfdelta(tdelta, fmt):
-    d = {"D": tdelta.days}
-    d["H"], rem = divmod(tdelta.seconds, 3600)
-    d["M"], d["S"] = divmod(rem, 60)
+    d = {'D': tdelta.days}
+    d['H'], rem = divmod(tdelta.seconds, 3600)
+    d['M'], d['S'] = divmod(rem, 60)
+    d['M'] = '%02d' % d['M']
+    d['S'] = '%02d' % d['S']
     t = DeltaTemplate(fmt)
     return t.substitute(**d)
 
