@@ -111,9 +111,9 @@ class TelegramHandler(logging.Handler):
         self.whitelist = self.cfg.get('whitelist', [])
         self.blacklist = self.cfg.get('blacklist', [])
         self.client = None
-        self._createTelegram()
+        self._create_telegram()
 
-    def _createTelegram(self):
+    def _create_telegram(self):
         self.client = TelegramClient(self.name, self.api_id, self.api_hash)
         self.client.start(bot_token=self.token)
 
