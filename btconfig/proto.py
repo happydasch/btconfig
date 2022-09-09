@@ -30,7 +30,9 @@ class ProtoStrategy(bt.Strategy):
         log_candles=True,
         log_signals=True,
         log_orders=True,
-        log_trades=True
+        log_trades=True,
+        log_data=True,
+        log_store=True
     )
 
     def __init__(self):
@@ -56,18 +58,13 @@ class ProtoStrategy(bt.Strategy):
         '''
         Store notification
         '''
-        txt = ['[STORE]:', str(msg)]
-        self.log(', '.join(txt))
+        self.log_store(msg, *args, **kwargs)
 
     def notify_data(self, data, status, *args, **kwargs):
         '''
         Data notification
         '''
-        txt = ['[DATA]',
-               data._name,
-               data._getstatusname(status),
-               *args]
-        self.log(', '.join(txt))
+        self.log_data(data, status, *args, **kwargs)
         if status == data.LIVE:
             self.datastatus = 1
         elif status == data.DELAYED:
@@ -201,6 +198,27 @@ class ProtoStrategy(bt.Strategy):
             txt.append(str(trade))
         info = ' / '.join(txt)
         self.log(f'[TRADE] {info}')
+
+    def log_data(self, data, status, *args, **kwargs):
+        '''
+        Log data notification
+        '''
+        if not self.p.log_data:
+            return
+        txt = [data._name,
+               data._getstatusname(status),
+               *args]
+        info = ' / '.join(txt)
+        self.log(f'[DATA] {info}')
+
+    def log_store(self, msg, *args, **kwargs):
+        '''
+        Log store notification
+        '''
+        txt = [msg,
+               *args]
+        info = ' / '.join(txt)
+        self.log(f'[STORE] {info}')
 
 
 class ForexProtoStrategy(ProtoStrategy):
