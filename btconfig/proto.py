@@ -56,15 +56,14 @@ class ProtoStrategy(bt.Strategy):
         '''
         Store notification
         '''
-        txt = ['*' * 5, 'STORE NOTIF:', str(msg)]
+        txt = ['[STORE]:', str(msg)]
         self.log(', '.join(txt))
 
     def notify_data(self, data, status, *args, **kwargs):
         '''
         Data notification
         '''
-        txt = ['*' * 5,
-               'DATA NOTIF:',
+        txt = ['[DATA]',
                data._name,
                data._getstatusname(status),
                *args]
