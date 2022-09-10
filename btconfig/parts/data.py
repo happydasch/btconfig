@@ -122,14 +122,22 @@ class PartDatas(btconfig.BTConfigPart):
         '''
         commoncfg = self._instance.config.get('common', {})
         dtnow = commoncfg.get('time', None)
-        dargs = get_data_params(cfg, tz, dtnow)
+        feedname = cfg.get('feedname')
+        if feedname and feedname not in self._instance.datas.keys():
+            raise Exception(f'Feed {feedname} not found')
         classname = cfg.get('classname')
         if classname and classname not in self.all_classes:
             raise Exception(f'Data {classname} not found')
         store = cfg.get('store')
         if store and store not in self._instance.stores:
             raise Exception(f'Store {store} not found')
-        if classname:
+        if feedname:
+            self.log(f'Using Data {feedname} ({data_id})',
+                     logging.DEBUG)
+            d = self._instance.datas[feedname]
+            self.log(f'Data {data_id} found', logging.INFO)
+        elif classname:
+            dargs = get_data_params(cfg, tz, dtnow)
             if issubclass(
                     self.all_classes[classname],
                     btconfig.BTConfigDataloader):
@@ -146,16 +154,18 @@ class PartDatas(btconfig.BTConfigPart):
                         tabulate(dargs.items(), tablefmt='plain')),
                     logging.DEBUG)
                 d = self.all_classes[classname](**dargs)
+            self.log(f'Data {data_id} created', logging.INFO)
         elif store:
-            self.log('Creating Data from Store {} ({})\n{}'.format(
+            dargs = get_data_params(cfg, tz, dtnow)
+            self.log('Loading Data from Store {} ({})\n{}'.format(
                     store,
                     data_id,
                     tabulate(dargs.items(), tablefmt='plain')),
                 logging.DEBUG)
             d = self._instance.stores[store].getdata(**dargs)
+            self.log(f'Data {data_id} loaded', logging.INFO)
         else:
             raise Exception('No valid data configuration')
-        self.log(f'Data {data_id} created', logging.INFO)
         return d
 
     def _createFeed(
