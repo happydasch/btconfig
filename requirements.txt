@@ -18,4 +18,4 @@ backtrader @ git+https://github.com/happydasch/backtrader
 btoandav20 @ git+https://github.com/happydasch/btoandav20
 btplotting @ git+https://github.com/happydasch/btplotting
 bt-ccxt-store @ git+https://github.com/happydasch/bt-ccxt-store
-IbPy2 @ git+https://github.com/blampe/IbPy.git
+#IbPy2 @ git+https://github.com/blampe/IbPy.git
