@@ -1,4 +1,9 @@
-matplotlib==3.2.2
+backtrader @ git+https://github.com/happydasch/backtrader
+btoandav20 @ git+https://github.com/happydasch/btoandav20
+btplotting @ git+https://github.com/happydasch/btplotting
+bt-ccxt-store @ git+https://github.com/happydasch/bt-ccxt-store
+#IbPy2 @ git+https://github.com/blampe/IbPy.git
+matplotlib
 python-dateutil>=2.8.1
 pykalman>=0.9.5
 tabulate>=0.8.7
@@ -14,8 +19,3 @@ QuantStats>=0.0.34
 telethon>=1.21.1
 gradient-free-optimizers>=0.3.2
 hyperactive<=3.9.9
-backtrader @ git+https://github.com/happydasch/backtrader
-btoandav20 @ git+https://github.com/happydasch/btoandav20
-btplotting @ git+https://github.com/happydasch/btplotting
-bt-ccxt-store @ git+https://github.com/happydasch/bt-ccxt-store
-#IbPy2 @ git+https://github.com/blampe/IbPy.git
