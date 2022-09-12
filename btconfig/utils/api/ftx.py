@@ -96,10 +96,10 @@ class FTXClient(BTConfigApiClient):
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()
-            first_dt = int(tmp['result'][0]['time'] / 1000)
-            last_dt = int(tmp['result'][-1]['time'] / 1000)
             if not len(tmp['result']):
                 break
+            first_dt = int(tmp['result'][0]['time'] / 1000)
+            last_dt = int(tmp['result'][-1]['time'] / 1000)
             if not len(res):
                 res = tmp['result']
             else:
@@ -140,10 +140,10 @@ class FTXClient(BTConfigApiClient):
             if response.status_code != 200:
                 raise Exception(f'{response.url}: {response.text}')
             tmp = response.json()
-            first_dt = int(datetime.fromisoformat(
-                tmp['result'][-1]['time']).timestamp())
             if not len(tmp['result']):
                 break
+            first_dt = int(datetime.fromisoformat(
+                tmp['result'][-1]['time']).timestamp())
             if not len(res):
                 res = tmp['result']
             else:
