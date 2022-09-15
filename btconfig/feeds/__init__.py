@@ -6,4 +6,3 @@ from .coinapi import *  # noqa: *
 from .coinmetrics import *  # noqa: *
 from .yahoo import *  # noqa: *
 from .ftx import *  # noqa: *
-from .ftx_live import *  # noqa: *
