@@ -3,7 +3,7 @@ btoandav20 @ git+https://github.com/happydasch/btoandav20
 btplotting @ git+https://github.com/happydasch/btplotting
 bt-ccxt-store @ git+https://github.com/happydasch/bt-ccxt-store
 #IbPy2 @ git+https://github.com/blampe/IbPy.git
-matplotlib
+websocket-client>=1.3.3
 python-dateutil>=2.8.1
 pykalman>=0.9.5
 tabulate>=0.8.7
@@ -12,6 +12,7 @@ pandas==1.3.5
 pytz>=2020.1
 PyYAML
 v20
+matplotylib
 scipy>=1.6.3
 python-binance>=0.7.11
 yfinance>=0.1.55
