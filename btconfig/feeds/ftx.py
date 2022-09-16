@@ -465,8 +465,6 @@ class FTXDataLive(CSVAdjustTime):
                 Thread(target=self._prefill_ws).start()
             else:
                 self._state = self._ST_LIVE
-            self._timeframe = bt.TimeFrame.Ticks
-            self._compression = 1
         if self._state == self._ST_LIVE:
             while True:
                 try:
