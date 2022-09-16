@@ -90,7 +90,6 @@ class FTXClient(BTConfigApiClient):
         if end_time:
             kwargs['end_time'] = int(end_time)
         res = []
-
         while True:
             response = self._request(path, **kwargs)
             if response.status_code != 200:
@@ -103,19 +102,17 @@ class FTXClient(BTConfigApiClient):
             if not len(res):
                 res = tmp['result']
             else:
+                # if data did not move backwards don't continue
                 if (first_dt == int(res[0]['time'] / 1000)):
                     break
                 res = tmp['result'][:-1] + res
-            if not kwargs.get('start_time') and not kwargs.get('end_time'):
+            if not start_time and not end_time:
                 break
-            if (kwargs.get('start_time')
-                    and kwargs.get('start_time', 0) >= first_dt):
+            if start_time and start_time >= first_dt:
                 break
-            if (kwargs.get('end_time')
-                    and kwargs.get('end_time', 0) >= last_dt):
-                break
-            if first_dt > kwargs.get('start_time', first_dt):
+            if start_time and start_time < first_dt:
                 kwargs['end_time'] = first_dt
+                prev_first_dt = first_dt
             else:
                 break
         return res
