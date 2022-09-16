@@ -4,11 +4,11 @@ import os
 import time
 import hmac
 import json
-import threading
 
 import pandas as pd
 import backtrader as bt
 
+from threading import Timer, Thread
 from queue import Queue, Empty
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
@@ -285,6 +285,7 @@ class FTXDataLive(CSVAdjustTime):
 
     def __init__(self, debug=False, *args, **kwargs):
         super(FTXDataLive, self).__init__(*args, **kwargs)
+        self._laststatus = None
         self._state = self._ST_START
         self._trades = Queue()
         self._ticks = Queue()
@@ -461,7 +462,7 @@ class FTXDataLive(CSVAdjustTime):
             if self.p.fill_gap:
                 self._state = self._ST_PRELIVE
                 self._subscribe_ws()
-                threading.Thread(target=self._prefill_ws).start()
+                Thread(target=self._prefill_ws).start()
             else:
                 self._state = self._ST_LIVE
             self._timeframe = bt.TimeFrame.Ticks
@@ -575,8 +576,10 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
 
     def __init__(self, debug=False, *args, **kwargs):
         super(FTXFundingRatesLive, self).__init__(*args, **kwargs)
+        self._laststatus = None
         self._state = self._ST_START
         self._queue = Queue()
+        self._timer = Timer(self.p.check_interval/1000, self._check_newest)
         self._debug = debug
         self._last_date = datetime.utcnow()
         self._last_success = None
@@ -587,7 +590,7 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
     def _start_thread(ftx_loader, interval, debug):
         if FTXFundingRatesLive._thread is not None:
             return
-        thread = threading.Thread(
+        thread = Thread(
             target=FTXFundingRatesLive._t_poll,
             args=[ftx_loader, interval, debug],
             daemon=True)
@@ -677,10 +680,10 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
             if result:
                 return result
             self._state = self._ST_LIVE
+            self._timer.start()
             FTXFundingRatesLive._start_thread(
                 self.ftx_loader, self.p.poll_interval, self._debug)
         if self._state == self._ST_LIVE:
-            self._check_newest()
             try:
                 candle = self._queue.get(timeout=self.p.qcheck)
                 result = self._load_candle(candle)
@@ -709,6 +712,7 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
 
     def stop(self):
         FTXFundingRatesLive.running = False
+        self._timer.cancel()
 
     def haslivedata(self):
         return (self._queue.qsize() > 0)
