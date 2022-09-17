@@ -10,7 +10,7 @@ import pandas as pd
 import backtrader as bt
 
 from threading import Thread
-from queue import Queue, Empty
+from queue import PriorityQueue, Queue, Empty
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
 from typing import DefaultDict, List, Dict, Callable
@@ -288,9 +288,9 @@ class FTXDataLive(CSVAdjustTime):
         super(FTXDataLive, self).__init__(*args, **kwargs)
         self._laststatus = None
         self._state = self._ST_START
+        self._queue = PriorityQueue()
         self._trades = Queue()
         self._ticks = Queue()
-        self._queue = Queue()
         self._debug = debug
         self._last_emit = None
         self._last_qsize = 0
@@ -426,7 +426,7 @@ class FTXDataLive(CSVAdjustTime):
                 f' first dt: {first_dt}'
                 f' last dt: {last_dt}'
                 f' duration: {last_dt-first_dt}')
-        self._queue.put(candle)
+        self._queue.put((bt.date2num(candle['datetime']), candle))
 
     def _load_candle(self, candle):
         datetime = candle['datetime']
@@ -473,19 +473,19 @@ class FTXDataLive(CSVAdjustTime):
                 qsize = self._queue.qsize()
                 try:
                     if qsize < 5:
-                        candle = self._queue.get(timeout=self.p.qcheck)
+                        dt, candle = self._queue.get(timeout=self.p.qcheck)
                     else:
-                        candle = self._queue.get(timeout=self.p.qcheck)
+                        dt, candle = self._queue.get(timeout=self.p.qcheck)
                         candle_idx = (
                             candle['datetime'].timestamp()
                             // self.p.max_interval)
                         for i in range(qsize - 1):
-                            tmp = self._queue.get()
+                            tmpdt, tmp = self._queue.get()
                             tmp_idx = (
                                 tmp['datetime'].timestamp()
                                 // self.p.max_interval)
                             if tmp_idx != candle_idx:
-                                self._queue.putleft(tmp)
+                                self._queue.put((tmpdt, tmp))
                                 break
                             candle['datetime'] = tmp['datetime']
                             candle['close'] = tmp['close']
