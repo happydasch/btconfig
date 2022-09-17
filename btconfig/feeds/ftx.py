@@ -292,7 +292,6 @@ class FTXDataLive(CSVAdjustTime):
         self._queue = Queue()
         self._debug = debug
         self._last_emit = None
-        self._last_duration = None
         self._last_qsize = 0
         self._current_interval = 0.0
         self.reset_emit_interval()
@@ -577,11 +576,9 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
         self._laststatus = None
         self._state = self._ST_START
         self._queue = Queue()
-        self._timer = Timer(self.p.check_interval/1000, self._check_newest)
         self._debug = debug
         self._last_date = datetime.utcnow()
         self._last_success = None
-        self._last_duration = 0
         self._last_check = None
 
     @staticmethod
@@ -678,14 +675,15 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
             if result:
                 return result
             self._state = self._ST_LIVE
-            self._timer.start()
             FTXFundingRatesLive._start_thread(
                 self.ftx_loader, self.p.poll_interval, self._debug)
         if self._state == self._ST_LIVE:
+            self._check_newest()
             try:
                 candle = self._queue.get(timeout=self.p.qcheck)
                 result = self._load_candle(candle)
-                return result
+                if result:
+                    return result
             except Empty:
                 pass
             if self._laststatus != self.LIVE and self._queue.qsize() == 0:
@@ -710,7 +708,6 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
 
     def stop(self):
         FTXFundingRatesLive.running = False
-        self._timer.cancel()
 
     def haslivedata(self):
         return (self._queue.qsize() > 0)
