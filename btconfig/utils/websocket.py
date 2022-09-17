@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from threading import Thread, Lock
 
@@ -78,7 +79,7 @@ class WebsocketManager:
         except Exception as e:
             # the catched exception ends current thread
             if self.debug:
-                print(e)
+                logging.exception(f'websocket exception: {e}')
 
     def _reconnect(self, ws):
         assert ws is not None, ('_reconnect should only be called'

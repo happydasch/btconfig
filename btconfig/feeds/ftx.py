@@ -4,11 +4,12 @@ import os
 import time
 import hmac
 import json
+import logging
 
 import pandas as pd
 import backtrader as bt
 
-from threading import Timer, Thread
+from threading import Thread
 from queue import Queue, Empty
 from collections import defaultdict
 from datetime import datetime, timezone, timedelta
@@ -325,8 +326,9 @@ class FTXDataLive(CSVAdjustTime):
         if self._debug:
             dtnow = datetime.utcnow()
             tradeslen = len(self.ws_client._trades_cb)
-            print(f'Market Candles {dtnow}: Subscribe to'
-                  f' {self.p.instrument} ({tradeslen} subscriptions)')
+            logging.debug(
+                f'Market Candles {dtnow}: Subscribe to'
+                f' {self.p.instrument} ({tradeslen} subscriptions)')
 
     def _unsubscribe_ws(self):
         self.ws_client.unsubscribe_ticker(
@@ -336,8 +338,9 @@ class FTXDataLive(CSVAdjustTime):
         if self._debug:
             dtnow = datetime.utcnow()
             tradeslen = len(self.ws_client._trades_cb)
-            print(f'Market Candles {dtnow}: Unsubscribe from'
-                  f' {self.p.instrument} ({tradeslen} subscriptions)')
+            logging.debug(
+                f'Market Candles {dtnow}: Unsubscribe from'
+                f' {self.p.instrument} ({tradeslen} subscriptions)')
 
     def _add_tick_to_queue(self, tick):
         '''
@@ -415,13 +418,14 @@ class FTXDataLive(CSVAdjustTime):
             trade = self._trades.get()
             candle['volume'] += trade['size']
         if self._debug:
-            print(f'Market Candles {dtnow}: Emitting candle for'
-                  f' {self.p.instrument} at {candle["datetime"]}'
-                  f' interval: {self._current_interval}'
-                  f' ticks used: {ticks}'
-                  f' first dt: {first_dt}'
-                  f' last dt: {last_dt}'
-                  f' duration: {last_dt-first_dt}')
+            logging.debug(
+                f'Market Candles {dtnow}: Emitting candle for'
+                f' {self.p.instrument} at {candle["datetime"]}'
+                f' interval: {self._current_interval}'
+                f' ticks used: {ticks}'
+                f' first dt: {first_dt}'
+                f' last dt: {last_dt}'
+                f' duration: {last_dt-first_dt}')
         self._queue.put(candle)
 
     def _load_candle(self, candle):
@@ -466,8 +470,28 @@ class FTXDataLive(CSVAdjustTime):
                 self._state = self._ST_LIVE
         if self._state == self._ST_LIVE:
             while True:
+                qsize = self._queue.qsize()
                 try:
-                    candle = self._queue.get(timeout=self.p.qcheck)
+                    if qsize < 5:
+                        candle = self._queue.get(timeout=self.p.qcheck)
+                    else:
+                        candle = self._queue.get(timeout=self.p.qcheck)
+                        candle_idx = (
+                            candle['datetime'].timestamp()
+                            // self.p.max_interval)
+                        for i in range(qsize - 1):
+                            tmp = self._queue.get()
+                            tmp_idx = (
+                                tmp['datetime'].timestamp()
+                                // self.p.max_interval)
+                            if tmp_idx != candle_idx:
+                                self._queue.putleft(tmp)
+                                break
+                            candle['datetime'] = tmp['datetime']
+                            candle['close'] = tmp['close']
+                            candle['high'] = max(candle['high'], tmp['high'])
+                            candle['low'] = min(candle['low'], tmp['low'])
+                            candle['volume'] += tmp['volume']
                 except Empty:
                     return None
                 res = self._load_candle(candle)
@@ -508,22 +532,25 @@ class FTXDataLive(CSVAdjustTime):
                     if self._debug:
                         if qsize > self._last_qsize:
                             dtnow = datetime.utcnow()
-                            print(f'Market Candles {dtnow}:'
-                                  f'{self.p.instrument} - queue is growing,'
-                                  f' was: {self._last_qsize} - is: {qsize}'
-                                  f' emit interval: {self._current_interval}')
+                            logging.debug(
+                                f'Market Candles {dtnow}:'
+                                f'{self.p.instrument} - queue is growing,'
+                                f' was: {self._last_qsize} - is: {qsize}'
+                                f' emit interval: {self._current_interval}')
                         elif qsize < self._last_qsize:
                             dtnow = datetime.utcnow()
-                            print(f'Market Candles {dtnow}:'
-                                  f'{self.p.instrument} - queue is shrinking,'
-                                  f' was: {self._last_qsize} - is: {qsize}'
-                                  f' emit interval: {self._current_interval}')
+                            logging.debug(
+                                f'Market Candles {dtnow}:'
+                                f'{self.p.instrument} - queue is shrinking,'
+                                f' was: {self._last_qsize} - is: {qsize}'
+                                f' emit interval: {self._current_interval}')
                         else:
                             dtnow = datetime.utcnow()
-                            print(f'Market Candles {dtnow}:'
-                                  f'{self.p.instrument} - queue not changed,'
-                                  f' was: {self._last_qsize} - is: {qsize}'
-                                  f' emit interval: {self._current_interval}')
+                            logging.debug(
+                                f'Market Candles {dtnow}:'
+                                f'{self.p.instrument} - queue not changed,'
+                                f' was: {self._last_qsize} - is: {qsize}'
+                                f' emit interval: {self._current_interval}')
                     self._last_qsize = qsize
                     return True
 
@@ -609,17 +636,19 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
                     dtdiff = 0
                 if dtdiff > 0:
                     if debug:
-                        print(f'Funding Rates {dtnow}: Current time period is'
-                              f' not over yet. Waiting for {dtdiff} seconds'
-                              ' before next request')
+                        logging.debug(
+                            f'Funding Rates {dtnow}: Current time period is'
+                            f' not over yet. Waiting for {dtdiff} seconds'
+                            ' before next request')
                         # wake up every 0.5 seconds instead of sleeping
                         # for a long period:
                         # time.sleep(dtdiff.total_seconds())
                         time.sleep(0.5)
                     continue
             if debug:
-                print(f'Funding Rates {dtnow}: Requesting funding rates'
-                      + (f' since {dtcurr}' if dtcurr else ''))
+                logging.debug(
+                    f'Funding Rates {dtnow}: Requesting funding rates'
+                    + (f' since {dtcurr}' if dtcurr else ''))
             data = ftx_loader.getAllFundingRates(fromdate=dtcurr)
             if data is not None and len(data):
                 if not duration and len(data) > 1:
@@ -630,8 +659,9 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
                     data = data[data.datetime > dtcurr]
             if not len(data):
                 if debug:
-                    print(f'Funding Rates {dtnow}: Waiting for {interval}'
-                          ' seconds before next request')
+                    logging.debug(
+                        f'Funding Rates {dtnow}: Waiting for {interval}'
+                        ' seconds before next request')
                 time.sleep(interval)
                 continue
             if dtcurr:
@@ -642,7 +672,8 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
             else:
                 FTXFundingRatesLive.newest = data
             if debug:
-                print(f'Funding Rates {dtnow}: New funding rates recieved')
+                logging.debug(
+                    f'Funding Rates {dtnow}: New funding rates recieved')
 
     def _check_newest(self):
         if FTXFundingRatesLive.newest is None:
