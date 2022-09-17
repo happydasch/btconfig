@@ -14,7 +14,7 @@ class WebsocketManager:
     def __init__(self, ping_interval=0, ping_timeout=0, debug=False):
         self._ping_interval = ping_interval
         self._ping_timeout = ping_timeout
-        self.thread_check = Thread(target=self._check_thread)
+        self.thread_check = Thread(target=self._check_thread, daemon=True)
         self.connect_lock = Lock()
         self.ws = None
         self.wst = None
