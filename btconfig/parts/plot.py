@@ -149,7 +149,6 @@ class PartPlot(btconfig.BTConfigPart):
             vol_aspectratio=5.5,
             obs_aspectratio=8.5,
             ind_aspectratio=11.5,
-            xaxis_pos='bottom',
             plot_title=False
         )
         kwargs.update(override)
