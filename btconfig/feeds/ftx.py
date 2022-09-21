@@ -16,7 +16,8 @@ from datetime import datetime, timezone, timedelta
 from typing import DefaultDict, List, Dict, Callable
 
 from btconfig import BTConfigDataloader
-from btconfig.helper import get_data_dates
+from btconfig.helper import get_data_dates, get_starttime
+
 from btconfig.feeds.misc import (
     CSVAdjustTime, CSVAdjustTimeCloseOnly)
 from btconfig.utils.api.ftx import create_data_df
@@ -725,8 +726,17 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
     def _load_candle(self, candle):
         dt = bt.date2num(candle['datetime'])
         close = candle['close']
+        if self.p.adjstarttime:
+            # move time to start time of next candle
+            # and subtract 0.1 miliseconds (ensures no
+            # rounding issues, 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 1)
+            dt -= timedelta(microseconds=100)
         if dt <= self.l.datetime[-1]:
             return False  # time already seen
+        self.datetime[0] = bt.date2num(dt)
         self.l.datetime[0] = dt
         self.l.open[0] = close
         self.l.high[0] = close
