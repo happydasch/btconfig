@@ -36,11 +36,9 @@ def get_pip_location(value, to_one=True):
                 break
             pip_location += 1
         else:
-            if pips > 1:
+            if pips >= 1:
                 if to_one:
                     pip_location += 1
-                break
-            elif pips == 1:
                 break
             pip_location -= 1
     return pip_location
