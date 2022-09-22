@@ -318,7 +318,7 @@ class FTXDataLive(CSVAdjustTime):
                     low=row[1].low,
                     close=row[1].close,
                     volume=row[1].volume)
-                self._queue.put(candle)
+                self._queue.put((bt.date2num(candle['datetime']), candle))
         self._state = self._ST_LIVE
 
     def _subscribe_ws(self):
@@ -657,21 +657,20 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
                     duration = pd.Timedelta(
                         dt_unique[1] - dt_unique[0]).to_pytimedelta()
                 if dtcurr:
-                    data = data[data.datetime > dtcurr]
-            if not len(data):
-                if debug:
-                    logging.debug(
-                        f'Funding Rates {dtnow}: Waiting for {interval}'
-                        ' seconds before next request')
-                time.sleep(interval)
-                continue
-            if dtcurr:
-                FTXFundingRatesLive.newest = pd.merge(
-                    FTXFundingRatesLive.newest[
-                        FTXFundingRatesLive.newest.datetime >= dtcurr],
-                    data)
-            else:
-                FTXFundingRatesLive.newest = data
+                    # ensure to also get current time, so the df does not
+                    # end up being empty, if there is only current time
+                    # available in new data
+                    data = data[data.datetime >= dtcurr]
+            if dtcurr is not None:
+                if not len(data) or not len(data[data.datetime > dtcurr]):
+                    if debug:
+                        logging.debug(
+                            f'Funding Rates {dtnow}: Waiting for {interval}'
+                            ' seconds before next request')
+                    time.sleep(interval)
+                    continue
+            # replace funding rates with latest fetched
+            FTXFundingRatesLive.newest = data
             if debug:
                 logging.debug(
                     f'Funding Rates {dtnow}: New funding rates recieved')
@@ -681,8 +680,8 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
             return
         dtnow = datetime.utcnow()
         if self._last_check:
-            if (self._last_check
-                    < dtnow - timedelta(seconds=self.p.check_interval)):
+            dtdiff = dtnow - timedelta(seconds=self.p.check_interval)
+            if (dtdiff < self._last_check):
                 return
         data = FTXFundingRatesLive.newest
         newest = data[data.future == self.p.instrument]
@@ -724,7 +723,7 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
         return False
 
     def _load_candle(self, candle):
-        dt = bt.date2num(candle['datetime'])
+        dt = candle['datetime']
         close = candle['close']
         if self.p.adjstarttime:
             # move time to start time of next candle
@@ -734,17 +733,17 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
                 self._timeframe, self._compression, dt,
                 self.p.sessionstart, 1)
             dt -= timedelta(microseconds=100)
-        if dt <= self.l.datetime[-1]:
+        dtnum = bt.date2num(dt)
+        if dtnum <= self.l.datetime[-1]:
             return False  # time already seen
-        self.datetime[0] = bt.date2num(dt)
-        self.l.datetime[0] = dt
+        self.l.datetime[0] = dtnum
         self.l.open[0] = close
         self.l.high[0] = close
         self.l.low[0] = close
         self.l.close[0] = close
         self.l.volume[0] = 0
         self.l.openinterest[0] = 0.0
-        self._last_date = candle['datetime']
+        self._last_date = dt
         return True
 
     def stop(self):
