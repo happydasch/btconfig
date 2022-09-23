@@ -730,12 +730,9 @@ class FTXFundingRatesLive(CSVAdjustTimeCloseOnly):
         dt = candle['datetime']
         close = candle['close']
         if self.p.adjstarttime:
-            # move time to start time of next candle
-            # and subtract 0.1 miliseconds (ensures no
-            # rounding issues, 10 microseconds is minimum)
-            dt = get_starttime(
-                self._timeframe, self._compression, dt,
-                self.p.sessionstart, 1)
+            # move time to end time of prev candle
+            # subtract 0.1 miliseconds (ensures no rounding issues,
+            # 10 microseconds is minimum)
             dt -= timedelta(microseconds=100)
         dtnum = bt.date2num(dt)
         if dtnum <= self.l.datetime[-1]:
