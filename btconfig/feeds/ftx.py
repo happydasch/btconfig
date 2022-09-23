@@ -240,7 +240,10 @@ class FTXDataloaderLive(FTXDataloader):
 
     def _createFeed(self):
         data = super(FTXDataloaderLive, self)._createFeed()
-        data.ftx_loader = self._instance.ftx_loader
+        if hasattr(self._instance, 'ftx_loader'):
+            data.ftx_loader = self._instance.ftx_loader
+        else:
+            data.ftx_loader = self.loader
         if not hasattr(FTXWebsocketClient, 'instance'):
             debug = self._cfg.get('debug', False)
             FTXWebsocketClient.instance = FTXWebsocketClient(
@@ -258,7 +261,10 @@ class FTXFundingRatesDataloaderLive(FTXFundingRatesDataloader):
 
     def _createFeed(self):
         data = super(FTXFundingRatesDataloaderLive, self)._createFeed()
-        data.ftx_loader = self._instance.ftx_loader
+        if hasattr(self._instance, 'ftx_loader'):
+            data.ftx_loader = self._instance.ftx_loader
+        else:
+             data.ftx_loader = self.loader
         return data
 
 
