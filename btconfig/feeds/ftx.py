@@ -282,7 +282,8 @@ class FTXDataLive(CSVAdjustTime):
         'emit_interval': 0.0,
         'adjust_interval': False,
         'max_interval': 15.0,
-        'fill_gap': False
+        'fill_gap': False,
+        'load_multiple_candles': False
     }
 
     def __init__(self, debug=False, *args, **kwargs):
@@ -471,16 +472,13 @@ class FTXDataLive(CSVAdjustTime):
                 self._state = self._ST_LIVE
         if self._state == self._ST_LIVE:
             while True:
-                qsize = self._queue.qsize()
                 try:
-                    if qsize < 5:
-                        dt, candle = self._queue.get(timeout=self.p.qcheck)
-                    else:
-                        dt, candle = self._queue.get(timeout=self.p.qcheck)
+                    dt, candle = self._queue.get(timeout=self.p.qcheck)
+                    if self.p.load_multiple_candles:
                         candle_idx = (
                             candle['datetime'].timestamp()
                             // self.p.max_interval)
-                        for i in range(qsize - 1):
+                        for i in range(self._queue.qsize()):
                             tmpdt, tmp = self._queue.get()
                             tmp_idx = (
                                 tmp['datetime'].timestamp()
