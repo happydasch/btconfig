@@ -179,7 +179,7 @@ class FTXDataloader(BTConfigDataloader):
     PREFIX = 'FTX'
 
     def _prepare(self):
-        self._cls = CSVAdjustTime
+        self._cls = FTXData
         pause = self._cfg.get('pause', 0.0285714)
         debug = self._cfg.get('debug', False)
         api_key = self._cfg.get('api_key', '')
@@ -267,7 +267,43 @@ class FTXFundingRatesDataloaderLive(FTXFundingRatesDataloader):
         return data
 
 
-class FTXDataLive(CSVAdjustTime):
+class FTXData(bt.feeds.GenericCSVData):
+
+    params = dict(
+        adjstarttime=False,
+        roundvalues=False,
+        roundprecision=8,
+        dtformat=parse_dt,
+        datetime=0, open=1, high=2, low=3, close=4, volume=5,
+        openinterest=-1
+    )
+
+    def _loadline(self, linetokens):
+        res = super(FTXData, self)._loadline(linetokens)
+        # if values should be rounded, all lines will get rounded
+        if self.p.roundvalues:
+            for linefield in (x for x in self.getlinealiases() if x != 'datetime'):
+                csvidx = getattr(self.params, linefield)
+                if csvidx is None or csvidx < 0:
+                    continue
+                line = getattr(self.lines, linefield)
+                if line[0] == line[0]:
+                    line[0] = round(line[0], self.p.roundprecision)
+        # ensure that utc time is being used
+        dt = self.datetime.datetime(0, tz=timezone.utc)
+        if self.p.adjstarttime:
+            # move time to start time of next candle and
+            # subtract 0.1 miliseconds (ensures no
+            # rounding issues, 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 0)
+            dt -= timedelta(microseconds=100)
+        self.datetime[0] = bt.date2num(dt)
+        return res
+
+
+class FTXDataLive(FTXData):
 
     # Extends ftx data with live data
     #
@@ -616,10 +652,8 @@ class FTXFundingRates(bt.feeds.GenericCSVData):
             # move time to end time of prev candle
             # subtract 0.1 miliseconds (ensures no
             # rounding issues, 10 microseconds is minimum)
-            new_date = dt - timedelta(microseconds=100)
-            self.datetime[0] = bt.date2num(new_date)
-        else:
-            self.datetime[0] = bt.date2num(dt)
+            dt -= timedelta(microseconds=100)
+        self.datetime[0] = bt.date2num(dt)
         return res
 
 
@@ -767,6 +801,9 @@ class FTXFundingRatesLive(FTXFundingRates):
             # move time to end time of prev candle
             # subtract 0.1 miliseconds (ensures no rounding issues,
             # 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 0)
             dt -= timedelta(microseconds=100)
         dtnum = bt.date2num(dt)
         if dtnum <= self.l.datetime[-1]:
