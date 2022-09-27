@@ -251,7 +251,7 @@ class FTXDataloaderLive(FTXDataloader):
             debug = self._cfg.get('debug', False)
             FTXWebsocketClient.instance = FTXWebsocketClient(
                 self.loader.api_key, self.loader.api_secret,
-                ping_interval=10, ping_timeout=5, debug=debug)
+                ping_interval=15, ping_timeout=10, debug=debug)
         data.ws_client = FTXWebsocketClient.instance
         return data
 
