@@ -370,6 +370,14 @@ class FTXDataLive(FTXData):
                     low=row[1].low,
                     close=row[1].close,
                     volume=row[1].volume)
+                if self.p.adjstarttime:
+                    # move to bar endtime
+                    # subtract 0.1 miliseconds to move from edge of candle
+                    # (ensures no rounding issues, 10 microseconds is minimum)
+                    candle['datetime'] = get_starttime(
+                        self._timeframe, self._compression, candle['datetime'],
+                        self.p.sessionstart, 1)
+                    candle['datetime'] -= timedelta(microseconds=100)
                 self._queue.put((bt.date2num(candle['datetime']), candle))
         self._state = self._ST_LIVE
 
@@ -428,7 +436,8 @@ class FTXDataLive(FTXData):
         '''
         dt = None
         for trade in data:
-            dt = datetime.fromisoformat(trade['time'])
+            dt = datetime.fromisoformat(
+                trade['time']).replace(tzinfo=None)
             t = dict(datetime=dt,
                      open=trade['price'],
                      high=trade['price'],
