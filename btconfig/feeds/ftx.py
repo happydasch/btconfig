@@ -723,6 +723,13 @@ class FTXFundingRatesLive(FTXFundingRates):
         duration = None
         while FTXFundingRatesLive.running:
             dtnow = datetime.utcnow()
+            # check for latest funding rate dt
+            if FTXFundingRatesLive.newest is not None:
+                newest = FTXFundingRatesLive.newest
+                newest_dt = newest.datetime.unique()
+                if len(newest_dt):
+                    dtcurr = pd.to_datetime(newest_dt[-1]).to_pydatetime()
+            # fetch new data
             if debug:
                 logging.debug(
                     f'Funding Rates {dtnow}: Requesting funding rates'
@@ -738,8 +745,8 @@ class FTXFundingRatesLive(FTXFundingRates):
                     # end up being empty, if there is only current time
                     # available in new data
                     data = data[data.datetime >= dtcurr]
-            # replace funding rates with latest fetched
-            if len(data) and len(data[data.datetime > dtcurr]):
+            # update newest funding rates with latest fetched
+            if len(data):
                 if debug:
                     logging.debug(
                         f'Funding Rates {dtnow}: New funding rates recieved')
