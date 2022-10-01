@@ -18,7 +18,6 @@ from typing import DefaultDict, List, Dict, Callable
 from btconfig import BTConfigDataloader
 from btconfig.helper import get_data_dates, get_starttime, parse_dt
 
-from btconfig.feeds.misc import CSVAdjustTime
 from btconfig.utils.api.ftx import create_data_df
 from btconfig.utils.dataloader import FTXDataloaderApp
 from btconfig.utils.websocket import WebsocketManager
@@ -174,12 +173,17 @@ class FTXWebsocketClient(WebsocketManager):
             cb(message['data'])
 
 
+#
+# Dataloader
+#
+
+
 class FTXDataloader(BTConfigDataloader):
 
     PREFIX = 'FTX'
 
     def _prepare(self):
-        self._cls = CSVAdjustTime
+        self._cls = FTXData
         pause = self._cfg.get('pause', 0.0285714)
         debug = self._cfg.get('debug', False)
         api_key = self._cfg.get('api_key', '')
@@ -247,7 +251,7 @@ class FTXDataloaderLive(FTXDataloader):
             debug = self._cfg.get('debug', False)
             FTXWebsocketClient.instance = FTXWebsocketClient(
                 self.loader.api_key, self.loader.api_secret,
-                ping_interval=10, ping_timeout=5, debug=debug)
+                ping_interval=15, ping_timeout=10, debug=debug)
         data.ws_client = FTXWebsocketClient.instance
         return data
 
@@ -267,7 +271,48 @@ class FTXFundingRatesDataloaderLive(FTXFundingRatesDataloader):
         return data
 
 
-class FTXDataLive(CSVAdjustTime):
+#
+# Feeds
+#
+
+
+class FTXData(bt.feeds.GenericCSVData):
+
+    params = dict(
+        adjstarttime=False,
+        roundvalues=False,
+        roundprecision=8,
+        dtformat=parse_dt,
+        datetime=0, open=1, high=2, low=3, close=4, volume=5,
+        openinterest=-1
+    )
+
+    def _loadline(self, linetokens):
+        res = super(FTXData, self)._loadline(linetokens)
+        # if values should be rounded, all lines will get rounded
+        if self.p.roundvalues:
+            for linefield in self.getlinealiases():
+                csvidx = getattr(self.params, linefield)
+                if linefield == 'datetime' or csvidx is None or csvidx < 0:
+                    continue
+                line = getattr(self.lines, linefield)
+                if line[0] == line[0]:
+                    line[0] = round(line[0], self.p.roundprecision)
+        # ensure that utc time is being used
+        dt = self.datetime.datetime(0, tz=timezone.utc)
+        if self.p.adjstarttime:
+            # move to bar endtime
+            # subtract 0.1 miliseconds to move from edge of candle
+            # (ensures no rounding issues, 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 1)
+            dt -= timedelta(microseconds=100)
+        self.datetime[0] = bt.date2num(dt)
+        return res
+
+
+class FTXDataLive(FTXData):
 
     # Extends ftx data with live data
     #
@@ -288,6 +333,7 @@ class FTXDataLive(CSVAdjustTime):
         'adjust_interval': False,
         'max_interval': 15.0,
         'fill_gap': False,
+        'enable_ticker': True,
         'load_multiple_candles': False
     }
 
@@ -324,6 +370,14 @@ class FTXDataLive(CSVAdjustTime):
                     low=row[1].low,
                     close=row[1].close,
                     volume=row[1].volume)
+                if self.p.adjstarttime:
+                    # move to bar endtime
+                    # subtract 0.1 miliseconds to move from edge of candle
+                    # (ensures no rounding issues, 10 microseconds is minimum)
+                    candle['datetime'] = get_starttime(
+                        self._timeframe, self._compression, candle['datetime'],
+                        self.p.sessionstart, 1)
+                    candle['datetime'] -= timedelta(microseconds=100)
                 self._queue.put((bt.date2num(candle['datetime']), candle))
         self._state = self._ST_LIVE
 
@@ -336,6 +390,8 @@ class FTXDataLive(CSVAdjustTime):
             logging.debug(
                 f'Market Candles {dtnow}: Subscribe to'
                 f' {self.p.instrument} ({tradeslen} subscriptions)')
+        if self.p.enable_ticker:
+            self.enable_ticker()
 
     def _unsubscribe_ws(self):
         self.ws_client.unsubscribe_ticker(
@@ -380,7 +436,8 @@ class FTXDataLive(CSVAdjustTime):
         '''
         dt = None
         for trade in data:
-            dt = datetime.fromisoformat(trade['time'])
+            dt = datetime.fromisoformat(
+                trade['time']).replace(tzinfo=None)
             t = dict(datetime=dt,
                      open=trade['price'],
                      high=trade['price'],
@@ -502,6 +559,7 @@ class FTXDataLive(CSVAdjustTime):
                 if res:
                     qsize = self._queue.qsize()
                     if qsize == 0:
+                        # set to live after first time queue was emptied
                         if self._laststatus != self.LIVE:
                             self.put_notification(self.LIVE)
                     elif qsize > 2:
@@ -603,9 +661,9 @@ class FTXFundingRates(bt.feeds.GenericCSVData):
         res = super(FTXFundingRates, self)._loadline(linetokens)
         # if values should be rounded, all lines will get rounded
         if self.p.roundvalues:
-            for linefield in (x for x in self.getlinealiases() if x != 'datetime'):
+            for linefield in self.getlinealiases():
                 csvidx = getattr(self.params, linefield)
-                if csvidx is None or csvidx < 0:
+                if linefield == 'datetime' or csvidx is None or csvidx < 0:
                     continue
                 line = getattr(self.lines, linefield)
                 if line[0] == line[0]:
@@ -613,13 +671,13 @@ class FTXFundingRates(bt.feeds.GenericCSVData):
         # ensure that utc time is being used
         dt = self.datetime.datetime(0, tz=timezone.utc)
         if self.p.adjstarttime:
-            # move time to end time of prev candle
-            # subtract 0.1 miliseconds (ensures no
-            # rounding issues, 10 microseconds is minimum)
-            new_date = dt - timedelta(microseconds=100)
-            self.datetime[0] = bt.date2num(new_date)
-        else:
-            self.datetime[0] = bt.date2num(dt)
+            # subtract 0.1 miliseconds to move to end of candle
+            # (ensures no rounding issues, 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 0)
+            dt -= timedelta(microseconds=100)
+        self.datetime[0] = bt.date2num(dt)
         return res
 
 
@@ -646,6 +704,7 @@ class FTXFundingRatesLive(FTXFundingRates):
         self._last_date = datetime.utcnow()
         self._last_success = None
         self._last_check = None
+        self._live = False
 
     @staticmethod
     def _start_thread(ftx_loader, interval, debug):
@@ -664,26 +723,13 @@ class FTXFundingRatesLive(FTXFundingRates):
         duration = None
         while FTXFundingRatesLive.running:
             dtnow = datetime.utcnow()
+            # check for latest funding rate dt
             if FTXFundingRatesLive.newest is not None:
                 newest = FTXFundingRatesLive.newest
                 newest_dt = newest.datetime.unique()
                 if len(newest_dt):
                     dtcurr = pd.to_datetime(newest_dt[-1]).to_pydatetime()
-                    dtdiff = dtcurr + duration - dtnow
-                    dtdiff = dtdiff.total_seconds()
-                else:
-                    dtdiff = 0
-                if dtdiff > 0:
-                    if debug:
-                        logging.debug(
-                            f'Funding Rates {dtnow}: Current time period is'
-                            f' not over yet. Waiting for {dtdiff} seconds'
-                            ' before next request')
-                        # wake up every 0.5 seconds instead of sleeping
-                        # for a long period:
-                        # time.sleep(dtdiff.total_seconds())
-                        time.sleep(0.5)
-                    continue
+            # fetch new data
             if debug:
                 logging.debug(
                     f'Funding Rates {dtnow}: Requesting funding rates'
@@ -699,19 +745,18 @@ class FTXFundingRatesLive(FTXFundingRates):
                     # end up being empty, if there is only current time
                     # available in new data
                     data = data[data.datetime >= dtcurr]
-            if dtcurr is not None:
-                if not len(data) or not len(data[data.datetime > dtcurr]):
-                    if debug:
-                        logging.debug(
-                            f'Funding Rates {dtnow}: Waiting for {interval}'
-                            ' seconds before next request')
-                    time.sleep(interval)
-                    continue
-            # replace funding rates with latest fetched
-            FTXFundingRatesLive.newest = data
+            # update newest funding rates with latest fetched
+            if len(data):
+                if debug:
+                    logging.debug(
+                        f'Funding Rates {dtnow}: New funding rates recieved')
+                FTXFundingRatesLive.newest = data
+            # wait before next request
             if debug:
                 logging.debug(
-                    f'Funding Rates {dtnow}: New funding rates recieved')
+                    f'Funding Rates {dtnow}: Waiting for {interval}'
+                    ' seconds before next request')
+            time.sleep(interval)
 
     def _check_newest(self):
         if FTXFundingRatesLive.newest is None:
@@ -752,10 +797,11 @@ class FTXFundingRatesLive(FTXFundingRates):
                 candle = self._queue.get(timeout=self.p.qcheck)
                 result = self._load_candle(candle)
                 if result:
+                    self._live = True
                     return result
             except Empty:
                 pass
-            if self._laststatus != self.LIVE and self._queue.qsize() == 0:
+            if self._live and self._laststatus != self.LIVE:
                 self.put_notification(self.LIVE)
             return None
         return False
@@ -764,9 +810,11 @@ class FTXFundingRatesLive(FTXFundingRates):
         dt = candle['datetime']
         close = candle['close']
         if self.p.adjstarttime:
-            # move time to end time of prev candle
-            # subtract 0.1 miliseconds (ensures no rounding issues,
-            # 10 microseconds is minimum)
+            # subtract 0.1 miliseconds to move to end of candle
+            # (ensures no rounding issues, 10 microseconds is minimum)
+            dt = get_starttime(
+                self._timeframe, self._compression, dt,
+                self.p.sessionstart, 0)
             dt -= timedelta(microseconds=100)
         dtnum = bt.date2num(dt)
         if dtnum <= self.l.datetime[-1]:

@@ -3,7 +3,6 @@ from __future__ import division, absolute_import, print_function
 import backtrader as bt
 
 from datetime import timedelta, timezone
-from backtrader.utils import date2num
 from btconfig.helper import get_starttime, parse_dt
 
 
@@ -40,9 +39,9 @@ class PandasAdjustTime(bt.feeds.PandasData):
                     self._timeframe, self._compression, dt,
                     self.p.sessionstart, 1)
                 new_date -= timedelta(microseconds=100)
-                self.datetime[0] = date2num(new_date)
+                self.datetime[0] = bt.date2num(new_date)
             else:
-                self.datetime[0] = date2num(dt)
+                self.datetime[0] = bt.date2num(dt)
         return res
 
 
@@ -78,9 +77,9 @@ class CSVAdjustTime(bt.feeds.GenericCSVData):
                 self._timeframe, self._compression, dt,
                 self.p.sessionstart, 1)
             new_date -= timedelta(microseconds=100)
-            self.datetime[0] = date2num(new_date)
+            self.datetime[0] = bt.date2num(new_date)
         else:
-            self.datetime[0] = date2num(dt)
+            self.datetime[0] = bt.date2num(dt)
         return res
 
 
