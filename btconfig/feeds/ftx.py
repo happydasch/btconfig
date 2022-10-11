@@ -203,8 +203,11 @@ class FTXDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            data = self.loader.getMarketCandles(
-                dataname, timeframe, compression, fromdate, todate)
+            try:
+                data = self.loader.getMarketCandles(
+                    dataname, timeframe, compression, fromdate, todate)
+            except Exception:
+                data = None
             return data
 
 
@@ -231,7 +234,10 @@ class FTXFundingRatesDataloader(BTConfigDataloader):
         if self._filedate:
             fromdate = self._filedate
         if not os.path.isfile(self._filename) or not todate:
-            data = self.loader.getFundingRates(dataname, fromdate, todate)
+            try:
+                data = self.loader.getFundingRates(dataname, fromdate, todate)
+            except Exception:
+                data = None
             return data
 
 
