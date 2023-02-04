@@ -5,7 +5,7 @@ def get_pip_location(value, to_one=True):
     '''
     Returns the pip location for given value
 
-    Ex.
+    Examples:
     value=0 - pip location=0
     value=1 - pip location=0
     value=5 - pip location=1 (to_one = True)
@@ -23,24 +23,33 @@ def get_pip_location(value, to_one=True):
     value=0.01 - pip location=-2
     value=0.001 - pip location=-3
     '''
-    pip_location = 0
     if value == 0:
-        return pip_location
-    while True:
-        mult = float(10 ** -pip_location)
-        pips = value * mult
-        if value >= 1:
+        return 0
+    # get the pip location if non zero number
+    pip_location = 0
+    if value % 1 == 0:
+        # a big number, pip location is on
+        # the left side
+        while True:
+            mult = float(10 ** -pip_location)
+            pips = value * mult
             if pips <= 1:
                 if pips < 1 and not to_one:
                     pip_location -= 1
                 break
             pip_location += 1
-        else:
-            if pips >= 1:
-                if to_one:
-                    pip_location += 1
-                break
-            pip_location -= 1
+    else:
+        # a small number, pip locacation is on
+        # the right side
+        str_value = str(value)  # convert to str to prevent float rounding issues
+        # get the length of decimals fraction for pip
+        # location
+        pip_location = -len(str_value.split('.')[-1])
+        # if to_one, just assume pip_location is for fraction of pip
+        # so just increase by one to get whole pip
+        if to_one:
+            pip_location += 1
+    # return pip location
     return pip_location
 
 
