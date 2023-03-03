@@ -1,7 +1,7 @@
 # btconfig
 
 btconfig is a configureable backtrader execution helper. It is using
-JSON-formatted config files.
+YAML-formatted config files.
 
 It supports different execution modes:
 
