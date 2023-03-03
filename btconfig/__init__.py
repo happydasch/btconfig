@@ -43,7 +43,7 @@ How to run
     import btconfig
 
     if __name__ == '__main__':
-        btconfig.run(btconfig.MODE_BACKTEST, "config.json")
+        btconfig.run(btconfig.MODE_BACKTEST, "config.yaml")
     ```
 
     Example with customization:
@@ -56,7 +56,7 @@ How to run
     btconf.PATH_STRATEGY.append('other_stratgies')
 
     if __name__ == '__main__':
-        btconf.run(btconfig.MODE_BACKTEST, "config.json")
+        btconf.run(btconfig.MODE_BACKTEST, "config.yaml")
     ```
 
 Config file
@@ -249,7 +249,7 @@ Config file
 from __future__ import division, absolute_import, print_function
 
 import os
-import json
+import yaml
 import time
 import logging
 import requests
@@ -427,7 +427,7 @@ class BTConfig:
             self._filename = configfile
         if self._filename:
             with open(self._filename, 'r') as file:
-                self._config = json.load(file)
+                self._config = yaml.safe_load(file)
         if self._config is None:
             raise Exception('No config provided')
         merge_dicts(self._config, CONFIG_DEFAULT)

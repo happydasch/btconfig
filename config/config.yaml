@@ -1,0 +1,335 @@
+
+#
+# Common config values
+#
+common:
+  strategy: StrategyName
+  timezone: Europe/Warsaw
+  create_plot: false
+  create_report: false
+  broker: null
+  cash: null
+  log_path: ./logs
+  report_path: ./backtest
+  data_path: ./data
+
+#
+# Config for logging
+#
+logging:
+  enabled: true
+  console: true
+  file: true
+  level: INFO
+
+#
+# Config for cerebro
+#
+cerebro:
+  preload: true
+  runonce: true
+
+#
+# Config for all available stores
+#
+stores:
+  #
+  # Configuration for oanda
+  #
+  oandav20:
+    classname: OandaV20Store
+    params:
+      token: ""
+      account: ""
+      practice: true
+      stream_timeout: 5
+      poll_timeout: 5
+      notif_transactions: false
+  #
+  # Configuration for IB
+  #
+  ib:
+    classname: IBStore
+    params:
+      host: localhost
+      port: 7496
+      clientId: 1
+      reconnect: 3
+      timeout: 3
+      timerefresh: 60
+      timeoffset: true
+      notifyall: false
+      indcash: true
+      _debug: false
+
+#
+# Config for all data sources
+#
+datas:
+  ident_oanda:
+    store: oanda
+    name: EUR_USD
+    sessionstart:
+      - 22
+      - 0
+      - 0
+      - 0
+    sessionend:
+      - 21
+      - 59
+      - 59
+      - 999999
+    granularity:
+      - Minutes
+      - 5
+    backfill_days: null
+    params:
+      historical: true
+    for:
+      - primary
+      - secondary
+  ident_ib:
+    store: ib
+    name: EUR.USD-CASH-IDEALPRO
+    sessionstart:
+      - 22
+      - 0
+      - 0
+      - 0
+    sessionend:
+      - 21
+      - 59
+      - 59
+      - 999999
+    granularity:
+      - Minutes
+      - 5
+    backfill_days: null
+    fromdate: "2020-01-01 00:00:00"
+    todate: null
+    params:
+      historical: true
+      rtbar: false
+      what: null
+      useRTH: false
+    for:
+      - primary
+      - secondary
+  ident_oanda_downloader:
+    classname: OandaV20DataDownload
+    store: oanda
+    name: EUR_USD
+    sessionstart:
+      - 22
+      - 0
+      - 0
+      - 0
+    sessionend:
+      - 21
+      - 59
+      - 59
+      - 999999
+    granularity:
+      - Minutes
+      - 5
+    backfill_days: null
+    fromdate: "2020-01-01 00:00:00"
+    todate: null
+    params:
+      adjstarttime: true
+      useRTH: false
+    for: []
+  ident_csv:
+    classname: CSVAdjustTime
+    name: OANDA_EUR_USD_M5_MID_30DAYS.csv
+    sessionstart:
+      - 22
+      - 0
+      - 0
+      - 0
+    sessionend:
+      - 21
+      - 59
+      - 59
+      - 999999
+    granularity:
+      - Minutes
+      - 5
+    fromdate: "2020-01-01 00:00:00"
+    todate: null
+    params:
+      datetime: 0
+      time: -1
+      open: 1
+      high: 2
+      low: 3
+      close: 4
+      volume: 5
+      openinterest: -1
+    for:
+      - primary
+      - secondary
+  ident_csv_ticks:
+    classname: CSVAdjustTimeBidAsk
+    name: OANDA_EUR_USD_TICKS.csv
+    sessionstart:
+      - 22
+      - 0
+      - 0
+      - 0
+    sessionend:
+      - 21
+      - 59
+      - 59
+      - 999999
+    granularity: null
+    params: {}
+    for:
+      - primary
+      - secondary
+
+#
+# Feeds: feeds used in strategy
+# They will not be created if there is no data source which has
+# the feed name in "for"
+# Timeframe, Compression, Mode, Options
+# where mode can be: add, resample, replay
+# when using mode: add, then this feed needs to be first in list
+#
+feeds:
+  primary:
+    - Minutes
+    - 5
+    - resample
+    - {}
+  secondary:
+    - Minutes
+    - 60
+    - resample
+    - {}
+
+#
+# Sizer configuration
+#
+sizer:
+  classname: OandaV20BacktestRiskPercentSizer
+  params:
+    percents: 2
+    avail_reduce_perc: 0.1
+
+#
+# Comminfo configuration
+#
+comminfo:
+  classname: OandaV20BacktestCommInfo
+  params:
+    acc_counter_currency: true
+    spread: 0.7
+    leverage: 20
+    margin: 0.5
+    pip_location: -4
+
+#
+# Configuration for optimization process
+#
+optimize:
+  # To provide a list of values use:
+  param1:
+    - list
+    - - true
+      - false
+  # To provide a range of values use:
+  param2:
+    - range
+    - 8
+    - 10
+    - 1
+
+#
+# Configuration for analyzers
+#
+analyzers:
+  time_return:
+    - Minutes
+    - 240
+  # Sharpe Ratio
+  # Timeframe, Compression, Factor, Annualize
+  # Config based on https://community.backtrader.com/topic/2747/how-to-initialize-bt-analyzers-sharperatio/13
+  sharpe_ratio:
+    - Days
+    - 1
+    - 365
+    - true
+
+#
+# Configuration for plotting
+#
+plot:
+  use: TKAgg
+  path: ./backtest
+  volume: true
+  bar_dist: 0.0003
+  style: candle
+  combine: true
+  port: 80
+  live_lookback: 50
+
+#
+# Configuration for strategy
+#
+strategy:
+  # Default proto strategy values
+  ProtoStrategy:
+    log_candles: true
+    log_signals: true
+    log_orders: true
+    log_trades: true
+  # Default forex strategy values
+  ForexProtoStrategy:
+    pip_location: -4
+    display_precision: 5
+    min_trail_stop_dist: 0.0005
+    markets: []
+    custom_market_hours: []
+  # Configuration for other strategies can be added
+  StrategyName: {}
+
+#
+# Configuration for live trading
+#
+_live:
+  common:
+    create_plot: false
+    broker: oanda
+  cerebro:
+    quicknotify: true
+
+#
+# Configuration for backtest
+#
+_backtest:
+  common:
+    cash: 10000
+    create_plot: true
+    create_report: true
+  cerebro:
+    preload: true
+    runonce: true
+
+#
+# Configuration for optimization
+#
+_optimize:
+  cerebro:
+    preload: true
+    runonce: true
+  optimize:
+    param1:
+      - list
+      - - true
+        - false
+    param2:
+      - range
+      - 8
+      - 10
+      - 1

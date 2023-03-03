@@ -6,6 +6,7 @@ import importlib
 import inspect
 import pkgutil
 import json
+import yaml
 import backtrader as bt
 
 from zipimport import zipimporter
@@ -31,6 +32,12 @@ def strfdelta(tdelta, fmt):
 def load_json(filename):
     with open(filename, 'r') as file:
         res = json.load(file)
+    return res
+
+
+def load_yaml(filename):
+    with open(filename, 'r') as file:
+        res = yaml.safe_load(file)
     return res
 
 
