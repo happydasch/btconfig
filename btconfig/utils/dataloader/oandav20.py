@@ -81,7 +81,7 @@ class OandaV20DataloaderApp:
             if data_df is None:
                 data_df = tmp_df
             else:
-                data_df = data_df.append(tmp_df)
+                data_df = pd.concat([data_df, tmp_df])
             fromdate = data_df['datetime'].iloc[-1]
             # stop if start time is higher than end date if defined
             if todate and fromdate > todate:
