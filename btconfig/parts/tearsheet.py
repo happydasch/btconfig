@@ -92,6 +92,7 @@ def create_tearsheet(result, filename, title, bm=None):
             benchmark=benchmark,
             title=title,
             output=filename,
+            download_filename=filename
         )
-    except:
+    except Exception:
         pass
