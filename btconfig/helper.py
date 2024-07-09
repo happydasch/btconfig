@@ -310,8 +310,15 @@ def get_data_params(cfg: dict, tz: str, dtnow=None) -> dict:
         cfg.get('fromdate'),
         cfg.get('todate'),
         dtnow)
-    dargs['fromdate'] = fromdate
-    dargs['todate'] = todate
+    if fromdate:
+        if isinstance(fromdate, str):
+            fromdate = parser.parse(fromdate)
+        dargs['fromdate'] = fromdate
+    if todate:
+        if isinstance(todate, str):
+            todate = parser.parse(todate)
+        dargs['todate'] = todate
+
     # append args from params
     dargs.update(cfg.get('params', {}))
     return dargs
